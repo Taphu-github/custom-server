@@ -2,12 +2,12 @@ import { connectToMongoDB } from "@/lib/mongodb";
 import Device from "@/models/device";
 
 
-export async function PUT(req) {
+export async function PUT(req, {params}) {
+    const id= params;
     connectToMongoDB();
     try {
         Device.findById(id)
         .then(device => {
-            device.id = id;
             device.d_id = req.body.d_id;
             device.d_name = req.body.d_name;
             device.password = req.body.password;

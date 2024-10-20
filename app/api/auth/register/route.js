@@ -14,6 +14,7 @@ export async function POST(req) {
     const dzongkhag = body['dzongkhag'];
     const gewog = body['gewog'];
     const village = body['village'];
+    const role = body['role'];
     
     try {
         // Creating a new todo using Todo model
@@ -27,7 +28,8 @@ export async function POST(req) {
             phone,
             dzongkhag,
             gewog,
-            village
+            village,
+            role
         });
         // Saving the new todo
         newUser.save();

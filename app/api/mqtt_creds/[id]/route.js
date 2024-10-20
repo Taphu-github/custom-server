@@ -2,12 +2,12 @@ import { connectToMongoDB } from "@/lib/mongodb";
 import MQTT_cred from "@/models/MQTT_cred";
 
 
-export async function PUT(req) {
+export async function PUT(req, {params}) {
   connectToMongoDB();
+  const id= params;
   try {
     MQTT_cred.findById(id)
       .then(mqtt_credit => {
-        mqtt_credit.id = id;
         mqtt_credit.mqtt_id = req.body.mqtt_id;
         mqtt_credit.user_name = req.body.user_name;
         mqtt_credit.password = req.body.password;
@@ -26,10 +26,11 @@ export async function PUT(req) {
 }
 
 
-export async function DELETE(req) {
+export async function DELETE(req, {params}) {
   connectToMongoDB();
+  const id=params;
   try {
-    const deleteItem = MQTT_cred.findByIdAndDelete(req.params.id);
+    const deleteItem = MQTT_cred.findByIdAndDelete(id);
     return Response.json({
       message: 'Success'
     });

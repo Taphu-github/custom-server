@@ -1,58 +1,84 @@
-const mongoose= require("mongoose");
+const { unix } = require("moment");
+const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 
 const User = new mongoose.Schema({
-    user_id:{
-        type: String,
-        required: true,
+    user_id: {
+        type: Number,
         unique: true
     },
     username: {
         type: String,
         required: true,
-        
-      },
-      email: {
+        unique: true
+
+    },
+    email: {
         type: String,
         required: true,
         unique: true
-      },
-      password: {
-        type: String, 
+    },
+    password: {
+        type: String,
         required: true
-      },
-      cid: {
-        type: String, 
+    },
+    cid: {
+        type: String,
         required: true,
         unique: true
-      },
-      full_name: {
-        type: String, 
+    },
+    full_name: {
+        type: String,
         required: true
-      },
-      phone: {
-        type: String, 
+    },
+    phone: {
+        type: String,
         required: true,
         unique: true
-      },
-      dzongkhag: {
-        type: String, 
+    },
+    dzongkhag: {
+        type: String,
         required: true
-      },
-      gewog: {
-        type: String, 
+    },
+    gewog: {
+        type: String,
         required: true
-      },
-      village: {
-        type: String, 
+    },
+    village: {
+        type: String,
         required: true
-      }, 
+    },
+    role: {
+        type: String,
+        default: "user",
+    }
 },
-{
-    timestamps: true,
+    {
+        timestamps: true,
+    });
+User.plugin(AutoIncrement, {inc_field: 'user_id'});
+
+User.pre('save', async function (next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
+
+    try {
+        const salt = await bcrypt.genSalt();
+        user.password = await bcrypt.hash(user.password, salt);
+        next();
+    } catch (error) {
+        return next(error);
+    }
 });
 
+// Compare the given password with the hashed password in the database
+User.methods.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
 
-module.exports= mongoose.models.User || mongoose.model("User", User);
+
+
+module.exports = mongoose.models.User || mongoose.model("User", User);
 
 

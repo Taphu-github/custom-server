@@ -2,13 +2,13 @@
 import { connectToMongoDB } from '../../../../lib/mongodb';
 import device_owner from '@/models/device_owner';
 
-export async function PUT(req) {
+export async function PUT(req, {params}) {
   connectToMongoDB();
+  const id= params;
   try {
     device_owner.findById(id)
       .then(device_owner_ => {
-        device_owner_.id = id,
-        device_owner_.user_id = body.user_id;
+        device_owner_.user_id = req.body.user_id;
         device_owner_.d_id = req.body.d_id;
         device_owner_.date = req.body.password;
 
@@ -25,10 +25,11 @@ export async function PUT(req) {
 }
 
 
-export async function DELETE(req) {
+export async function DELETE(req, {params}) {
   connectToMongoDB();
+  const id= params;
   try {
-    const deleteItem = device_owner.findByIdAndDelete(req.params.id);
+    const deleteItem = device_owner.findByIdAndDelete(id);
     return Response.json({
       message: "Succesfully deleted"
     })

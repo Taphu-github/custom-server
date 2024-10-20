@@ -1,4 +1,4 @@
-import { connectToMongoDB } from '../../../lib/mongodbs';
+import { connectToMongoDB } from '@/lib/mongodb';
 import user from '@/models/user';
 import device from '@/models/device';
 import detected_animal from '@/models/detected_animal';
@@ -12,9 +12,16 @@ import { preprocessAnimalData } from '@/lib/data_preprocess';
  */
 export async function GET() {
     connectToMongoDB();
-    const data=preprocessAnimalData();
+    try {
+        const data = await preprocessAnimalData();
+        console.log(data);
 
-    return Response.json({
-      message: data
-    });
+        return Response.json({
+            message: data
+        });
+    } catch (error) {
+        return Response.json({
+            message: error
+        });
+    }
 }

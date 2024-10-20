@@ -2,13 +2,14 @@ import { connectToMongoDB } from "@/lib/mongodb";
 import animal_category from "@/models/animal_category";
 
 
-export async function PUT(req) {
+export async function PUT(req, {params}) {
     connectToMongoDB();
+    const id= params;
     try {
 
-        animal_category.findById(req.query)
+        animal_category.findById(id)
             .then(animal => {
-                animal.a_c_id = req.query;
+                animal.a_c_id = req.body.a_c_id;
                 animal.animal_name = req.body.animal_name;
                 animal.animal_description = req.body.animal_description;
                 animal.save();

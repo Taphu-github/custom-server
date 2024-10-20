@@ -1,46 +1,53 @@
-import { connectToMongoDB } from '../../../lib/mongodb';
-import User from '@/models/user';
+import { connectToMongoDB } from '@/lib/mongodb';
+import user from '@/models/user';
 
-export async function PUT(req){
+export async function PUT(req, { params }){
     connectToMongoDB();
+    const { id } = params;
     try {
-        User.findById(req.params.id)
-            .then(user => {
+        user.findById(id)
+            .then(u => {
 
-                user.user_id = req.params.id;
-                user.username = req.body.username;
-                user.email = req.body.email;
-                user.password = req.body.password;
-                user.cid = req.body.cid;
-                user.full_name = req.body.full_name;
-                user.phone = req.body.phone;
-                user.dzongkhag = req.body.dzongkhag;
-                user.gewog = req.body.gewog;
-                user.village = req.body.village;
+                u.user_id = req.body.user_id;
+                u.username = req.body.username;
+                u.email = req.body.email;
+                u.password = req.body.password;
+                u.cid = req.body.cid;
+                u.full_name = req.body.full_name;
+                u.phone = req.body.phone;
+                u.dzongkhag = req.body.dzongkhag;
+                u.gewog = req.body.gewog;
+                u.village = req.body.village;
 
+                u.save();
 
-                res.setHeader('Content-Type', 'application/json');
+            });
+        return Response.json({
+            message: "Updated"
+        })
+            
 
-                user.save()
-                    .then(() => res.json('user updated!'))
-                    .catch(err => res.status(400).json('Error: ' + err));
-            })
-            .catch(err => res.status(400).json('Error: ' + err));
-
-        res.status(200).json({ message: 'Device updated successfully!' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update device' });
+        return Response.json({
+            message: error
+        })
     }
 }
 
 
-export async function DELETE(req){
+export async function DELETE(req, {params}){
     connectToMongoDB();
+    const { id } = params;
     try {
-        const deleteItem = User.findByIdAndDelete(req.params.id);
-        res.status(200).json('Device Deleted');
+        
+        await user.findByIdAndDelete(id);
+        
+        return Response.json({
+            message: "deleted succesfully"
+        })
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete device' });
+        return Response.json({
+            message: "error"+error
+        })
     }
 }
-

@@ -1,6 +1,6 @@
 const mongoose= require("mongoose");
 
-const Device = new mongoose.Schema<DeviceDocument>({
+const Device = new mongoose.Schema({
     d_id: { type: String, required: true },
     d_name: { type: String, required: true },
     password: {type:String, required:true},
