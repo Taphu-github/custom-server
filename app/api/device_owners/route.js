@@ -2,29 +2,69 @@ import { connectToMongoDB } from "@/lib/mongodb";
 import device_owner from "@/models/device_owner";
 import user from "@/models/user";
 
-export async function GET(){
-    connectToMongoDB();
-    try{
-        const list=device_owner.find();
+/**
+ * @swagger
+ * /api/device-owners:
+ *   get:
+ *     summary: Get list of device owners
+ *     description: Retrieves all device owners from the database.
+ *     responses:
+ *       200:
+ *         description: List of device owners
+ *       400:
+ *         description: Failed to fetch device owners
+ */
+
+/**
+ * @swagger
+ * /api/device-owners:
+ *   post:
+ *     summary: Add a new device owner
+ *     description: Adds a new device owner to the system.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             example:
+ *               user_id: "number"
+ *               d_id: "string"
+ *               date_of_own: "YYYY-MM-DD"
+ *     responses:
+ *       200:
+ *         description: Device owner added successfully
+ *       400:
+ *         description: Failed to add device owner
+ */
+
+
+export async function GET() {
+
+    try {
+        await connectToMongoDB();
+        const list = device_owner.find();
         return Response.json({
-            message: list
+            data: list
         })
-    }catch(error){
+    } catch (error) {
         return Response.json({
             message: error
         })
     }
 }
 
-export async function POST(req){
-    connectToMongoDB();
+export async function POST(req) {
 
-    const user_id=req.body.user_id;
-    const d_id=req.body.d_id;
-    const date_of_own=req.body.date_of_own;
-    console.log(req.body);
-    try{
-        const new_device_owner=await device_owner.create({
+    try {
+        await connectToMongoDB();
+        const body= await req.json();
+        
+        const user_id = body.user_id;
+        const d_id = body.d_id;
+        const date_of_own = body.date_of_own;
+
+        const new_device_owner = await device_owner.create({
             user_id,
             d_id,
             date_of_own
@@ -33,12 +73,15 @@ export async function POST(req){
         new_device_owner.save();
 
         return Response.json({
+            new_device_owner,
             message: "Successfully added"
+        }, {
+            status: 200
         })
 
-    }catch(error){
+    } catch (error) {
         return Response.json({
-            message: "error: "+error
+            message: "error: " + error
         })
     }
 }

@@ -40,7 +40,6 @@ const data = {
   user: {
     name: "Tseten Dorji",
     email: "tsetendorji.rub.edu.bt",
-    avatar: "/avatars/shadcn.jpg",
   },
 };
 

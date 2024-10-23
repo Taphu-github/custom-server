@@ -1,13 +1,48 @@
 const { connectToMongoDB } = require('../../../lib/mongodb');
 const MQTT_Cred = require("../../../models/MQTT_cred");
 
+/**
+ * @swagger
+ * /api/mqtt-creds:
+ *   get:
+ *     summary: Get list of MQTT credentials
+ *     description: Retrieves all MQTT credentials from the database.
+ *     responses:
+ *       200:
+ *         description: List of MQTT credentials
+ *       400:
+ *         description: Failed to fetch MQTT credentials
+ */
+
+/**
+ * @swagger
+ * /api/mqtt-creds:
+ *   post:
+ *     summary: Register new MQTT credentials
+ *     description: Registers new MQTT credentials in the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             example:
+ *               mqtt_id: "string"
+ *               user_name: "string"
+ *               password: "string"
+ *     responses:
+ *       200:
+ *         description: Successfully registered MQTT credentials
+ *       400:
+ *         description: Failed to register MQTT credentials
+ */
 
 export async function GET() {
     connectToMongoDB();
     try {
         const credlist=MQTT_Cred.find();
         return Response.json({
-            message: credlist
+            data: credlist
         })
     } catch (error) {
         return Response.json({
@@ -33,7 +68,10 @@ export async function POST(req){
         mqtt_cred.save();
         
         return Response.json({
+            mqtt_cred,
             message: 'Succesfully Registered'
+        },{
+            status: 200
         });
         
 

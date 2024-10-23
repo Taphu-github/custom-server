@@ -1,13 +1,57 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import animal_category from "@/models/animal_category";
 
+/**
+ * @swagger
+ * /api/animal_categories:
+ *   get:
+ *     summary: Get list of animal categories
+ *     description: Retrieves all animal categories from the database.
+ *     responses:
+ *       200:
+ *         description: List of animal categories
+ *       400:
+ *         description: Failed to fetch animal categories
+ */
+
+/**
+ * @swagger
+ * /api/animal_categories:
+ *   post:
+ *     summary: Add a new animal category
+ *     description: Creates a new animal category in the system.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               a_c_id:
+ *                 type: string
+ *               animal_name:
+ *                 type: string
+ *               animal_description:
+ *                 type: string
+ *             example:
+ *               a_c_id: "1"
+ *               animal_name: "Tiger"
+ *               animal_description: "A large cat species"
+ *     responses:
+ *       200:
+ *         description: Animal category added successfully
+ *       400:
+ *         description: Failed to add animal category
+ */
 
 export async function GET() {
-    connectToMongoDB();
+
     try {
+
+        await connectToMongoDB();
         const list = animal_category.find()
         return Response.json({
-            message: list
+            data: list
         })
     } catch (error) {
         return Response.json({
@@ -20,6 +64,8 @@ export async function GET() {
 
 export async function POST(req) {
     try {
+        await connectToMongoDB();
+
         const a_c_id = req.body.a_c_id;
         const animal_name = req.body.animal_name;
         const animal_description = req.body.animal_description;

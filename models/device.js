@@ -1,4 +1,5 @@
 const mongoose= require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const Device = new mongoose.Schema({
     d_id: { type: String, required: true },
@@ -9,4 +10,24 @@ const Device = new mongoose.Schema({
     installed_date: {type:  Date, required: true}
 });
 
-module.exports= mongoose.models?.Device || mongoose.model("Device", Device);
+
+Device.pre('save', async function (next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
+
+    try {
+        const salt = await bcrypt.genSalt();
+        user.password = await bcrypt.hash(user.password, salt);
+        next();
+        
+    } catch (error) {
+        return next(error);
+    }
+});
+
+// Compare the given password with the hashed password in the database
+Device.methods.comparePassword = async function (password) {
+    return bcrypt.compare(password, this.password);
+};
+
+module.exports= mongoose.models.Device || mongoose.model("Device", Device);

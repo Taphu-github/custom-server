@@ -1,7 +1,7 @@
 const { unix } = require("moment");
 const mongoose = require("mongoose");
 const AutoIncrement = require('mongoose-sequence')(mongoose);
-
+const bcrypt = require("bcryptjs");
 
 const User = new mongoose.Schema({
     user_id: {
@@ -57,6 +57,7 @@ const User = new mongoose.Schema({
     {
         timestamps: true,
     });
+
 User.plugin(AutoIncrement, {inc_field: 'user_id'});
 
 User.pre('save', async function (next) {
@@ -67,6 +68,7 @@ User.pre('save', async function (next) {
         const salt = await bcrypt.genSalt();
         user.password = await bcrypt.hash(user.password, salt);
         next();
+        
     } catch (error) {
         return next(error);
     }
