@@ -62,6 +62,9 @@ export async function POST(req) {
         if (!passwordMatch) {
             return Response.json({
                 message: "Incorrect Password"
+            },
+            {
+                status: 400
             })
         }
 
