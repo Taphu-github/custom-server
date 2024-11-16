@@ -65,17 +65,17 @@ export async function GET() {
 export async function POST(req) {
     try {
         await connectToMongoDB();
-
-        const a_c_id = req.body.a_c_id;
-        const animal_name = req.body.animal_name;
-        const animal_description = req.body.animal_description;
+        const body = await req.json();
+        const a_c_id = body.a_c_id;
+        const animal_name = body.animal_name;
+        const animal_description = body.animal_description;
 
         const animal_categories = new animal_category({
             a_c_id,
             animal_name,
             animal_description
         })
-        animal_categories.save()
+        await animal_categories.save()
         return Response.json({
             message: "Succesfully added"
         })

@@ -4,7 +4,7 @@ import MQTT_cred from "@/models/MQTT_cred";
 
 /**
  * @swagger
- * /api/mqtt-creds/{id}:
+ * /api/mqtt_creds/{id}:
  *   get:
  *     summary: Get MQTT credentials by ID
  *     description: Fetches a specific MQTT credential by its ID.
@@ -23,7 +23,7 @@ import MQTT_cred from "@/models/MQTT_cred";
 
 /**
  * @swagger
- * /api/mqtt-creds/{id}:
+ * /api/mqtt_creds/{id}:
  *   put:
  *     summary: Update MQTT credentials by ID
  *     description: Updates the details of an existing MQTT credential.
@@ -52,7 +52,7 @@ import MQTT_cred from "@/models/MQTT_cred";
 
 /**
  * @swagger
- * /api/mqtt-creds/{id}:
+ * /api/mqtt_creds/{id}:
  *   delete:
  *     summary: Delete MQTT credentials by ID
  *     description: Deletes an MQTT credential by its ID.
@@ -100,11 +100,12 @@ export async function PUT(req, { params }) {
   try {
     await connectToMongoDB();
     const id = params;
-    const mqtt_credit = MQTT_cred.findById(id)
+    const mqtt_credit = MQTT_cred.findById(id);
+    const body= await req.json();
     if (mqtt_credit) {
-      mqtt_credit.mqtt_id = req.body.mqtt_id;
-      mqtt_credit.user_name = req.body.user_name;
-      mqtt_credit.password = req.body.password;
+      mqtt_credit.mqtt_id = body.mqtt_id;
+      mqtt_credit.user_name = body.user_name;
+      mqtt_credit.password = body.password;
 
       mqtt_credit.save();
       return Response.json({

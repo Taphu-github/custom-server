@@ -115,11 +115,12 @@ export async function PUT(req, { params }) {
     try {
         await connectToMongoDB();
         const id = params;
-        const animal = animal_category.findById(id);
+        const animal = await animal_category.findById(id);
+        const body=await req.json()
         if (animal) {
-            animal.a_c_id = req.body.a_c_id;
-            animal.animal_name = req.body.animal_name;
-            animal.animal_description = req.body.animal_description;
+            animal.a_c_id = body.a_c_id;
+            animal.animal_name = body.animal_name;
+            animal.animal_description = body.animal_description;
             animal.save();
             return Response.json({
                 message: "Succesfully updated"
@@ -139,9 +140,10 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_, { params }) {
-    connectToMongoDB();
+    
     try {
-        const deleteItem = animal_category.findByIdAndDelete(params.id);
+        await connectToMongoDB();
+        const deleteItem = await animal_category.findByIdAndDelete(params.id);
         if (deleteItem) {
             return Response.json({
                 message: "Succesfully updated"

@@ -3,7 +3,7 @@ const MQTT_Cred = require("../../../models/MQTT_cred");
 
 /**
  * @swagger
- * /api/mqtt-creds:
+ * /api/mqtt_creds:
  *   get:
  *     summary: Get list of MQTT credentials
  *     description: Retrieves all MQTT credentials from the database.
@@ -16,7 +16,7 @@ const MQTT_Cred = require("../../../models/MQTT_cred");
 
 /**
  * @swagger
- * /api/mqtt-creds:
+ * /api/mqtt_creds:
  *   post:
  *     summary: Register new MQTT credentials
  *     description: Registers new MQTT credentials in the database.
@@ -38,8 +38,9 @@ const MQTT_Cred = require("../../../models/MQTT_cred");
  */
 
 export async function GET() {
-    connectToMongoDB();
+    
     try {
+        await connectToMongoDB();
         const credlist=MQTT_Cred.find();
         return Response.json({
             data: credlist
@@ -52,11 +53,13 @@ export async function GET() {
 }
 
 export async function POST(req){
-    connectToMongoDB();
+    
     try {
-        const mqtt_id = req.body.mqtt_id;
-        const user_name = req.body.user_name;
-        const password = req.body.password;
+        await connectToMongoDB();
+        const body = await req.json();        
+        const mqtt_id = body.mqtt_id;
+        const user_name = body.user_name;
+        const password = body.password;
 
 
         const mqtt_cred = new MQTT_Cred({
