@@ -88,6 +88,8 @@ export async function POST(req) {
             token: token,
             topics: device_arr
 
+        },{
+            status: 200
         })
     } catch (error) {
         return Response.json({
