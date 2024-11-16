@@ -42,7 +42,8 @@ import Device from "@/models/device";
 
 export async function GET(){
     try{
-        const list=Device.find();
+        await connectToMongoDB();
+        const list=await Device.find();
         return Response.json({
             data: list
         })

@@ -43,7 +43,7 @@ export async function GET() {
 
     try {
         await connectToMongoDB();
-        const list = device_owner.find();
+        const list = await device_owner.find();
         return Response.json({
             data: list
         })

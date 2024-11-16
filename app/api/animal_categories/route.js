@@ -49,7 +49,7 @@ export async function GET() {
     try {
 
         await connectToMongoDB();
-        const list = animal_category.find()
+        const list = await animal_category.find()
         return Response.json({
             data: list
         })

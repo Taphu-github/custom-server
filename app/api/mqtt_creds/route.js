@@ -41,7 +41,7 @@ export async function GET() {
     
     try {
         await connectToMongoDB();
-        const credlist=MQTT_Cred.find();
+        const credlist=await MQTT_Cred.find();
         return Response.json({
             data: credlist
         })
