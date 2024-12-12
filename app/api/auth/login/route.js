@@ -85,6 +85,7 @@ export async function POST(req) {
         console.log(device_arr);
 
         return Response.json({
+            user: user,
             token: token,
             topics: device_arr
 

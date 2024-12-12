@@ -63,7 +63,7 @@ export async function POST(req){
         }
 
         return Response.json(
-            {data:dev.d_id,
+            {data:dev,
             message: "Successfully Added Device"},
             {status: 200}
         )
