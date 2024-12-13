@@ -31,6 +31,7 @@
     "next-swagger-doc": "^0.4.0",
     "react": "^18",
     "react-dom": "^18",
+    "recharts": "^2.13.3",
     "swagger-ui-react": "^5.17.14",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"

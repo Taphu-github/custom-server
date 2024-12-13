@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,47 +8,77 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PencilIcon, TrashIcon, PlusIcon } from 'lucide-react'
 
-// Mock data for demonstration
-const initialAnimalCategories = [
-  {
-    a_c_id: '1',
-    animal_name: 'Elephant',
-    animal_description: 'Large mammal known for its tusks and trunk, native to various regions including Africa and Asia.',
-  },
-  {
-    a_c_id: '2',
-    animal_name: 'Tiger',
-    animal_description: 'A big cat species, native to parts of Asia, known for its striped coat.',
-  },
-  // Add more mock animal categories as needed
-]
-
-
 export default function AnimalCategoryTable() {
-  const [animalCategories, setAnimalCategories] = useState(initialAnimalCategories)
+  const [animalCategories, setAnimalCategories] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentAnimalCategory, setCurrentAnimalCategory] = useState(null)
+
+  // Fetch animal categories from the API on mount
+  useEffect(() => {
+    fetchAnimalCategories()
+  }, [])
+
+  const fetchAnimalCategories = async () => {
+    try {
+      const response = await fetch('/api/animal_categories')
+      const data = await response.json()
+
+      // Ensure data is an array
+      setAnimalCategories(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Error fetching animal categories:', error)
+      setAnimalCategories([])  // Fallback to empty array on error
+    }
+  }
 
   const handleOpenDialog = (animalCategory = null) => {
     setCurrentAnimalCategory(animalCategory)
     setIsDialogOpen(true)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const animalCategoryData = Object.fromEntries(formData.entries())
 
-    if (currentAnimalCategory) {
-      // Edit existing animal category
-      setAnimalCategories(animalCategories.map(category => category.a_c_id === currentAnimalCategory.a_c_id ? { ...category, ...animalCategoryData } : category))
-    } else {
-      // Add new animal category
-      setAnimalCategories([...animalCategories, { ...animalCategoryData, a_c_id: (animalCategories.length + 1).toString() }])
+    try {
+      if (currentAnimalCategory) {
+        // Edit existing animal category
+        await fetch(`/api/animal_categories/${currentAnimalCategory.a_c_id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(animalCategoryData),
+        })
+        setAnimalCategories(
+          animalCategories.map(category =>
+            category.a_c_id === currentAnimalCategory.a_c_id ? { ...category, ...animalCategoryData } : category
+          )
+        )
+      } else {
+        // Add new animal category
+        const response = await fetch('/api/animal_categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(animalCategoryData),
+        })
+        const newCategory = await response.json()
+        setAnimalCategories([...animalCategories, newCategory])
+      }
+    } catch (error) {
+      console.error('Error saving animal category:', error)
     }
 
     setIsDialogOpen(false)
     setCurrentAnimalCategory(null)
+  }
+
+  const handleDeleteCategory = async (id) => {
+    try {
+      await fetch(`/api/animal_categories/${id}`, { method: 'DELETE' })
+      setAnimalCategories(animalCategories.filter(category => category.a_c_id !== id))
+    } catch (error) {
+      console.error('Error deleting animal category:', error)
+    }
   }
 
   return (
@@ -87,7 +117,7 @@ export default function AnimalCategoryTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {animalCategories.map((category) => (
+            {Array.isArray(animalCategories) && animalCategories.map((category) => (
               <TableRow key={category.a_c_id}>
                 <TableCell>{category.a_c_id}</TableCell>
                 <TableCell>{category.animal_name}</TableCell>
@@ -97,7 +127,7 @@ export default function AnimalCategoryTable() {
                     <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(category)}>
                       <PencilIcon className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteCategory(category.a_c_id)}>
                       <TrashIcon className="h-4 w-4" />
                     </Button>
                   </div>
