@@ -1,5 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import Device from "@/models/device";
+import device_owner from "@/models/device_owner";
+import user from "@/models/user";
 
 
 /**

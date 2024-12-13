@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,9 +28,21 @@ const initialAnimalCategories = [
 
 
 export default function AnimalCategoryTable() {
-  const [animalCategories, setAnimalCategories] = useState(initialAnimalCategories)
+  const [animalCategories, setAnimalCategories] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentAnimalCategory, setCurrentAnimalCategory] = useState(null)
+
+  useEffect(() => {
+          fetch("/api/animal_categories")
+            .then((res) => res.json())
+            .then((data) => {
+              setAnimalCategories(data.data)
+      
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }, []);
 
   const handleOpenDialog = (animalCategory = null) => {
     setCurrentAnimalCategory(animalCategory)

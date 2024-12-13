@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,9 +64,22 @@ const initialUsers = [
 // type User = typeof initialUsers[0]
 
 export default function UserTable() {
-  const [users, setUsers] = useState(initialUsers)
+  const [users, setUsers] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
+
+  useEffect(() => {
+      fetch("/api/users")
+        .then((res) => res.json())
+        .then((data) => {
+          setUsers(data.data)
+  
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      console.log(users)
+    }, []);
 
   const handleOpenDialog = (user = null) => {
     setCurrentUser(user)
@@ -154,7 +167,7 @@ export default function UserTable() {
             <TableHead>CID</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Phone</TableHead>
-            <TableHead>Date of Birth</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Dzongkhag</TableHead>
             <TableHead>Gewog</TableHead>
             <TableHead>Village</TableHead>
@@ -163,13 +176,13 @@ export default function UserTable() {
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.user_name}</TableCell>
+            <TableRow key={user.user_id}>
+              <TableCell>{user.user_id}</TableCell>
+              <TableCell>{user.username}</TableCell>
               <TableCell>{user.cid}</TableCell>
-              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.full_name}</TableCell>
               <TableCell>{user.phone}</TableCell>
-              <TableCell>{user.date_of_birth}</TableCell>
+              <TableCell>{user.email}</TableCell>
               <TableCell>{user.dzongkhag}</TableCell>
               <TableCell>{user.gewog}</TableCell>
               <TableCell>{user.village}</TableCell>

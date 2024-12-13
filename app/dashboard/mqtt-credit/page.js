@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,9 +26,21 @@ const initialMQTTCredits = [
 
 
 export default function MQTTCreditTable() {
-  const [mqttCredits, setMQTTCredits] = useState(initialMQTTCredits)
+  const [mqttCredits, setMQTTCredits] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentMQTTCredit, setCurrentMQTTCredit] = useState(null)
+
+  useEffect(() => {
+      fetch("/api/mqtt_creds")
+        .then((res) => res.json())
+        .then((data) => {
+          setMQTTCredits(data.data)
+  
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }, []);
 
   const handleOpenDialog = (mqttCredit = null) => {
     setCurrentMQTTCredit(mqttCredit)

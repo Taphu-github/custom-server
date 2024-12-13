@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,9 +34,21 @@ const initialDevices = [
 
 
 export default function DeviceTable() {
-  const [devices, setDevices] = useState(initialDevices)
+  const [devices, setDevices] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentDevice, setCurrentDevice] = useState(null)
+
+  useEffect(() => {
+    fetch("/api/devices")
+      .then((res) => res.json())
+      .then((data) => {
+        setDevices(data.data)
+
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const handleOpenDialog = (device = null) => {
     setCurrentDevice(device)
@@ -91,10 +103,6 @@ export default function DeviceTable() {
                 <Input id="mac_address" name="mac_address" defaultValue={currentDevice?.mac_address} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="mqtt_id">MQTT ID</Label>
-                <Input id="mqtt_id" name="mqtt_id" defaultValue={currentDevice?.mqtt_id} required />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="installed_date">Installed Date</Label>
                 <Input id="installed_date" name="installed_date" type="date" defaultValue={currentDevice?.installed_date} required />
               </div>
@@ -112,7 +120,6 @@ export default function DeviceTable() {
             <TableHead>Password</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>MAC Address</TableHead>
-            <TableHead>MQTT ID</TableHead>
             <TableHead>Installed Date</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -125,7 +132,6 @@ export default function DeviceTable() {
               <TableCell>{device.password}</TableCell>
               <TableCell>{device.location}</TableCell>
               <TableCell>{device.mac_address}</TableCell>
-              <TableCell>{device.mqtt_id}</TableCell>
               <TableCell>{device.installed_date}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">

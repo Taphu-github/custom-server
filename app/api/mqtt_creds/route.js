@@ -1,6 +1,7 @@
-const { connectToMongoDB } = require('../../../lib/mongodb');
-const MQTT_Cred = require("../../../models/MQTT_cred");
-
+// const { connectToMongoDB } = require('../../../lib/mongodb');
+import { connectToMongoDB } from "@/lib/mongodb";
+// const MQTT_Cred = require("../../../models/MQTT_cred");
+import MQTT_Cred from "@/models/MQTT_cred";
 /**
  * @swagger
  * /api/mqtt_creds:
