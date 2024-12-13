@@ -1,6 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import device_owner from "@/models/device_owner";
+import MQTT_cred from "@/models/MQTT_cred";
 import jwt from "jsonwebtoken";
 
 /**
@@ -83,11 +84,13 @@ export async function POST(req) {
         })
 
         console.log(device_arr);
+        const credlist=await MQTT_cred.find();
 
         return Response.json({
             user: user,
             token: token,
-            topics: device_arr
+            topics: device_arr,
+            mqtt_creds: credlist
 
         },{
             status: 200
