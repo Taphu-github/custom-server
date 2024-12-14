@@ -8,6 +8,25 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PencilIcon, TrashIcon, PlusIcon } from 'lucide-react'
 
+
+
+
+// Mock data for demonstration
+const initialAnimalCategories = [
+  {
+    a_c_id: '1',
+    animal_name: 'Elephant',
+    animal_description: 'Large mammal known for its tusks and trunk, native to various regions including Africa and Asia.',
+  },
+  {
+    a_c_id: '2',
+    animal_name: 'Tiger',
+    animal_description: 'A big cat species, native to parts of Asia, known for its striped coat.',
+  },
+  // Add more mock animal categories as needed
+]
+
+
 export default function AnimalCategoryTable() {
   const [animalCategories, setAnimalCategories] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -30,6 +49,18 @@ export default function AnimalCategoryTable() {
       setAnimalCategories([])  // Fallback to empty array on error
     }
   }
+
+  useEffect(() => {
+          fetch("/api/animal_categories")
+            .then((res) => res.json())
+            .then((data) => {
+              setAnimalCategories(data.data)
+      
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }, []);
 
   const handleOpenDialog = (animalCategory = null) => {
     setCurrentAnimalCategory(animalCategory)

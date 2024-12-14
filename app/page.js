@@ -1,23 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertTriangle } from 'lucide-react'
-
-const sampleData = {
-  "Dates": ["2024-10-29", "2024-10-31", "2024-11-01", "2024-11-02", "2024-11-03", "2024-11-04"],
-  "Bear": [0, 2, 0, 0, 0, 1],
-  "Boar": [0, 0, 0, 0, 0, 1],
-  "Cattle": [0, 0, 0, 0, 3, 2],
-  "Deer": [2, 0, 0, 0, 0, 4],
-  "Elephant": [2, 0, 0, 0, 0, 3],
-  "Horse": [3, 0, 0, 0, 0, 3],
-  "Monkey": [0, 3, 2, 2, 2, 4],
-  "Sums": [3, 1, 5, 6, 5, 6, 13]
-}
+import { AlertTriangle, Loader } from 'lucide-react';
 
 const animals = ["Bear", "Boar", "Cattle", "Deer", "Elephant", "Horse", "Monkey"]
 
@@ -33,11 +21,25 @@ const colors = {
 
 
 
-export default function AnimalIntrusionDashboard({ data = sampleData }) {
+export default function AnimalIntrusionDashboard() {
   const [error, setError] = useState(null)
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  useEffect(()=>{
+    fetch("/api/analysis")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data.message);
+      setData(data.message);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  },[])
 
   // Validate and transform data
-  const chartData = data.Dates.map((date, index) => {
+  const chartData = data?.Dates?.map((date, index) => {
     const entry = { date }
     animals.forEach(animal => {
       if (data[animal][index] === undefined) {
@@ -50,7 +52,7 @@ export default function AnimalIntrusionDashboard({ data = sampleData }) {
   })
 
   const totalIntrusions = animals.reduce((acc, animal) => {
-    acc[animal] = data[animal].reduce((sum, count) => sum + count, 0)
+    acc[animal] = data[animal]?.reduce((sum, count) => sum + count, 0)
     return acc
   }, {})
 
@@ -67,6 +69,12 @@ export default function AnimalIntrusionDashboard({ data = sampleData }) {
   }
 
   return (
+    <div className="w-full h-screen ">
+    {loading ?
+    <div className="flex flex-col justify-center items-center w-full h-screen">
+    <Loader className="animate-spin text-4xl"/>
+    </div>
+    :
     <div className="flex flex-col justify-start items-start w-full h-screen">
         <h1 className="text-3xl font-bold text-green-800 mt-5 p-2">Animal Intrusion Detection System</h1>
       <div className="p-2 space-x-8 flex flex-col lg:flex-row justify-center items-start gap-4">
@@ -98,7 +106,7 @@ export default function AnimalIntrusionDashboard({ data = sampleData }) {
         </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
           {animals.map((animal) => (
             <Card key={animal} className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
@@ -121,6 +129,7 @@ export default function AnimalIntrusionDashboard({ data = sampleData }) {
 
     
       </div>
+    </div>}
     </div>
   )
 }

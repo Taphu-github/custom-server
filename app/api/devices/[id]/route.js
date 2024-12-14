@@ -95,25 +95,24 @@ export async function GET(_, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
+export async function PATCH(req, { params }) {
 
   try {
     const { id } = params;
     await connectToMongoDB();
     const body = await req.json();
-    const salt = await bcrypt.genSalt();
-    const pass= await bcrypt.hash(body.password, salt);
     
     const device = await Device.findById(id);
 
     if(device) {
-        device.d_id = body.d_id;
-        device.d_name = body.d_name;
-        device.password = pass;
-        device.location = body.location;
-        device.mac_address = body.mac_address;
-        device.installed_date= body.installed_date;
-        device.save();
+      device.d_id = body.d_id || device.d_id;
+      device.d_name = body.d_name || device.d_name;
+      device.location = body.location || device.location;
+      device.mac_address = body.mac_address || device.mac_address;
+      device.installed_date = body.installed_date || device.installed_date;
+
+      // Save the updated device
+      await device.save();
 
         return Response.json({
           device,
@@ -137,22 +136,35 @@ export async function PUT(req, { params }) {
 }
 
 
-export async function DELETE(req) {
-  
+export async function DELETE(req, {params}) {
   try {
     await connectToMongoDB();
-    const deleteItem = await Device.findByIdAndDelete(req.params.id);
+    const id = params.id; 
+    // Find and delete the device
+    const deleteItem = await Device.findByIdAndDelete(id);
 
-    if (deleteItem) {
-      return Response.json({
-        message: `Device ${deleteItem.d_id} has been deleted`
-      });
+    if (!deleteItem) {
+      return new Response(
+        JSON.stringify({ message: `Device with ID ${id} not found` }),
+        { status: 404 }
+      );
     }
+
+    // Return success response
+    return new Response(
+      JSON.stringify({
+        message: `Device ${deleteItem.d_id} has been deleted`,
+        data: deleteItem,
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
-    return Response.json({
-      message: 'Failed to Fetch MQTT Cred'
-    }, { status: 400 }
+    // Handle errors
+    return new Response(
+      JSON.stringify({ message: `Error: ${error.message}` }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }
+
 

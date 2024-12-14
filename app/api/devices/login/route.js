@@ -1,5 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import Device from "@/models/device";
+import device_owner from "@/models/device_owner";
+import user from "@/models/user";
 
 
 /**
@@ -63,7 +65,7 @@ export async function POST(req){
         }
 
         return Response.json(
-            {data:dev.d_id,
+            {data:{ d_id:dev.d_id, d_name:dev.d_name, d_location:dev.location},
             message: "Successfully Added Device"},
             {status: 200}
         )

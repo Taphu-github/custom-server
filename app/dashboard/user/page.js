@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect} from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,6 +30,19 @@ export default function UserTable() {
       setUsers([])  // Fallback to an empty array on error
     }
   }
+
+  useEffect(() => {
+      fetch("/api/users")
+        .then((res) => res.json())
+        .then((data) => {
+          setUsers(data.data)
+  
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      console.log(users)
+    }, []);
 
   const handleOpenDialog = (user = null) => {
     setCurrentUser(user)
@@ -92,102 +105,102 @@ export default function UserTable() {
 
   return (
     <div className='flex justify-center items-start w-full h-full mt-20'>
-      <div className="space-y-4 w-[90%]">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Users</h2>
-          <Button onClick={() => handleOpenDialog()}><PlusIcon className="mr-2 h-4 w-4" /> Add User</Button>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{currentUser ? 'Edit User' : 'Add New User'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="user_name">Username</Label>
-                  <Input id="user_name" name="user_name" defaultValue={currentUser?.user_name} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input id="password" name="password" type="password" defaultValue={currentUser?.password} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cid">CID</Label>
-                  <Input id="cid" name="cid" defaultValue={currentUser?.cid} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" name="name" defaultValue={currentUser?.name} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" name="phone" defaultValue={currentUser?.phone} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date_of_birth">Date of Birth</Label>
-                  <Input id="date_of_birth" name="date_of_birth" type="date" defaultValue={currentUser?.date_of_birth} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dzongkhag">Dzongkhag</Label>
-                  <Input id="dzongkhag" name="dzongkhag" defaultValue={currentUser?.dzongkhag} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gewog">Gewog</Label>
-                  <Input id="gewog" name="gewog" defaultValue={currentUser?.gewog} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="village">Village</Label>
-                  <Input id="village" name="village" defaultValue={currentUser?.village} required />
-                </div>
-              </div>
-              <Button type="submit">{currentUser ? 'Edit User' : 'Add User'}</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-        <Table>
-          <TableCaption>A list of users.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>CID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Date of Birth</TableHead>
-              <TableHead>Dzongkhag</TableHead>
-              <TableHead>Gewog</TableHead>
-              <TableHead>Village</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.user_name}</TableCell>
-                <TableCell>{user.cid}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.phone}</TableCell>
-                <TableCell>{user.date_of_birth}</TableCell>
-                <TableCell>{user.dzongkhag}</TableCell>
-                <TableCell>{user.gewog}</TableCell>
-                <TableCell>{user.village}</TableCell>
-                <TableCell>
-                  <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(user)}>
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}>
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div className="space-y-4 w-[90%] ">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Users</h2>
+        <Button onClick={() => handleOpenDialog()}><PlusIcon className="mr-2 h-4 w-4" /> Add User</Button>
       </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{currentUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="user_name">Username</Label>
+                <Input id="user_name" name="user_name" defaultValue={currentUser?.user_name} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" name="password" type="password" defaultValue={currentUser?.password} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cid">CID</Label>
+                <Input id="cid" name="cid" defaultValue={currentUser?.cid} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" name="name" defaultValue={currentUser?.name} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" name="phone" defaultValue={currentUser?.phone} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date_of_birth">Date of Birth</Label>
+                <Input id="date_of_birth" name="date_of_birth" type="date" defaultValue={currentUser?.date_of_birth} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dzongkhag">Dzongkhag</Label>
+                <Input id="dzongkhag" name="dzongkhag" defaultValue={currentUser?.dzongkhag} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gewog">Gewog</Label>
+                <Input id="gewog" name="gewog" defaultValue={currentUser?.gewog} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="village">Village</Label>
+                <Input id="village" name="village" defaultValue={currentUser?.village} required />
+              </div>
+            </div>
+            <Button type="submit">{currentUser ? 'Edit User' : 'Add User'}</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Table>
+        <TableCaption>A list of users.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Username</TableHead>
+            <TableHead>CID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Dzongkhag</TableHead>
+            <TableHead>Gewog</TableHead>
+            <TableHead>Village</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.user_id}>
+              <TableCell>{user.user_id}</TableCell>
+              <TableCell>{user.username}</TableCell>
+              <TableCell>{user.cid}</TableCell>
+              <TableCell>{user.full_name}</TableCell>
+              <TableCell>{user.phone}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.dzongkhag}</TableCell>
+              <TableCell>{user.gewog}</TableCell>
+              <TableCell>{user.village}</TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(user)}>
+                    <PencilIcon className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon">
+                    <TrashIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
     </div>
   )
 }

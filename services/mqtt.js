@@ -54,8 +54,9 @@ function initMqttClient(){
             // Additional logic can be added here
         }
     });
-
+    
     // Subscribe to the 'animal' topic
+
     client.subscribe('animal', (err) => {
     if (err) {
         console.error('Subscription error:', err.message);

@@ -1,10 +1,14 @@
 const mongoose= require("mongoose");
 
-const MQTT_credit = new mongoose.Schema({
+const MQTT_cred = mongoose.models.MQTT_cred || mongoose.model('MQTT_cred', new mongoose.Schema({
+
+// const MQTT_credSchema = new mongoose.Schema({
     mqtt_id: {type: String, required: true },
     user_name: { type: String, required: true },
     password: {type:String, required:true},
   
-});
+}));
 
-module.exports= mongoose.models.MQTT_credit || mongoose.model("MQTT_cred", MQTT_credit);
+
+// const MQTT_cred=mongoose.models.MQTT_credit || mongoose.model("MQTT_cred", MQTT_credSchema);
+module.exports= MQTT_cred;

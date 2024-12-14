@@ -73,13 +73,22 @@ export async function POST(req){
             mac_address,
             installed_date
         })
-        await systemowner.save();
 
-        return Response.json({
-            systemowner,
-            message: "Successfully Added"},
-            {status: 200}
-        )
+        if(d_id && d_name && password && location && mac_address && installed_date){
+            await systemowner.save();
+
+            return Response.json({
+                systemowner,
+                message: "Successfully Added"},
+                {status: 200}
+            )
+        }else{
+
+            return Response.json({
+                message: "Missing value" },
+            {status: 400})
+        }
+
         
     } catch (error) {
         return Response.json({

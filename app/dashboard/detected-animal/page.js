@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,7 +32,7 @@ const initialDetectedAnimals = [
 
 
 export default function DetectedAnimalTable() {
-  const [detectedAnimals, setDetectedAnimals] = useState(initialDetectedAnimals)
+  const [detectedAnimals, setDetectedAnimals] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentDetectedAnimal, setCurrentDetectedAnimal] = useState(null)
 
@@ -40,6 +40,18 @@ export default function DetectedAnimalTable() {
 //     setCurrentDetectedAnimal(detectedAnimal)
 //     setIsDialogOpen(true)
 //   }
+  const animal_name=['Bear', 'Boar', 'Cattle', 'Deer', 'Elephant', 'Horse', 'Monkey']
+  useEffect(() => {
+        fetch("/api/detected_animals")
+          .then((res) => res.json())
+          .then((data) => {
+            setDetectedAnimals(data.data)
+    
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -77,7 +89,7 @@ export default function DetectedAnimalTable() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="animal_name">Animal Name</Label>
-                <Input id="animal_name" name="animal_name" defaultValue={currentDetectedAnimal?.animal_name} required />
+                <Input id="animal_name" name="animal_name" defaultValue={animal_name[currentDetectedAnimal?.a_c_id]} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="enroach_time">Encroach Time</Label>
@@ -114,15 +126,16 @@ export default function DetectedAnimalTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {detectedAnimals.map((detectedAnimal) => (
-            <TableRow key={detectedAnimal.animal_id}>
-              <TableCell>{detectedAnimal.animal_id}</TableCell>
+          {
+            detectedAnimals.map((detectedAnimal) => (
+            <TableRow key={detectedAnimal._id}>
+              <TableCell>{detectedAnimal._id}</TableCell>
               <TableCell>{detectedAnimal.d_id}</TableCell>
-              <TableCell>{detectedAnimal.animal_name}</TableCell>
+              <TableCell>{animal_name[detectedAnimal.a_c_id]}</TableCell>
               <TableCell>{detectedAnimal.enroach_time}</TableCell>
               <TableCell>{detectedAnimal.enroach_date}</TableCell>
               <TableCell>{detectedAnimal.animal_count}</TableCell>
-              <TableCell>{detectedAnimal.animal_category_id}</TableCell>
+              <TableCell>{detectedAnimal.a_c_id}</TableCell>
             </TableRow>
           ))}
         </TableBody>
