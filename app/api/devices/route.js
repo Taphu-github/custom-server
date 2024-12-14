@@ -93,6 +93,6 @@ export async function POST(req){
     } catch (error) {
         return Response.json({
             message: "error: "+error
-        })
+        },{status: 400})
     }
 }
