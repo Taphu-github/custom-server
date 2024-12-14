@@ -87,6 +87,6 @@ export async function POST(req){
         return Response.json({
             message: "error: "+error
         },
-        {status: 400})
+        {status: error.status})
     }
 }
