@@ -53,37 +53,46 @@ export async function GET() {
     }
 }
 
-export async function POST(req){
-    
+export async function POST(req) {
     try {
-        await connectToMongoDB();
-        const body = await req.json();        
-        const mqtt_id = body.mqtt_id;
-        const user_name = body.user_name;
-        const password = body.password;
-
-
-        const mqtt_cred = new MQTT_Cred({
-            mqtt_id,
-            user_name,
-            password
-        })
-
-        mqtt_cred.save();
-        
-        return Response.json({
-            mqtt_cred,
-            message: 'Succesfully Registered'
-        },{
-            status: 200
-        });
-        
-
+      await connectToMongoDB();
+      const body = await req.json();
+  
+      // Destructure input fields from the request body
+      const { mqtt_id, user_name, password } = body;
+  
+      // Create a new MQTT credential document
+      const mqtt_cred = new MQTT_Cred({
+        mqtt_id,
+        user_name,
+        password,
+      });
+  
+      // Save the document to the database
+      await mqtt_cred.save();
+  
+      // Return a successful response
+      return new Response(
+        JSON.stringify({
+          data:mqtt_cred,
+          message: 'Successfully Registered',
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     } catch (error) {
-        return Response.json({
-            message: error
-        });
-        
+      // Handle errors and return a 500 response
+      return new Response(
+        JSON.stringify({
+          message: error.message || 'Internal Server Error',
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
-
-}
+  }
+  

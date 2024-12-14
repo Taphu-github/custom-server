@@ -95,49 +95,88 @@ export async function GET(_, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
-
+export async function PATCH(req, { params }) {
   try {
     await connectToMongoDB();
-    const id = params;
-    const mqtt_credit = MQTT_cred.findById(id);
-    const body= await req.json();
+    const { id } = params; // Extract `id` from `params`
+    const mqtt_credit = await MQTT_cred.findById(id); // Add `await` to ensure the database query resolves
+
     if (mqtt_credit) {
-      mqtt_credit.mqtt_id = body.mqtt_id;
-      mqtt_credit.user_name = body.user_name;
-      mqtt_credit.password = body.password;
+      const body = await req.json();
 
-      mqtt_credit.save();
-      return Response.json({
-        mqtt_credit
-      });
+      // Update the fields
+      mqtt_credit.mqtt_id = body.mqtt_id || mqtt_credit.mqtt_id;
+      mqtt_credit.user_name = body.user_name || mqtt_credit.user_name;
+      mqtt_credit.password = body.password || mqtt_credit.password;
+
+      await mqtt_credit.save(); // Ensure changes are saved to the database
+
+      return new Response(
+        JSON.stringify({ mqtt_credit }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
     }
-    return Response.json({
-      message: `mqtt ${id} is not found`
-    }, {
-      status: 400
-    });
 
+    return new Response(
+      JSON.stringify({ message: `MQTT credit with ID ${id} not found` }),
+      { status: 404, headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    return Response.json({
-      message: error
-    });
+    return new Response(
+      JSON.stringify({ message: error.message || "Internal Server Error" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
+
 
 
 export async function DELETE(req, { params }) {
-  connectToMongoDB();
-  const id = params;
   try {
-    const deleteItem = MQTT_cred.findByIdAndDelete(id);
-    return Response.json({
-      message: 'Success'
-    });
+    await connectToMongoDB(); // Ensure the connection is awaited
+
+    const { id } = params; // Destructure `id` from `params`
+
+    const deleteItem = await MQTT_cred.findByIdAndDelete(id); // Await the deletion operation
+
+    if (!deleteItem) {
+      // Handle case where no item was found
+      return new Response(
+        JSON.stringify({
+          message: `MQTT Cred with ID ${id} not found`,
+          ok: false,
+        }),
+        {
+          status: 404,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Return success response
+    return new Response(
+      JSON.stringify({
+        message: 'Successfully deleted MQTT Cred',
+        ok: true,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
-    return Response.json({
-      message: 'Failed to Fetch MQTT Cred'
-    });
+    // Return error response
+    return new Response(
+      JSON.stringify({
+        message: 'Failed to delete MQTT Cred',
+        error: error.message || 'Internal Server Error',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }
+
 

@@ -6,36 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { PencilIcon, TrashIcon, PlusIcon } from 'lucide-react'
+import { PencilIcon, TrashIcon, PlusIcon, Loader } from 'lucide-react'
 
 export default function UserTable() {
   const [users, setUsers] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
-
-  // Fetch users from API on mount
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/users')
-      const data = await response.json()
-      
-      // Ensure `data` is an array, if not, fallback to an empty array
-      setUsers(Array.isArray(data) ? data : [])
-    } catch (error) {
-      console.error('Error fetching users:', error)
-      setUsers([])  // Fallback to an empty array on error
-    }
-  }
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
       fetch("/api/users")
         .then((res) => res.json())
         .then((data) => {
           setUsers(data.data)
+          setLoading(false);
   
         })
         .catch((error) => {
@@ -53,18 +37,19 @@ export default function UserTable() {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const userData = Object.fromEntries(formData.entries())
+    console.log('formData', userData);
 
     try {
       if (currentUser) {
         // Edit existing user
-        const response = await fetch(`/api/users/${currentUser.id}`, {
-          method: 'PUT',
+        const response = await fetch(`/api/users/${currentUser._id}`, {
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userData),
         })
         if (response.ok) {
           const updatedUser = await response.json()
-          setUsers(users.map(user => user.id === currentUser.id ? updatedUser : user))
+          setUsers(users.map(user => user._id === currentUser._id ? updatedUser.data : user))
         } else {
           console.error('Failed to update user')
         }
@@ -77,7 +62,7 @@ export default function UserTable() {
         })
         if (response.ok) {
           const newUser = await response.json()
-          setUsers([...users, newUser])
+          setUsers([...users, newUser.data])
         } else {
           console.error('Failed to add user')
         }
@@ -94,7 +79,7 @@ export default function UserTable() {
     try {
       const response = await fetch(`/api/users/${id}`, { method: 'DELETE' })
       if (response.ok) {
-        setUsers(users.filter(user => user.id !== id))
+        setUsers(users.filter(user => user._id !== id))
       } else {
         console.error('Failed to delete user')
       }
@@ -105,6 +90,11 @@ export default function UserTable() {
 
   return (
     <div className='flex justify-center items-start w-full h-full mt-20'>
+    {loading? 
+
+    <div className="flex flex-col justify-center items-center w-full h-screen">
+    <Loader className="animate-spin text-4xl"/>
+    </div>:
     <div className="space-y-4 w-[90%] ">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Users</h2>
@@ -118,28 +108,28 @@ export default function UserTable() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="user_name">Username</Label>
-                <Input id="user_name" name="user_name" defaultValue={currentUser?.user_name} required />
+                <Label htmlFor="username">Username</Label>
+                <Input id="username" name="username" defaultValue={currentUser?.username} required />
               </div>
-              <div className="space-y-2">
+             {!currentUser && <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" name="password" type="password" defaultValue={currentUser?.password} required />
-              </div>
+              </div>}
               <div className="space-y-2">
                 <Label htmlFor="cid">CID</Label>
                 <Input id="cid" name="cid" defaultValue={currentUser?.cid} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" defaultValue={currentUser?.name} required />
+                <Label htmlFor="full_name">Name</Label>
+                <Input id="full_name" name="full_name" defaultValue={currentUser?.full_name} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type='email' defaultValue={currentUser?.email} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
                 <Input id="phone" name="phone" defaultValue={currentUser?.phone} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="date_of_birth">Date of Birth</Label>
-                <Input id="date_of_birth" name="date_of_birth" type="date" defaultValue={currentUser?.date_of_birth} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="dzongkhag">Dzongkhag</Label>
@@ -191,7 +181,7 @@ export default function UserTable() {
                   <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(user)}>
                     <PencilIcon className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user._id)}>
                     <TrashIcon className="h-4 w-4" />
                   </Button>
                 </div>
@@ -200,7 +190,7 @@ export default function UserTable() {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </div>}
     </div>
   )
 }

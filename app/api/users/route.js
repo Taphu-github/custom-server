@@ -143,7 +143,8 @@ export async function POST(req) {
 
         newUser.save();
         return Response.json({
-            message: 'Succesfully Added'
+            message: 'Succesfully Added',
+            data: newUser
         })
     } catch (error) {
         return Response.json({

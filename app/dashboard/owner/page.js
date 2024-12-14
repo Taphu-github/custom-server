@@ -19,10 +19,9 @@ export default function DeviceOwnerTable() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/device_owners")
+    fetch("/api/owners")
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.data)
         setDeviceOwners(data.data);
         setLoading(false);
       })
@@ -58,11 +57,16 @@ export default function DeviceOwnerTable() {
               <TableRow key={owner._id}>
                 <TableCell>{owner.user_id}</TableCell>
                 <TableCell>{owner.user_name}</TableCell>
-                <TableCell>{owner.d_ids?.map((id, index)=>{
+                <TableCell>
+                  <div className="flex justify-center items-start flex-col gap-1 ">
+
+                  {owner.d_ids?.map((id, index)=>{
                   return <Badge key={index}>{id}</Badge>
                 }
+              )}
+                  </div>
 
-                )}</TableCell>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

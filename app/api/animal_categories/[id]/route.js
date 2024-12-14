@@ -110,34 +110,46 @@ export async function GET(_, { params }) {
     }
 }
 
-export async function PUT(req, { params }) {
-
+export async function PATCH(req, { params }) {
     try {
-        await connectToMongoDB();
-        const id = params;
-        const animal = await animal_category.findById(id);
-        const body=await req.json()
-        if (animal) {
-            animal.a_c_id = body.a_c_id;
-            animal.animal_name = body.animal_name;
-            animal.animal_description = body.animal_description;
-            animal.save();
-            return Response.json({
-                message: "Succesfully updated"
-            });
-        }
-        return Response.json({
-            message: `Animal Category ${params.id} Not found`
-        });
-
+      await connectToMongoDB();
+  
+      const { id } = params; // Extract the ID
+      const body = await req.json();
+  
+      // Find the animal category by ID
+      const animal = await animal_category.findById(id);
+  
+      if (!animal) {
+        return new Response(
+          JSON.stringify({ message: `Animal Category with ID ${id} not found` }),
+          { status: 404, headers: { "Content-Type": "application/json" } }
+        );
+      }
+  
+      // Update the fields
+      animal.animal_name = body.animal_name || animal.animal_name;
+      animal.animal_description = body.animal_description || animal.animal_description;
+  
+      // Save the updated document
+      await animal.save();
+  
+      return new Response(
+        JSON.stringify({
+          message: "Successfully updated",
+          data: animal,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
     } catch (error) {
-        return Response.json(
-            { message: error },
-            { status: 400 }
-        )
+      console.error("Error updating animal category:", error);
+      return new Response(
+        JSON.stringify({ message: "Error: " + error.message }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
-
-}
+  }
+  
 
 export async function DELETE(_, { params }) {
     

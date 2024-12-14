@@ -177,46 +177,56 @@ export async function GET(_, { params }) {
     }
 }
 
-export async function PUT(req, { params }) {
-
+export async function PATCH(req, { params }) {
     try {
-        await connectToMongoDB();
-        const { id } = params;
-        const body = await req.json();
-       
+      await connectToMongoDB();
+  
+      const { id } = params;
+      const body = await req.json();
+  
+      const u = await user.findById(id);
+      if (!u) {
+        return new Response(
+          JSON.stringify({ message: `User ${id} not found` }),
+          { status: 404, headers: { "Content-Type": "application/json" } }
+        );
+      }
+  
+      // Update fields
+      u.user_id = body.user_id || u.user_id;
+      u.username = body.username || u.username;
+      u.email = body.email || u.email;
+      u.cid = body.cid || u.cid;
+      u.full_name = body.full_name || u.full_name;
+      u.phone = body.phone || u.phone;
+      u.dzongkhag = body.dzongkhag || u.dzongkhag;
+      u.gewog = body.gewog || u.gewog;
+      u.village = body.village || u.village;
+  
+      // Update password if provided
+      if (body.password) {
         const salt = await bcrypt.genSalt();
-        const pass= await bcrypt.hash(body.password, salt);
-
-        const u = user.findById(id);
-        if (u) {
-            u.user_id = body.user_id;
-            u.username = body.username;
-            u.email = body.email;
-            u.password = pass;
-            u.cid = body.cid;
-            u.full_name = body.full_name;
-            u.phone = body.phone;
-            u.dzongkhag = body.dzongkhag;
-            u.gewog = body.gewog;
-            u.village = body.village;
-
-            u.save();
-            return Response.json({
-                u
-            })
-
-        }
-
-        return Response.json({
-            message: `user ${params.id} not found`
-        })
-
+        u.password = await bcrypt.hash(body.password, salt);
+      }
+  
+      await u.save();
+  
+      return new Response(
+        JSON.stringify({
+          message: "User updated successfully",
+          data: u,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
     } catch (error) {
-        return Response.json({
-            message: error
-        })
+      console.error("Error updating user:", error);
+      return new Response(
+        JSON.stringify({ message: `Error: ${error.message}` }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
-}
+  }
+  
 
 
 export async function DELETE(req, { params }) {
