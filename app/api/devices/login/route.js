@@ -45,13 +45,13 @@ export async function POST(req){
         const body= await req.json();
         const d_id = body.username;
         const password = body.password;
+        const user_id = body.user_id;
 
         const dev = await Device.findOne({"d_id": d_id});
 
-
         if (!dev) {
             return Response.json({
-                message: "User not found"
+                message: "Device not found"
             }, {status: 400})
         }
 
@@ -62,6 +62,19 @@ export async function POST(req){
             return Response.json({
                 message: "Incorrect Password"
             }, {status: 400})
+        }
+
+        const device_owners=await device_owner.find({"user_id":user_id, "d_id":d_id})
+        console.log("device owner")
+        console.log(device_owners)
+        if(device_owners.length==0){
+            var cur_date=new Date()
+            const new_device_owner = await device_owner.create({
+                        user_id,
+                        d_id,
+                        cur_date
+                    })
+            console.log(new_device_owner)
         }
 
         return Response.json(
