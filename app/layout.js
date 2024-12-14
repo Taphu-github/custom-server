@@ -28,13 +28,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-            <SidebarTrigger />
-              <main className="flex justify-center items-center w-full">
+        {/* <SidebarProvider> */}
+          {/* <AppSidebar /> */}
+            {/* <SidebarTrigger /> */}
+              <main className="flex justify-center items-center w-screen">
                 {children}
               </main>
-        </SidebarProvider>
+        {/* </SidebarProvider> */}
       </body>
     </html>
   );

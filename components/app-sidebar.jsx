@@ -13,6 +13,7 @@ import {
   Radio,
   PawPrint
 } from "lucide-react";
+import Image from 'next/image'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -35,6 +36,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import logo from '@/app/AIDS_logo.png'
 
 const data = {
   user: {
@@ -44,7 +46,7 @@ const data = {
 };
 
 const navItems = [
-  { name: "Home", icon: Home, href: "/" },
+  { name: "Home", icon: Home, href: "/dashboard" },
   { name: "Device", icon: Smartphone, href: "/dashboard/device" },
   { name: "Owner", icon: User, href: "/dashboard/owner" },
   { name: "User", icon: Users, href: "/dashboard/user" },
@@ -67,11 +69,12 @@ export function AppSidebar() {
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
-                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-primary-foreground">
                       {/* <activeTeam.logo className="size-4" /> */}
+                      <Image src={logo} width={200} height={200} alt='logo'/>
                     </div>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
+                      <span className="truncate font-bold text-xl">
                         AIDS
                       </span>
                     </div>
