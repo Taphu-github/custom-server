@@ -63,7 +63,6 @@ export async function POST(req) {
 
         await connectToMongoDB();
         const body = await req.json();
-        const user_id = body["user_id"];
         const username = body["username"];
         const email = body["email"];
         const password = body["password"];
@@ -76,7 +75,6 @@ export async function POST(req) {
         const role = 'user';
 
         const newUser = await user.create({
-            user_id,
             username,
             email,
             password,

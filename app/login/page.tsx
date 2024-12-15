@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react";
+'use client';
 import logo from "../AIDS_logo.png";
 import sideImage from "../elephant.jpg";
 

@@ -6,6 +6,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } fro
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle, Loader } from 'lucide-react';
+import { useRouter } from "next/navigation"
 
 const animals = ["Bear", "Boar", "Cattle", "Deer", "Elephant", "Horse", "Monkey"]
 
@@ -25,6 +26,8 @@ export default function AnimalIntrusionDashboard() {
   const [error, setError] = useState(null)
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
   useEffect(()=>{
     fetch("/api/analysis")
     .then((res) => res.json())
@@ -37,6 +40,13 @@ export default function AnimalIntrusionDashboard() {
       console.log(error);
     });
   },[])
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, [router]);
 
   // Validate and transform data
   const chartData = data?.Dates?.map((date, index) => {
