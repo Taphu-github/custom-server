@@ -26,7 +26,7 @@ export default function UserTable() {
           console.log(error);
         });
       console.log(users)
-    }, []);
+    }, [users]);
 
   const handleOpenDialog = (user = null) => {
     setCurrentUser(user)

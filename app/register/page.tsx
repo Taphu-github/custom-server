@@ -3,7 +3,7 @@
 // import logo from '../AIDS_logo.png'
 // import sideImage from '../deer.jpg'
 
-// export default function RegisterPage() {
+export default function RegisterPage() {};
 //   return (
 //     <div className="grid min-h-svh lg:grid-cols-2 w-screen">
 //        <div className="relative hidden bg-muted lg:block">
