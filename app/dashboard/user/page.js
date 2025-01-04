@@ -264,7 +264,7 @@ export default function UserTable() {
             <TableBody>
               {users.map((user, index) => (
                 <TableRow key={user.user_id}>
-                  <TableCell>{index}</TableCell>
+                  <TableCell>{index+1}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.cid}</TableCell>
                   <TableCell>{user.full_name}</TableCell>

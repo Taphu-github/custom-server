@@ -10,14 +10,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 export default function DetectedAnimalTable() {
   const [detectedAnimals, setDetectedAnimals] = useState([]);
+  const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 14;
+  const [filters, setFilters] = useState({
+    deviceId: "",
+    animalName: "",
+    encroachDate: "",
+  });
+  const itemsPerPage = 13;
 
   const animal_name = [
     "Bear",
@@ -35,15 +49,34 @@ export default function DetectedAnimalTable() {
       .then((data) => {
         setLoading(false);
         setDetectedAnimals(data.data);
+        setFilteredAnimals(data.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
 
+  useEffect(() => {
+    const filtered = detectedAnimals.filter((animal) => {
+      return (
+        animal.d_id.toLowerCase().includes(filters.deviceId.toLowerCase()) &&
+        animal_name[animal.a_c_id]
+          .toLowerCase()
+          .includes(filters.animalName.toLowerCase()) &&
+        new Date(animal.enroach_date)
+          .toISOString()
+          .split("T")[0]
+          .includes(filters.encroachDate)
+      );
+    });
+    setFilteredAnimals(filtered);
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, detectedAnimals]);
+
   // Pagination logic
-  const totalPages = Math.ceil(detectedAnimals.length / itemsPerPage);
-  const paginatedAnimals = detectedAnimals.slice(
+  const totalPages = Math.ceil(filteredAnimals.length / itemsPerPage);
+  const paginatedAnimals = filteredAnimals.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -53,6 +86,26 @@ export default function DetectedAnimalTable() {
       setCurrentPage(newPage);
     }
   };
+
+  // const handleFilterChange = (key, value) => {
+  //   setFilters((prev) => ({ ...prev, [key]: value }));
+  // };
+
+
+  const handleFilterChange = (key, value) => {
+  setFilters((prevFilters) => ({
+    ...prevFilters,
+    [key]: value,
+  }));
+
+  if (key === "animalName" && value === "all") {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [key]: '',
+    }));
+  } 
+};
+
 
   return (
     <div className="w-full min-h-screen flex flex-col">
@@ -67,6 +120,48 @@ export default function DetectedAnimalTable() {
             <Table>
               <TableCaption>A list of detected animals.</TableCaption>
               <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Input
+                      placeholder="Filter Device ID"
+                      value={filters.deviceId}
+                      onChange={(e) =>
+                        handleFilterChange("deviceId", e.target.value)
+                      }
+                    />
+                  </TableHead>
+                  <TableHead>
+                    <Select
+                      value={filters.animalName}
+                      onValueChange={(value) =>
+                        handleFilterChange("animalName", value)
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Filter Animal" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Animals</SelectItem>{" "}
+                        {/* Use "all" instead of an empty string */}
+                        {animal_name.map((name, index) => (
+                          <SelectItem key={index} value={name}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableHead>
+
+                  <TableHead>
+                    <Input
+                      type="date"
+                      value={filters.encroachDate}
+                      onChange={(e) =>
+                        handleFilterChange("encroachDate", e.target.value)
+                      }
+                    />
+                  </TableHead>
+                </TableRow>
                 <TableRow>
                   <TableHead>Device ID</TableHead>
                   <TableHead>Animal Name</TableHead>
@@ -83,9 +178,11 @@ export default function DetectedAnimalTable() {
                     <TableCell>{animal_name[detectedAnimal.a_c_id]}</TableCell>
                     <TableCell>{detectedAnimal.enroach_time}</TableCell>
                     <TableCell>
-                      {new Date(detectedAnimal.enroach_date)
-                        .toISOString()
-                        .split("T")[0]}
+                      {
+                        new Date(detectedAnimal.enroach_date)
+                          .toISOString()
+                          .split("T")[0]
+                      }
                     </TableCell>
                     <TableCell>{detectedAnimal.animal_count}</TableCell>
                     <TableCell>{detectedAnimal.a_c_id}</TableCell>
@@ -118,4 +215,3 @@ export default function DetectedAnimalTable() {
     </div>
   );
 }
-
