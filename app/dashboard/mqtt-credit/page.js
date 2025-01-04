@@ -46,7 +46,7 @@ export default function MQTTCreditTable() {
   
       if (currentMQTTCredit) {
         // Edit existing MQTT credit
-        response = await fetch(`/api/mqtt_creds/${currentMQTTCredit.mqtt_id}`, {
+        response = await fetch(`/api/mqtt_creds/${currentMQTTCredit._id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function MQTTCreditTable() {
           const updatedMQTTCredit = await response.json();
           setMQTTCredits(
             mqttCredits.map((mqttCredit) =>
-              mqttCredit.mqtt_id === currentMQTTCredit.mqtt_id ? updatedMQTTCredit : mqttCredit
+              mqttCredit.mqtt_id === currentMQTTCredit.mqtt_id ? updatedMQTTCredit.mqtt_credit : mqttCredit
             )
           );
         } else {

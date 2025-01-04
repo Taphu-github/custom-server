@@ -32,6 +32,7 @@ export default function DeviceTable() {
     fetch("/api/devices")
       .then((res) => res.json())
       .then((data) => {
+        console.log(data); // Inspect the fetched data
         setDevices(data.data);
         setLoading(false);
       })
@@ -39,6 +40,7 @@ export default function DeviceTable() {
         console.log(error);
       });
   }, []);
+  
 
   const handleOpenDialog = (device = null) => {
     setCurrentDevice(device);
@@ -91,7 +93,7 @@ export default function DeviceTable() {
           const updatedDevice = await response.json();
           setDevices(
             devices.map((device) =>
-              device._id === currentDevice._id ? updatedDevice : device
+              device._id === currentDevice._id ? updatedDevice.device : device
             )
           );
         } else {
@@ -107,9 +109,12 @@ export default function DeviceTable() {
           body: JSON.stringify(deviceData),
         });
 
+
         if (response.ok) {
           const newDevice = await response.json();
-          setDevices([...devices, newDevice.device]);
+        console.log('device data',newDevice)
+
+          setDevices([...devices, newDevice.systemowner]);
         } else {
           throw new Error("Failed to add device");
         }
