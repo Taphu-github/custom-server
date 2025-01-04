@@ -165,8 +165,8 @@ export default function DetectedAnimalTable() {
                 <TableRow>
                   <TableHead>Device ID</TableHead>
                   <TableHead>Animal Name</TableHead>
-                  <TableHead>Encroach Time</TableHead>
                   <TableHead>Encroach Date</TableHead>
+                  <TableHead>Encroach Time</TableHead>
                   <TableHead>Animal Count</TableHead>
                   <TableHead>Animal Category ID</TableHead>
                 </TableRow>
@@ -176,7 +176,6 @@ export default function DetectedAnimalTable() {
                   <TableRow key={detectedAnimal._id}>
                     <TableCell>{detectedAnimal.d_id}</TableCell>
                     <TableCell>{animal_name[detectedAnimal.a_c_id]}</TableCell>
-                    <TableCell>{detectedAnimal.enroach_time}</TableCell>
                     <TableCell>
                       {
                         new Date(detectedAnimal.enroach_date)
@@ -184,6 +183,7 @@ export default function DetectedAnimalTable() {
                           .split("T")[0]
                       }
                     </TableCell>
+                    <TableCell>{detectedAnimal.enroach_time}</TableCell>
                     <TableCell>{detectedAnimal.animal_count}</TableCell>
                     <TableCell>{detectedAnimal.a_c_id}</TableCell>
                   </TableRow>

@@ -47,15 +47,15 @@ export default function DeviceOwnerTable() {
           <TableCaption>A list of device owners.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>User ID</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>User Name</TableHead>
               <TableHead>Device ID(s)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {deviceOwners?.map((owner) => (
+            {deviceOwners?.map((owner, index) => (
               <TableRow key={owner._id}>
-                <TableCell>{owner.user_id}</TableCell>
+                <TableCell>{index+1}</TableCell>
                 <TableCell>{owner.user_name}</TableCell>
                 <TableCell>
                   <div className="flex justify-center items-start flex-col gap-1 ">

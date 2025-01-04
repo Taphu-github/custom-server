@@ -29,33 +29,47 @@ export default function AnimalCategoryTable() {
   const [loading, setLoading] = useState(true);
 
   // Fetch animal categories from the API on mount
-  useEffect(() => {
-    fetchAnimalCategories();
-    setLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   fetchAnimalCategories();
+  //   setLoading(false);
+  // }, []);
 
-  const fetchAnimalCategories = async () => {
-    try {
-      const response = await fetch("/api/animal_categories");
-      const data = await response.json();
-
-      // Ensure data is an array
-      setAnimalCategories(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error fetching animal categories:", error);
-      setAnimalCategories([]); // Fallback to empty array on error
-    }
-  };
+  // const fetchAnimalCategories = async () => {
+  //   try {
+  //     const response = await fetch("/api/animal_categories");
+  
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  
+  //     const dataPresort = await response.json();
+  
+  //     // Sort by a_c_id, ensuring it’s treated as a number
+  //     const data = Array.isArray(dataPresort.data)
+  //     ? dataPresort.data.sort((a, b) => Number(a.a_c_id) - Number(b.a_c_id))
+  //     : [];
+  //     console.log("Sorted data:", data);
+  
+  //     // Ensure data is an array before setting state
+  //     setAnimalCategories(Array.isArray(data) ? data : []);
+  //   } catch (error) {
+  //     console.error("Error fetching animal categories:", error);
+  //     setAnimalCategories([]); // Fallback to an empty array on error
+  //   }
+  // };
+  
 
   useEffect(() => {
     fetch("/api/animal_categories")
       .then((res) => res.json())
       .then((data) => {
-        setAnimalCategories(data.data);
+        setAnimalCategories(data.data.sort((a, b) => Number(a.a_c_id) - Number(b.a_c_id)));
       })
       .catch((error) => {
         console.log(error);
       });
+    setLoading(false);
+
   }, []);
 
   const handleOpenDialog = (animalCategory = null) => {
@@ -159,7 +173,7 @@ export default function AnimalCategoryTable() {
               {Array.isArray(animalCategories) &&
                 animalCategories.map((category) => (
                   <TableRow key={category.a_c_id}>
-                    <TableCell>{category.a_c_id}</TableCell>
+                    <TableCell>{Number(category.a_c_id)+1}</TableCell>
                     <TableCell>{category.animal_name}</TableCell>
                     <TableCell>{category.animal_description}</TableCell>
                     <TableCell>
