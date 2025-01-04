@@ -10,11 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader } from "lucide-react";
+import { Loader } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 export default function DetectedAnimalTable() {
   const [detectedAnimals, setDetectedAnimals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 14;
 
   const animal_name = [
     "Bear",
@@ -25,6 +28,7 @@ export default function DetectedAnimalTable() {
     "Horse",
     "Monkey",
   ];
+
   useEffect(() => {
     fetch("/api/detected_animals")
       .then((res) => res.json())
@@ -37,18 +41,29 @@ export default function DetectedAnimalTable() {
       });
   }, []);
 
+  // Pagination logic
+  const totalPages = Math.ceil(detectedAnimals.length / itemsPerPage);
+  const paginatedAnimals = detectedAnimals.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
   return (
-    <div className="w-full h-screen">
+    <div className="w-full min-h-screen flex flex-col">
       {loading ? (
         <div className="flex flex-col justify-center items-center w-full h-screen">
           <Loader className="animate-spin text-4xl" />
         </div>
       ) : (
-        <div className="flex justify-center items-start w-full h-full m-10">
-          <div className="space-y-4 w-[90%] ">
-            <div className="flex justify-start items-center">
-              <h2 className="text-2xl font-bold">Detected Animals</h2>
-            </div>
+        <div className="flex flex-col justify-between items-center w-full h-full p-10 space-y-4">
+          <div className="w-full space-y-4">
+            <h2 className="text-2xl font-bold">Detected Animals</h2>
             <Table>
               <TableCaption>A list of detected animals.</TableCaption>
               <TableHeader>
@@ -62,17 +77,15 @@ export default function DetectedAnimalTable() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {detectedAnimals.map((detectedAnimal) => (
+                {paginatedAnimals.map((detectedAnimal) => (
                   <TableRow key={detectedAnimal._id}>
                     <TableCell>{detectedAnimal.d_id}</TableCell>
                     <TableCell>{animal_name[detectedAnimal.a_c_id]}</TableCell>
                     <TableCell>{detectedAnimal.enroach_time}</TableCell>
                     <TableCell>
-                      {
-                        new Date(detectedAnimal.enroach_date)
-                          .toISOString()
-                          .split("T")[0]
-                      }
+                      {new Date(detectedAnimal.enroach_date)
+                        .toISOString()
+                        .split("T")[0]}
                     </TableCell>
                     <TableCell>{detectedAnimal.animal_count}</TableCell>
                     <TableCell>{detectedAnimal.a_c_id}</TableCell>
@@ -81,8 +94,28 @@ export default function DetectedAnimalTable() {
               </TableBody>
             </Table>
           </div>
+          <div className="flex items-center space-x-4 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>
   );
 }
+
