@@ -198,6 +198,7 @@ export async function PATCH(req, { params }) {
       u.email = body.email || u.email;
       u.cid = body.cid || u.cid;
       u.full_name = body.full_name || u.full_name;
+      u.role = body.role || u.role;
       u.phone = body.phone || u.phone;
       u.dzongkhag = body.dzongkhag || u.dzongkhag;
       u.gewog = body.gewog || u.gewog;

@@ -217,7 +217,7 @@ export default function DeviceTable() {
                 </div>
               </div>
               <Button type="submit">
-                {currentDevice ? "Edit Device" : "Add Device"}
+                Save
               </Button>
             </form>
           </DialogContent>

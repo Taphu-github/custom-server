@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PencilIcon, Loader } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AnimalCategoryTable() {
   const [animalCategories, setAnimalCategories] = useState([]);
@@ -130,15 +131,16 @@ export default function AnimalCategoryTable() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="animal_description">Animal Description</Label>
-                  <Input
+                  <Textarea
                     id="animal_description"
                     name="animal_description"
+                    rows="6"
                     defaultValue={currentAnimalCategory?.animal_description}
                     required
                   />
                 </div>
                 <Button type="submit">
-                  {currentAnimalCategory ? "Edit Category" : "Add Category"}
+                  Save
                 </Button>
               </form>
             </DialogContent>

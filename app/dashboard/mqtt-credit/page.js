@@ -137,7 +137,7 @@ export default function MQTTCreditTable() {
                 <Input id="password" name="password" type="password" defaultValue={currentMQTTCredit?.password} required />
               </div>
             </div>
-            <Button type="submit">{currentMQTTCredit ? 'Edit MQTT Credential' : 'Add MQTT Credential'}</Button>
+            <Button type="submit">Save</Button>
           </form>
         </DialogContent>
       </Dialog>
