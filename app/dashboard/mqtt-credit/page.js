@@ -16,12 +16,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { PencilIcon, TrashIcon, PlusIcon, Loader } from 'lucide-react'
+import { PencilIcon, TrashIcon, PlusIcon, Loader, Eye, EyeOff } from 'lucide-react'
 
 export default function MQTTCreditTable() {
   const [mqttCredits, setMQTTCredits] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
   const [currentMQTTCredit, setCurrentMQTTCredit] = useState(null)
   const [mqttCreditToDelete, setMqttCreditToDelete] = useState(null) // Track MQTT credential to delete
   const [loading, setLoading] = useState(true);
@@ -158,7 +159,7 @@ export default function MQTTCreditTable() {
                 <DialogTitle>{currentMQTTCredit ? 'Edit MQTT Credential' : 'Add New MQTT Credential'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="mqtt_id">MQTT ID</Label>
                     <Input id="mqtt_id" name="mqtt_id" defaultValue={currentMQTTCredit?.mqtt_id} required />
@@ -169,7 +170,31 @@ export default function MQTTCreditTable() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" name="password" type="password" defaultValue={currentMQTTCredit?.password} required />
+                    <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          id="password"
+                          name="password"
+                          placeholder="Enter your password"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                   </div>
                 </div>
                 <Button type="submit">Save</Button>

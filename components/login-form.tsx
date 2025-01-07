@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
+import { Eye, EyeOff } from 'lucide-react'
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const router = useRouter();
+  const router = useRouter();  
+  const [showPassword, setShowPassword] = useState(false)
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -69,14 +71,31 @@ export function LoginForm({
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
           </div>
+          <div className="relative">
           <Input
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
-            type="password"
             placeholder="Enter your password"
             required
           />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </Button>
         </div>
+        </div>
+    
         <Button type="submit" className="w-full">
           Login
         </Button>

@@ -30,11 +30,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { PencilIcon, TrashIcon, PlusIcon, Loader } from "lucide-react";
+import {
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+  Loader,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function DeviceTable() {
   const [devices, setDevices] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [currentDevice, setCurrentDevice] = useState(null);
   const [deviceToDelete, setDeviceToDelete] = useState(null); // Track device to delete
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // Track AlertDialog state
@@ -59,7 +67,9 @@ export default function DeviceTable() {
     try {
       const response = await fetch(`/api/devices/${id}`, { method: "DELETE" });
       if (response.ok) {
-        setDevices((prevDevices) => prevDevices.filter((device) => device._id !== id));
+        setDevices((prevDevices) =>
+          prevDevices.filter((device) => device._id !== id)
+        );
         setDeviceToDelete(null);
         setIsAlertDialogOpen(false);
       } else {
@@ -67,6 +77,70 @@ export default function DeviceTable() {
       }
     } catch (error) {
       console.error("Error deleting device:", error);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const deviceData = Object.fromEntries(formData.entries());
+
+    // Optional: Ensure the installed_date is properly formatted
+    if (deviceData.installed_date) {
+      deviceData.installed_date = new Date(deviceData.installed_date);
+    }
+
+    try {
+      let response;
+
+      if (currentDevice) {
+        // Edit existing device
+        response = await fetch(
+          `/api/devices/${currentDevice._id || currentDevice._id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(deviceData),
+          }
+        );
+        if (response.ok) {
+          const updatedDevice = await response.json();
+          setDevices(
+            devices.map((device) =>
+              device._id === currentDevice._id ? updatedDevice.device : device
+            )
+          );
+        } else {
+          throw new Error("Failed to update device");
+        }
+      } else {
+        // Add new device
+        response = await fetch("/api/devices", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(deviceData),
+        });
+
+        if (response.ok) {
+          const newDevice = await response.json();
+          console.log("device data", newDevice);
+
+          setDevices([...devices, newDevice.systemowner]);
+        } else {
+          throw new Error("Failed to add device");
+        }
+      }
+
+      setIsDialogOpen(false);
+      setCurrentDevice(null);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("There was an error processing your request. Please try again.");
     }
   };
 
@@ -93,24 +167,125 @@ export default function DeviceTable() {
 
             {/* AlertDialog for Deletion */}
             {deviceToDelete && (
-              <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+              <AlertDialog
+                open={isAlertDialogOpen}
+                onOpenChange={setIsAlertDialogOpen}
+              >
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the device{" "}
-                      <strong>{deviceToDelete.d_name}</strong>.
+                      This action cannot be undone. This will permanently delete
+                      the device <strong>{deviceToDelete.d_name}</strong>.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDeleteDevice(deviceToDelete._id)}>
+                    <AlertDialogAction
+                      onClick={() => handleDeleteDevice(deviceToDelete._id)}
+                    >
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             )}
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {currentDevice ? "Edit Device" : "Add New Device"}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="d_id">Device ID</Label>
+                      <Input
+                        id="d_id"
+                        name="d_id"
+                        defaultValue={currentDevice?.d_id}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="d_name">Device Name</Label>
+                      <Input
+                        id="d_name"
+                        name="d_name"
+                        defaultValue={currentDevice?.d_name}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          id="password"
+                          name="password"
+                          placeholder="Enter your password"
+                          required
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location</Label>
+                      <Input
+                        id="location"
+                        name="location"
+                        defaultValue={currentDevice?.location}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="mac_address">MAC Address</Label>
+                      <Input
+                        id="mac_address"
+                        name="mac_address"
+                        defaultValue={currentDevice?.mac_address}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="installed_date">Installed Date</Label>
+                      <Input
+                        id="installed_date"
+                        name="installed_date"
+                        type="date"
+                        defaultValue={
+                          currentDevice?.installed_date
+                            ? new Date(currentDevice.installed_date)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                  <Button type="submit">Save</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
 
             <Table>
               <TableCaption>A list of devices.</TableCaption>
@@ -132,7 +307,11 @@ export default function DeviceTable() {
                     <TableCell>{device.location}</TableCell>
                     <TableCell>{device.mac_address}</TableCell>
                     <TableCell>
-                      {new Date(device.installed_date).toISOString().split("T")[0]}
+                      {
+                        new Date(device.installed_date)
+                          .toISOString()
+                          .split("T")[0]
+                      }
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
