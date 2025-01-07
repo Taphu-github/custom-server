@@ -90,6 +90,9 @@ export async function POST(req) {
         newUser.save();
         return Response.json({
             message: 'Succesfully Registered'
+        },
+        {
+            status: 201
         })
     } catch (error) {
         return Response.json({

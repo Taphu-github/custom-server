@@ -55,6 +55,9 @@ export async function POST(req) {
         if (!user) {
             return Response.json({
                 message: "User not found"
+            },
+            {
+                status: 404
             })
         }
         //console.log(user);
@@ -99,7 +102,7 @@ export async function POST(req) {
         return Response.json({
             message: "error"+error
         },{
-            status: 400
+            status: 500
         })
     }
 

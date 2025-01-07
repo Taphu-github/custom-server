@@ -44,8 +44,16 @@ const navItems = [
   { name: "Device", icon: Smartphone, href: "/dashboard/device" },
   { name: "Owner", icon: User, href: "/dashboard/owner" },
   { name: "User", icon: Users, href: "/dashboard/user" },
-  { name: "Detected Animal", icon: PawPrint, href: "/dashboard/detected-animal" },
-  { name: "Animal Category", icon: Squirrel, href: "/dashboard/animal-category" },
+  {
+    name: "Detected Animal",
+    icon: PawPrint,
+    href: "/dashboard/detected-animal",
+  },
+  {
+    name: "Animal Category",
+    icon: Squirrel,
+    href: "/dashboard/animal-category",
+  },
   { name: "MQTT Credentials", icon: Radio, href: "/dashboard/mqtt-credit" },
 ];
 
@@ -89,7 +97,11 @@ export function AppSidebar() {
                     <Image src={logo} width={200} height={200} alt="logo" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-bold text-xl">AIDS</span>
+                    <p className="truncate font-bold text-xl">
+                      D<span className="text-[#4aac69]">A</span>
+                      KZ
+                      <span className="text-[#4aac69]">I</span>N
+                    </p>
                   </div>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -125,13 +137,18 @@ export function AppSidebar() {
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarFallback className="rounded-lg text-white bg-slate-300 font-bold">
                       {user.name
-                        ? user.name.split(" ")[0][0] + user.name.split(" ")[1][0]
+                        ? user.name.split(" ")[0][0] +
+                          user.name.split(" ")[1][0]
                         : "NA"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.name || "Guest"}</span>
-                    <span className="truncate text-xs">{user.email || "guest@example.com"}</span>
+                    <span className="truncate font-semibold">
+                      {user.name || "Guest"}
+                    </span>
+                    <span className="truncate text-xs">
+                      {user.email || "guest@example.com"}
+                    </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -147,13 +164,18 @@ export function AppSidebar() {
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarFallback className="rounded-lg">
                         {user.name
-                          ? user.name.split(" ")[0][0] + user.name.split(" ")[1][0]
+                          ? user.name.split(" ")[0][0] +
+                            user.name.split(" ")[1][0]
                           : "NA"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user.name || "Guest"}</span>
-                      <span className="truncate text-xs">{user.email || "guest@example.com"}</span>
+                      <span className="truncate font-semibold">
+                        {user.name || "Guest"}
+                      </span>
+                      <span className="truncate text-xs">
+                        {user.email || "guest@example.com"}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

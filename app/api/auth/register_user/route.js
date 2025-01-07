@@ -96,6 +96,8 @@ export async function POST(req) {
             message: 'Succesfully Registered',
             user: newUser,
             token
+        }, {
+            status: 201
         })
     } catch (error) {
         return Response.json({

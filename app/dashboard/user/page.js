@@ -26,13 +26,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PencilIcon, TrashIcon, PlusIcon, Loader } from "lucide-react";
 
 export default function UserTable() {
   const [users, setUsers] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null); // Track user to delete
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,8 +56,6 @@ export default function UserTable() {
       .catch((error) => {
         console.log(error);
       });
-    console.log(users);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpenDialog = (user = null) => {
@@ -54,11 +63,32 @@ export default function UserTable() {
     setIsDialogOpen(true);
   };
 
+  const handleOpenDeleteDialog = (user) => {
+    setUserToDelete(user);
+    setIsAlertDialogOpen(true);
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      const response = await fetch(`/api/users/${userToDelete._id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setUsers(users.filter((user) => user._id !== userToDelete._id));
+        setIsAlertDialogOpen(false);
+        setUserToDelete(null);
+      } else {
+        console.error("Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const userData = Object.fromEntries(formData.entries());
-    console.log("formData", userData);
 
     try {
       if (currentUser) {
@@ -100,19 +130,6 @@ export default function UserTable() {
     setCurrentUser(null);
   };
 
-  const handleDeleteUser = async (id) => {
-    try {
-      const response = await fetch(`/api/users/${id}`, { method: "DELETE" });
-      if (response.ok) {
-        setUsers(users.filter((user) => user._id !== id));
-      } else {
-        console.error("Failed to delete user");
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-
   return (
     <div className="flex justify-center items-start w-full h-full mt-20">
       {loading ? (
@@ -127,123 +144,26 @@ export default function UserTable() {
               <PlusIcon className="mr-2 h-4 w-4" /> Add User
             </Button>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {currentUser ? "Edit User" : "Add New User"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      name="username"
-                      defaultValue={currentUser?.username}
-                      required
-                    />
-                  </div>
-                  {!currentUser && (
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        defaultValue={currentUser?.password}
-                        required
-                      />
-                    </div>
-                  )}
-                  <div className="space-y-2">
-                    <Label htmlFor="cid">CID</Label>
-                    <Input
-                      id="cid"
-                      name="cid"
-                      defaultValue={currentUser?.cid}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="full_name">Name</Label>
-                    <Input
-                      id="full_name"
-                      name="full_name"
-                      defaultValue={currentUser?.full_name}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      defaultValue={currentUser?.email}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select
-                      name="role"
-                      defaultValue={currentUser?.role || "user"}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="user">User</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      defaultValue={currentUser?.phone}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dzongkhag">Dzongkhag</Label>
-                    <Input
-                      id="dzongkhag"
-                      name="dzongkhag"
-                      defaultValue={currentUser?.dzongkhag}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="gewog">Gewog</Label>
-                    <Input
-                      id="gewog"
-                      name="gewog"
-                      defaultValue={currentUser?.gewog}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="village">Village</Label>
-                    <Input
-                      id="village"
-                      name="village"
-                      defaultValue={currentUser?.village}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit">
-                  Save
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          {/* AlertDialog for Deletion */}
+          {userToDelete && (
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. It will permanently delete the user{" "}
+                    <strong>{userToDelete.username}</strong>.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteUser}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
           <Table>
             <TableCaption>A list of users.</TableCaption>
             <TableHeader>
@@ -263,8 +183,8 @@ export default function UserTable() {
             </TableHeader>
             <TableBody>
               {users.map((user, index) => (
-                <TableRow key={user.user_id}>
-                  <TableCell>{index+1}</TableCell>
+                <TableRow key={user._id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.cid}</TableCell>
                   <TableCell>{user.full_name}</TableCell>
@@ -286,7 +206,7 @@ export default function UserTable() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteUser(user._id)}
+                        onClick={() => handleOpenDeleteDialog(user)}
                       >
                         <TrashIcon className="h-4 w-4" />
                       </Button>
