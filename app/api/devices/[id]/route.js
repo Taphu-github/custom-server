@@ -1,6 +1,8 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import Device from "@/models/device";
 import bcrypt from "bcryptjs";
+import device_owner from '@/models/device_owner';
+
 /**
  * @swagger
  * /api/devices/{id}:
@@ -101,7 +103,7 @@ export async function PATCH(req, { params }) {
     const { id } = params;
     await connectToMongoDB();
     const body = await req.json();
-    
+
     const device = await Device.findById(id);
 
     if(device) {
@@ -121,7 +123,7 @@ export async function PATCH(req, { params }) {
 
 
     }
-    
+
     return Response.json({
       message: `Device ${params.id} not found`
     });
@@ -139,7 +141,7 @@ export async function PATCH(req, { params }) {
 export async function DELETE(req, {params}) {
   try {
     await connectToMongoDB();
-    const id = params.id; 
+    const id = params.id;
     // Find and delete the device
     const deleteItem = await Device.findByIdAndDelete(id);
 
@@ -149,6 +151,14 @@ export async function DELETE(req, {params}) {
         { status: 404 }
       );
     }
+
+    const device_owners=await device_owner.find({"d_id":deleteItem.d_id})
+
+    device_owners.forEach(async({_id}) => {
+        await device_owner.findByIdAndDelete(_id);
+    });
+
+
 
     // Return success response
     return new Response(

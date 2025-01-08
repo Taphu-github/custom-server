@@ -1,5 +1,7 @@
 import { connectToMongoDB } from '@/lib/mongodb';
 import user from '@/models/user';
+import device_owner from '@/models/device_owner';
+
 
 /**
  * @swagger
@@ -180,10 +182,10 @@ export async function GET(_, { params }) {
 export async function PATCH(req, { params }) {
     try {
       await connectToMongoDB();
-  
+
       const { id } = params;
       const body = await req.json();
-  
+
       const u = await user.findById(id);
       if (!u) {
         return new Response(
@@ -191,7 +193,7 @@ export async function PATCH(req, { params }) {
           { status: 404, headers: { "Content-Type": "application/json" } }
         );
       }
-  
+
       // Update fields
       u.user_id = body.user_id || u.user_id;
       u.username = body.username || u.username;
@@ -203,15 +205,15 @@ export async function PATCH(req, { params }) {
       u.dzongkhag = body.dzongkhag || u.dzongkhag;
       u.gewog = body.gewog || u.gewog;
       u.village = body.village || u.village;
-  
+
       // Update password if provided
       if (body.password) {
         const salt = await bcrypt.genSalt();
         u.password = await bcrypt.hash(body.password, salt);
       }
-  
+
       await u.save();
-  
+
       return new Response(
         JSON.stringify({
           message: "User updated successfully",
@@ -227,17 +229,25 @@ export async function PATCH(req, { params }) {
       );
     }
   }
-  
+
 
 
 export async function DELETE(req, { params }) {
 
     try {
-        connectToMongoDB();
+        await connectToMongoDB();
         const { id } = params;
-        const u = user.findById(id);
+        const u = await user.findById(id);
         if (u) {
             await user.findByIdAndDelete(id);
+
+            const device_owners=await device_owner.find({"user_id":u.user_id})
+
+            device_owners.forEach(async({_id}) => {
+                await device_owner.findByIdAndDelete(_id);
+            });
+
+
 
             return Response.json({
                 message: `user ${id} has been deleted successfully`
