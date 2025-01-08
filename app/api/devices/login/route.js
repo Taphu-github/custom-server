@@ -32,7 +32,7 @@ import user from "@/models/user";
  *             schema:
  *               type: object
  *               properties:
- *                 
+ *
  *                 topics:
  *                   type: string
  *       400:
@@ -78,11 +78,11 @@ export async function POST(req){
         }
 
         return Response.json(
-            {data:{ d_id:dev.d_id, d_name:dev.d_name, d_location:dev.location},
+            {data:{ _id:dev._id ,d_id:dev.d_id, d_name:dev.d_name, d_location:dev.location},
             message: "Successfully Added Device"},
             {status: 200}
         )
-        
+
     } catch (error) {
         return Response.json({
             message: "error: "+error
