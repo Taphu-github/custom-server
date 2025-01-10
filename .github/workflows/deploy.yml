@@ -23,7 +23,7 @@ jobs:
       # Step 3: Deploy to Server
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no ghp@103.133.216.218 << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no ghp@103.133.216.218 << 'EOF'
             cd custom-server
             git pull origin master
             npm install
