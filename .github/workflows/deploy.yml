@@ -21,6 +21,8 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # Step 3: Deploy to Server
+      # have to give sudo access to systemctl restart apache2
+      # source ~/.profile add the NVM to this file for non-interactive access
       - name: Deploy to Server
         run: |
           ssh -t -o StrictHostKeyChecking=no ghp@103.133.216.218 << 'EOF'
