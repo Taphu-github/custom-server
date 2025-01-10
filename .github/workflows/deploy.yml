@@ -6,23 +6,32 @@ on:
       - master
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the Repository
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Set Up SSH
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build Testing
+        run: npm rub build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 3: Deploy to Server
-      # have to give sudo access to systemctl restart apache2
-      # source ~/.profile add the NVM to this file for non-interactive access
       - name: Deploy to Server
         run: |
           ssh -t -o StrictHostKeyChecking=no ghp@103.133.216.218 << 'EOF'
