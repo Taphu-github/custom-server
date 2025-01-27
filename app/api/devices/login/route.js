@@ -72,7 +72,7 @@ export async function POST(req){
             const new_device_owner = await device_owner.create({
                         user_id,
                         d_id,
-                        cur_date
+                        "date_of_own": cur_date
                     })
             console.log(new_device_owner)
 
