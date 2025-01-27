@@ -68,7 +68,7 @@ export async function POST(req){
         console.log("device owner")
         console.log(device_owners)
         console.log(device_owners[0]._id)
-        let device_owner_id=device_owners[0]._id
+        let device_owner_id=""
         if(device_owners.length==0){
             var cur_date=new Date()
             const new_device_owner = await device_owner.create({
@@ -79,10 +79,14 @@ export async function POST(req){
             console.log(new_device_owner)
 
             device_owner_id=new_device_owner._id
+        }else{
+            device_owner_id=device_owners[0]._id
         }
+
+
         console.log(device_owner_id)
         return Response.json(
-            {data:{ _id:dev._id ,d_id:dev.d_id, d_name:dev.d_name, d_location:dev.location, device_owner_id:device_owner_id},
+            {data:{ _id:dev._id , d_id:dev.d_id, d_name:dev.d_name, d_location:dev.location, device_owner_id:device_owner_id},
             message: "Successfully Added Device"},
             {status: 200}
         )
