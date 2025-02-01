@@ -1,6 +1,5 @@
+
 const mongoose = require("mongoose");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
-const bcrypt = require("bcryptjs");
 
 const FCMTokenSchema = new mongoose.Schema({
     user_id: {
@@ -19,9 +18,7 @@ const FCMTokenSchema = new mongoose.Schema({
 const FCMToken =
   mongoose.models.FCMToken || mongoose.model("FCMToken", FCMTokenSchema);
 
-export default FCMToken;
+module.exports = FCMToken;
 
-
-// module.exports = mongoose.models.FCMToken || mongoose.model("fcm_token", FCMToken);
 
 
