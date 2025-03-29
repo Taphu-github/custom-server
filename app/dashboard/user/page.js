@@ -11,21 +11,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,35 +27,71 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  PencilIcon,
-  TrashIcon,
-  PlusIcon,
-  Loader,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { PencilIcon, TrashIcon, PlusIcon, Loader } from "lucide-react";
+import UserForm from "./components/UserForm";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 export default function UserTable() {
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage] = useState(10);
   const [users, setUsers] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [userToDelete, setUserToDelete] = useState(null); // Track user to delete
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    full_name: "",
+    dzongkhag: "",
+    gewog: "",
+    phone: "",
+    cid: "",
+  });
 
-  useEffect(() => {
-    fetch("/api/users")
+  const fetchUsers = () => {
+    setLoading(true);
+    // Add filters to URL
+    const queryParams = new URLSearchParams({
+      page: currentPage,
+      limit: itemsPerPage,
+      ...Object.fromEntries(
+        Object.entries(filters).filter(([_, value]) => value !== "")
+      ),
+    });
+
+    fetch(`/api/users?${queryParams}`)
       .then((res) => res.json())
       .then((data) => {
         setUsers(data.data);
+        setTotalPages(data.pagination.totalPages);
         setLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, itemsPerPage, filters]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  // Add pagination controls
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   const handleOpenDialog = (user = null) => {
     setCurrentUser(user);
@@ -93,53 +120,9 @@ export default function UserTable() {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const userData = Object.fromEntries(formData.entries());
-
-    try {
-      if (currentUser) {
-        // Edit existing user
-        const response = await fetch(`/api/users/${currentUser._id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-        if (response.ok) {
-          const updatedUser = await response.json();
-          setUsers(
-            users.map((user) =>
-              user._id === currentUser._id ? updatedUser.data : user
-            )
-          );
-        } else {
-          console.error("Failed to update user");
-        }
-      } else {
-        // Add new user
-        const response = await fetch("/api/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-        if (response.ok) {
-          const newUser = await response.json();
-          setUsers([...users, newUser.data]);
-        } else {
-          console.error("Failed to add user");
-        }
-      }
-    } catch (error) {
-      console.error("Error saving user:", error);
-    }
-
-    setIsDialogOpen(false);
-    setCurrentUser(null);
-  };
-
+  // Add this before the closing Table tag
   return (
-    <div className="flex justify-center items-start w-full h-full mt-20">
+    <div className="flex justify-center items-start w-full h-screen pt-10">
       {loading ? (
         <div className="flex flex-col justify-center items-center w-full h-screen">
           <Loader className="animate-spin text-4xl" />
@@ -151,6 +134,44 @@ export default function UserTable() {
             <Button onClick={() => handleOpenDialog()}>
               <PlusIcon className="mr-2 h-4 w-4" /> Add User
             </Button>
+          </div>
+
+          {/* Add Filters */}
+          <div className="grid grid-cols-5 gap-4">
+            <div className="relative">
+              <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Search by name..."
+                name="full_name"
+                value={filters.full_name}
+                onChange={handleFilterChange}
+                className="pl-8"
+              />
+            </div>
+            <Input
+              placeholder="Search by CID..."
+              name="cid"
+              value={filters.cid}
+              onChange={handleFilterChange}
+            />
+            <Input
+              placeholder="Search by phone..."
+              name="phone"
+              value={filters.phone}
+              onChange={handleFilterChange}
+            />
+            <Input
+              placeholder="Search by dzongkhag..."
+              name="dzongkhag"
+              value={filters.dzongkhag}
+              onChange={handleFilterChange}
+            />
+            <Input
+              placeholder="Search by gewog..."
+              name="gewog"
+              value={filters.gewog}
+              onChange={handleFilterChange}
+            />
           </div>
 
           {/* AlertDialog for Deletion */}
@@ -179,135 +200,11 @@ export default function UserTable() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {currentUser ? "Edit User" : "Add New User"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      name="username"
-                      defaultValue={currentUser?.username}
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={
-                          showPassword ? "Hide password" : "Show password"
-                        }
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cid">CID</Label>
-                    <Input
-                      id="cid"
-                      name="cid"
-                      defaultValue={currentUser?.cid}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="full_name">Name</Label>
-                    <Input
-                      id="full_name"
-                      name="full_name"
-                      defaultValue={currentUser?.full_name}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      defaultValue={currentUser?.email}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select
-                      name="role"
-                      defaultValue={currentUser?.role || "user"}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="user">User</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      defaultValue={currentUser?.phone}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dzongkhag">Dzongkhag</Label>
-                    <Input
-                      id="dzongkhag"
-                      name="dzongkhag"
-                      defaultValue={currentUser?.dzongkhag}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="gewog">Gewog</Label>
-                    <Input
-                      id="gewog"
-                      name="gewog"
-                      defaultValue={currentUser?.gewog}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="village">Village</Label>
-                    <Input
-                      id="village"
-                      name="village"
-                      defaultValue={currentUser?.village}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit">Save</Button>
-              </form>
+              <UserForm
+                currentUser={currentUser}
+                setIsDialogOpen={setIsDialogOpen}
+                onSuccess={fetchUsers}
+              />
             </DialogContent>
           </Dialog>
 
@@ -363,6 +260,27 @@ export default function UserTable() {
               ))}
             </TableBody>
           </Table>
+          <div className="flex items-center justify-center w-full space-x-4 py-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>

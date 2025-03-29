@@ -135,7 +135,7 @@ export default function DeviceOwnerTable() {
           <Loader className="animate-spin text-4xl" />
         </div>
       ) : (
-        <div className="flex justify-center items-start w-full h-full mt-20">
+        <div className="flex justify-center items-start w-full h-full pt-10">
           <div className="space-y-4 w-[90%]">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Device Owners</h2>

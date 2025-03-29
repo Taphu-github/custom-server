@@ -1,6 +1,7 @@
-'use client';
+"use client";
 import logo from "../AIDS_logo.png";
 import sideImage from "../elephant.jpg";
+import { ImageCarousel } from "@/components/carousel-plugin";
 
 import Image from "next/image";
 import { LoginForm } from "../../components/login-form";
@@ -14,7 +15,9 @@ export default function LoginPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-primary-foreground">
               <Image src={logo} width={200} height={200} alt="Image" />
             </div>
-            <p className='font-bold text-xl'>Animal Intrusion Detection System</p>
+            <p className="font-bold text-xl">
+              Animal Intrusion Detection System
+            </p>
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -24,11 +27,12 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
-        <Image
+        <ImageCarousel />
+        {/* <Image
           src={sideImage}
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+        /> */}
       </div>
     </div>
   );
