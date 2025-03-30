@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -11,12 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +31,7 @@ export default function UserTable() {
   // Add pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(8);
   const [users, setUsers] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
@@ -51,14 +46,53 @@ export default function UserTable() {
     cid: "",
   });
 
-  const fetchUsers = () => {
+  // const fetchUsers = () => {
+  //   setLoading(true);
+  //   // Add filters to URL
+  //   const queryParams = new URLSearchParams({
+  //     page: currentPage,
+  //     limit: itemsPerPage,
+  //     ...Object.fromEntries(
+  //       Object.entries(filters).filter(([_, value]) => value !== "")
+  //     ),
+  //   });
+
+  //   fetch(`/api/users?${queryParams}`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setUsers(data.data);
+  //       setTotalPages(data.pagination.totalPages);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       setLoading(false);
+  //     });
+  // };
+
+  const [debouncedFilters, setDebouncedFilters] = useState(filters);
+
+  // Debounced fetch function
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedFilters(filters);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer);
+  }, [filters]);
+
+  // Separate effect for fetching data
+  useEffect(() => {
+    fetchUser();
+  }, [currentPage, itemsPerPage, debouncedFilters]);
+
+  const fetchUser = useCallback(() => {
     setLoading(true);
-    // Add filters to URL
     const queryParams = new URLSearchParams({
       page: currentPage,
       limit: itemsPerPage,
       ...Object.fromEntries(
-        Object.entries(filters).filter(([_, value]) => value !== "")
+        Object.entries(debouncedFilters).filter(([_, value]) => value !== "")
       ),
     });
 
@@ -73,11 +107,7 @@ export default function UserTable() {
         console.log(error);
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, itemsPerPage, filters]);
+  }, [currentPage, itemsPerPage, debouncedFilters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +115,6 @@ export default function UserTable() {
       ...prev,
       [name]: value,
     }));
-    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   // Add pagination controls
@@ -203,7 +232,7 @@ export default function UserTable() {
               <UserForm
                 currentUser={currentUser}
                 setIsDialogOpen={setIsDialogOpen}
-                onSuccess={fetchUsers}
+                onSuccess={fetchUser}
               />
             </DialogContent>
           </Dialog>
