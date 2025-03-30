@@ -141,7 +141,7 @@ export async function PATCH(req, { params }) {
 export async function DELETE(req, {params}) {
   try {
     await connectToMongoDB();
-    const id = params.id;
+    const { id } = params;
     // Find and delete the device
     const deleteItem = await Device.findByIdAndDelete(id);
 

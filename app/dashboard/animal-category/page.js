@@ -37,19 +37,19 @@ export default function AnimalCategoryTable() {
   // const fetchAnimalCategories = async () => {
   //   try {
   //     const response = await fetch("/api/animal_categories");
-  
+
   //     if (!response.ok) {
   //       throw new Error(`HTTP error! status: ${response.status}`);
   //     }
-  
+
   //     const dataPresort = await response.json();
-  
+
   //     // Sort by a_c_id, ensuring it’s treated as a number
   //     const data = Array.isArray(dataPresort.data)
   //     ? dataPresort.data.sort((a, b) => Number(a.a_c_id) - Number(b.a_c_id))
   //     : [];
   //     console.log("Sorted data:", data);
-  
+
   //     // Ensure data is an array before setting state
   //     setAnimalCategories(Array.isArray(data) ? data : []);
   //   } catch (error) {
@@ -57,19 +57,19 @@ export default function AnimalCategoryTable() {
   //     setAnimalCategories([]); // Fallback to an empty array on error
   //   }
   // };
-  
 
   useEffect(() => {
     fetch("/api/animal_categories")
       .then((res) => res.json())
       .then((data) => {
-        setAnimalCategories(data.data.sort((a, b) => Number(a.a_c_id) - Number(b.a_c_id)));
+        setAnimalCategories(
+          data.data.sort((a, b) => Number(a.a_c_id) - Number(b.a_c_id))
+        );
       })
       .catch((error) => {
         console.log(error);
       });
     setLoading(false);
-
   }, []);
 
   const handleOpenDialog = (animalCategory = null) => {
@@ -79,7 +79,7 @@ export default function AnimalCategoryTable() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    console.log('formData', formData);
+    console.log("formData", formData);
     const animalCategoryData = Object.fromEntries(formData.entries());
 
     try {
@@ -116,7 +116,7 @@ export default function AnimalCategoryTable() {
   };
 
   return (
-    <div className="flex justify-center items-start w-full h-full mt-20">
+    <div className="flex justify-center items-start w-full h-full pt-10">
       {loading ? (
         <div className="flex flex-col justify-center items-center w-full h-screen">
           <Loader className="animate-spin text-4xl" />
@@ -153,9 +153,7 @@ export default function AnimalCategoryTable() {
                     required
                   />
                 </div>
-                <Button type="submit">
-                  Save
-                </Button>
+                <Button type="submit">Save</Button>
               </form>
             </DialogContent>
           </Dialog>
@@ -173,7 +171,7 @@ export default function AnimalCategoryTable() {
               {Array.isArray(animalCategories) &&
                 animalCategories.map((category) => (
                   <TableRow key={category.a_c_id}>
-                    <TableCell>{Number(category.a_c_id)+1}</TableCell>
+                    <TableCell>{Number(category.a_c_id) + 1}</TableCell>
                     <TableCell>{category.animal_name}</TableCell>
                     <TableCell>{category.animal_description}</TableCell>
                     <TableCell>

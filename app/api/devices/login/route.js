@@ -48,7 +48,6 @@ export async function POST(req){
         const user_id = body.user_id;
 
         const dev = await Device.findOne({"d_id": d_id});
-
         if (!dev) {
             return Response.json({
                 message: "Device not found"
@@ -67,14 +66,13 @@ export async function POST(req){
         const device_owners=await device_owner.find({"user_id":user_id, "d_id":d_id})
         console.log("device owner")
         console.log(device_owners)
-        console.log(device_owners[0]._id)
         let device_owner_id=""
         if(device_owners.length==0){
             var cur_date=new Date()
             const new_device_owner = await device_owner.create({
                         user_id,
                         d_id,
-                        cur_date
+                        "date_of_own": cur_date
                     })
             console.log(new_device_owner)
 

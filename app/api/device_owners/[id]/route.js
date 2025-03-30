@@ -110,7 +110,7 @@ export async function PUT(req, { params }) {
     const { id } = params;
     const dev_own = device_owner.findById(id)
     const body = await req.json();
-    
+
     if (dev_own) {
       dev_own.user_id = body.user_id;
       dev_own.d_id = body.d_id;
@@ -143,7 +143,7 @@ export async function DELETE(req, { params }) {
     const { id } = params;
     const deleteItem = await device_owner.findById(id)
     if (deleteItem) {
-      device_owner.findByIdAndDelete(id);
+      await device_owner.findByIdAndDelete(id);
       return Response.json({
         message: `Device owner ${id} deleted successfully`
       })

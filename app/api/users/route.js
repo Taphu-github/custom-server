@@ -1,5 +1,5 @@
-import { connectToMongoDB } from '../../../lib/mongodb';
-import user from '@/models/user';
+import { connectToMongoDB } from "../../../lib/mongodb";
+import user from "@/models/user";
 
 /**
  * @swagger
@@ -37,22 +37,50 @@ import user from '@/models/user';
  *                   type: string
  *                   example: "error: Something went wrong"
  */
-export async function GET() {
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 10;
+    const skip = (page - 1) * limit;
 
-    try {
-        await connectToMongoDB();
-        const userlist = (await user.find());
+    // Build filter query
+    const filterQuery = {};
+    const filterFields = ["full_name", "dzongkhag", "gewog", "phone", "cid"];
+    
+    filterFields.forEach(field => {
+      const value = searchParams.get(field);
+      if (value) {
+        filterQuery[field] = { $regex: value, $options: 'i' };
+      }
+    });
 
-        return Response.json({
-            data: userlist
-        })
-    } catch (error) {
-        return Response.json({
-            message: "error: " + error
-        })
-    }
+    await connectToMongoDB();
+
+    const totalUsers = await user.countDocuments(filterQuery);
+    const userList = await user
+      .find(filterQuery)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    return Response.json({
+      data: userList,
+      pagination: {
+        total: totalUsers,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(totalUsers / limit),
+      },
+    });
+  } catch (error) {
+    return Response.json(
+      { message: "error: " + error },
+      { status: 400 }
+    );
+  }
 }
-
 
 /**
  * @swagger
@@ -108,49 +136,49 @@ export async function GET() {
  *         description: Error during registration
  */
 
-
 export async function POST(req) {
+  try {
+    await connectToMongoDB();
+    const body = await req.json();
+    const user_id = body["user_id"];
+    const username = body["username"];
+    const email = body["email"];
+    const password = body["password"];
+    const cid = body["cid"];
+    const full_name = body["full_name"];
+    const phone = body["phone"];
+    const dzongkhag = body["dzongkhag"];
+    const gewog = body["gewog"];
+    const village = body["village"];
+    const role = body["role"];
 
-    try {
+    const newUser = await user.create({
+      user_id,
+      username,
+      email,
+      password,
+      cid,
+      full_name,
+      phone,
+      dzongkhag,
+      gewog,
+      village,
+      role,
+    });
 
-        await connectToMongoDB();
-        const body = await req.json();
-        const user_id = body["user_id"];
-        const username = body["username"];
-        const email = body["email"];
-        const password = body["password"];
-        const cid = body["cid"];
-        const full_name = body["full_name"];
-        const phone = body['phone'];
-        const dzongkhag = body['dzongkhag'];
-        const gewog = body['gewog'];
-        const village = body['village'];
-        const role = body['role'];
-
-        const newUser = await user.create({
-            user_id,
-            username,
-            email,
-            password,
-            cid,
-            full_name,
-            phone,
-            dzongkhag,
-            gewog,
-            village,
-            role
-        });
-
-        newUser.save();
-        return Response.json({
-            message: 'Succesfully Added',
-            data: newUser
-        })
-    } catch (error) {
-        return Response.json({
-            message: "error "+error
-        },{
-            status: 400
-        })
-    }
+    newUser.save();
+    return Response.json({
+      message: "Succesfully Added",
+      data: newUser,
+    });
+  } catch (error) {
+    return Response.json(
+      {
+        message: "error " + error,
+      },
+      {
+        status: 400,
+      }
+    );
+  }
 }

@@ -136,10 +136,7 @@ export function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarFallback className="rounded-lg text-white bg-slate-300 font-bold">
-                      {user.name
-                        ? user.name.split(" ")[0][0] +
-                          user.name.split(" ")[1][0]
-                        : "NA"}
+                      {user.name ? user.name[0] + user.name[1] : "NA"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -163,10 +160,7 @@ export function AppSidebar() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarFallback className="rounded-lg">
-                        {user.name
-                          ? user.name.split(" ")[0][0] +
-                            user.name.split(" ")[1][0]
-                          : "NA"}
+                        {user.name ? user.name[0] + user.name[1] : "NA"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">

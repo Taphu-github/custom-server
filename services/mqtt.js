@@ -4,7 +4,7 @@ const {connectToMongoDB} = require('../lib/mongodb');
 const { format_time, format_date } = require('../utils/format_time');  // Adjust path as necessary
 const Animal = require("../models/detected_animal");
 const device = require("../models/device");
-
+const {notify_user} = require("./fcm_services")
 
 var options = {
     host: '34773dcfbaf24a4bba66e5a333c2df9a.s1.eu.hivemq.cloud',
@@ -14,13 +14,21 @@ var options = {
     password: 'Ads12345678'
 }
 
+var animal_obj={
+    0: "Bear",
+    1: "Boar",
+    2: "Cattle",
+    3: "Deer",
+    4: "Elephant",
+    5: "Horse",
+    6: "Monkey"
+}
 
 async function initMqttClient(){
     // Create the MQTT client with appropriate typing
     const client= mqtt.connect(options);
     await connectToMongoDB();
 
-    
 
     // Event listener for 'connect'
     client.on('connect', () => {
@@ -37,7 +45,7 @@ async function initMqttClient(){
         // Process the received message based on the topic
         // if (topic === 'animal') {
         const lastMessage = message.toString();
-            
+
         const pay_load = lastMessage.split("####");
         const formatted_date= format_date(pay_load[3]);
         const formatted_time= format_time(pay_load[3]);
@@ -51,6 +59,7 @@ async function initMqttClient(){
         });
 
         new_detected_animal.save().then().catch(err=> console.log(err));
+        await notify_user(topic, animal_obj[a_c_id] );
 
         console.log('Received message:', lastMessage);
 
@@ -59,7 +68,7 @@ async function initMqttClient(){
         //     // Additional logic can be added here
         // }
     });
-    
+
     // Subscribe to the 'animal' topic
     var devices = await device.find();
     devices.map((device)=>{

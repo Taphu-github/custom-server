@@ -27,6 +27,9 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.local
+.env
+/aidsv2-firebase-adminsdk-jr5yw-2e521e6e41.json
 
 # vercel
 .vercel

@@ -1,11 +1,24 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,48 +28,55 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { PencilIcon, TrashIcon, PlusIcon, Loader, Eye, EyeOff } from 'lucide-react'
+} from "@/components/ui/alert-dialog";
+import {
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+  Loader,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function MQTTCreditTable() {
-  const [mqttCredits, setMQTTCredits] = useState([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false)
+  const [mqttCredits, setMQTTCredits] = useState([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [currentMQTTCredit, setCurrentMQTTCredit] = useState(null)
-  const [mqttCreditToDelete, setMqttCreditToDelete] = useState(null) // Track MQTT credential to delete
+  const [currentMQTTCredit, setCurrentMQTTCredit] = useState(null);
+  const [mqttCreditToDelete, setMqttCreditToDelete] = useState(null); // Track MQTT credential to delete
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/mqtt_creds")
       .then((res) => res.json())
       .then((data) => {
-        setMQTTCredits(data.data)
-        setLoading(false)
+        setMQTTCredits(data.data);
+        setLoading(false);
       })
       .catch((error) => {
-        console.log(error)
-      })
-  }, [])
+        console.log(error);
+      });
+  }, []);
 
   const handleOpenDialog = (mqttCredit = null) => {
-    setCurrentMQTTCredit(mqttCredit)
-    setIsDialogOpen(true)
-  }
+    setCurrentMQTTCredit(mqttCredit);
+    setIsDialogOpen(true);
+  };
 
   const handleOpenDeleteDialog = (mqttCredit) => {
-    setMqttCreditToDelete(mqttCredit)
-    setIsAlertDialogOpen(true)
-  }
+    setMqttCreditToDelete(mqttCredit);
+    setIsAlertDialogOpen(true);
+  };
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    const formData = new FormData(event.currentTarget)
-    const mqttCreditData = Object.fromEntries(formData.entries())
+    const formData = new FormData(event.currentTarget);
+    const mqttCreditData = Object.fromEntries(formData.entries());
 
     try {
-      let response
+      let response;
 
       if (currentMQTTCredit) {
         // Edit existing MQTT credit
@@ -66,17 +86,19 @@ export default function MQTTCreditTable() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(mqttCreditData),
-        })
+        });
 
         if (response.ok) {
-          const updatedMQTTCredit = await response.json()
+          const updatedMQTTCredit = await response.json();
           setMQTTCredits(
             mqttCredits.map((mqttCredit) =>
-              mqttCredit.mqtt_id === currentMQTTCredit.mqtt_id ? updatedMQTTCredit.data : mqttCredit
+              mqttCredit.mqtt_id === currentMQTTCredit.mqtt_id
+                ? updatedMQTTCredit.data
+                : mqttCredit
             )
-          )
+          );
         } else {
-          throw new Error("Failed to update MQTT credit")
+          throw new Error("Failed to update MQTT credit");
         }
       } else {
         // Add new MQTT credit
@@ -86,41 +108,48 @@ export default function MQTTCreditTable() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ ...mqttCreditData }),
-        })
+        });
 
         if (response.ok) {
-          const newMQTTCredit = await response.json()
-          setMQTTCredits([...mqttCredits, newMQTTCredit.data])
+          const newMQTTCredit = await response.json();
+          setMQTTCredits([...mqttCredits, newMQTTCredit.data]);
         } else {
-          throw new Error("Failed to add MQTT credit")
+          throw new Error("Failed to add MQTT credit");
         }
       }
 
-      setIsDialogOpen(false)
-      setCurrentMQTTCredit(null)
+      setIsDialogOpen(false);
+      setCurrentMQTTCredit(null);
     } catch (error) {
-      console.error("Error:", error)
-      alert("There was an error processing your request. Please try again.")
+      console.error("Error:", error);
+      alert("There was an error processing your request. Please try again.");
     }
-  }
+  };
 
   const handleDeleteMqttCredentials = async () => {
     try {
-      const response = await fetch(`/api/mqtt_creds/${mqttCreditToDelete._id}`, { method: 'DELETE' })
+      const response = await fetch(
+        `/api/mqtt_creds/${mqttCreditToDelete._id}`,
+        { method: "DELETE" }
+      );
       if (response.ok) {
-        setMQTTCredits(mqttCredits.filter(mqttCred => mqttCred._id !== mqttCreditToDelete._id))
-        setIsAlertDialogOpen(false)
-        setMqttCreditToDelete(null)
+        setMQTTCredits(
+          mqttCredits.filter(
+            (mqttCred) => mqttCred._id !== mqttCreditToDelete._id
+          )
+        );
+        setIsAlertDialogOpen(false);
+        setMqttCreditToDelete(null);
       } else {
-        console.error('Failed to delete MQTT credential')
+        console.error("Failed to delete MQTT credential");
       }
     } catch (error) {
-      console.error('Error deleting MQTT credential:', error)
+      console.error("Error deleting MQTT credential:", error);
     }
-  }
+  };
 
   return (
-    <div className='flex justify-center items-start w-full h-full mt-10'>
+    <div className="flex justify-center items-start w-full h-full pt-10">
       {loading ? (
         <div className="flex flex-col justify-center items-center w-full h-full">
           <Loader className="animate-spin text-4xl" />
@@ -129,17 +158,23 @@ export default function MQTTCreditTable() {
         <div className="space-y-4 w-[90%] ">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">MQTT Credentials</h2>
-            <Button onClick={() => handleOpenDialog()}><PlusIcon className="mr-2 h-4 w-4" /> Add MQTT Credential</Button>
+            <Button onClick={() => handleOpenDialog()}>
+              <PlusIcon className="mr-2 h-4 w-4" /> Add MQTT Credential
+            </Button>
           </div>
 
           {/* AlertDialog for Deletion */}
           {mqttCreditToDelete && (
-            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+            <AlertDialog
+              open={isAlertDialogOpen}
+              onOpenChange={setIsAlertDialogOpen}
+            >
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. It will permanently delete the MQTT credential for{" "}
+                    This action cannot be undone. It will permanently delete the
+                    MQTT credential for{" "}
                     <strong>{mqttCreditToDelete.user_name}</strong>.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -156,45 +191,59 @@ export default function MQTTCreditTable() {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{currentMQTTCredit ? 'Edit MQTT Credential' : 'Add New MQTT Credential'}</DialogTitle>
+                <DialogTitle>
+                  {currentMQTTCredit
+                    ? "Edit MQTT Credential"
+                    : "Add New MQTT Credential"}
+                </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="mqtt_id">MQTT ID</Label>
-                    <Input id="mqtt_id" name="mqtt_id" defaultValue={currentMQTTCredit?.mqtt_id} required />
+                    <Input
+                      id="mqtt_id"
+                      name="mqtt_id"
+                      defaultValue={currentMQTTCredit?.mqtt_id}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="user_name">Username</Label>
-                    <Input id="user_name" name="user_name" defaultValue={currentMQTTCredit?.user_name} required />
+                    <Input
+                      id="user_name"
+                      name="user_name"
+                      defaultValue={currentMQTTCredit?.user_name}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          id="password"
-                          name="password"
-                          placeholder="Enter your password"
-                          required
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={
-                            showPassword ? "Hide password" : "Show password"
-                          }
-                        >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      </div>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 <Button type="submit">Save</Button>
@@ -220,10 +269,18 @@ export default function MQTTCreditTable() {
                   <TableCell>{mqttCredit.password}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(mqttCredit)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDialog(mqttCredit)}
+                      >
                         <PencilIcon className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleOpenDeleteDialog(mqttCredit)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleOpenDeleteDialog(mqttCredit)}
+                      >
                         <TrashIcon className="h-4 w-4" />
                       </Button>
                     </div>
@@ -235,5 +292,5 @@ export default function MQTTCreditTable() {
         </div>
       )}
     </div>
-  )
+  );
 }
