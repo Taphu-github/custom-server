@@ -47,6 +47,7 @@ export default function DetectedAnimalTable() {
     fetch("/api/detected_animals")
       .then((res) => res.json())
       .then((data) => {
+        console.log(data.data);
         setLoading(false);
         setDetectedAnimals(data.data);
         setFilteredAnimals(data.data);
@@ -58,20 +59,25 @@ export default function DetectedAnimalTable() {
 
   useEffect(() => {
     const filtered = detectedAnimals.filter((animal) => {
-      return (
-        animal.d_id.toLowerCase().includes(filters.deviceId.toLowerCase()) &&
-        animal_name[animal.a_c_id]
-          .toLowerCase()
-          .includes(filters.animalName.toLowerCase()) &&
-        new Date(animal.enroach_date)
-          .toISOString()
-          .split("T")[0]
-          .includes(filters.encroachDate)
-      );
+      const matchesDeviceId = animal.d_id
+        .toLowerCase()
+        .includes(filters.deviceId.toLowerCase());
+
+      const matchesAnimalName =
+        !filters.animalName ||
+        animal_name[animal.a_c_id]?.toLowerCase() ===
+          filters.animalName.toLowerCase();
+
+      const matchesDate =
+        !filters.encroachDate ||
+        new Date(animal.enroach_date).toISOString().split("T")[0] ===
+          filters.encroachDate;
+
+      return matchesDeviceId && matchesAnimalName && matchesDate;
     });
+
     setFilteredAnimals(filtered);
     setCurrentPage(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, detectedAnimals]);
 
   // Pagination logic
@@ -91,21 +97,26 @@ export default function DetectedAnimalTable() {
   //   setFilters((prev) => ({ ...prev, [key]: value }));
   // };
 
+  // const handleFilterChange = (key, value) => {
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     [key]: value,
+  //   }));
+
+  //   if (key === "animalName" && value === "all") {
+  //     setFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       [key]: "",
+  //     }));
+  //   }
+  // };
 
   const handleFilterChange = (key, value) => {
-  setFilters((prevFilters) => ({
-    ...prevFilters,
-    [key]: value,
-  }));
-
-  if (key === "animalName" && value === "all") {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [key]: '',
+      [key]: value === "all" ? "" : value,
     }));
-  } 
-};
-
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col">

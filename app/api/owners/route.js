@@ -1,67 +1,79 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import device_owner from "@/models/device_owner";
 import user from "@/models/user";
+import { NextResponse } from "next/server";
 
-/**
- * @swagger
- * /api/owners:
- *   get:
- *     summary: Get list of device owners
- *     description: Retrieves all device owners from the database.
- *     responses:
- *       200:
- *         description: List of device owners
- *       400:
- *         description: Failed to fetch device owners
- */
-export async function GET() {
+export async function GET(req) {
+  try {
+    await connectToMongoDB();
 
-    try {
-        await connectToMongoDB();
-        const list = await device_owner.find();
-        // var ownerlist=[...list]
-        var userlist=[]
-        const aggregated = {};
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 10;
+    const skip = (page - 1) * limit;
 
-        list.forEach((item) => {
-            const { user_id, d_id } = item;
-            if (user_id) {
-                if (!aggregated[user_id]) {
-                    aggregated[user_id] = [];
-                }
-                aggregated[user_id].push(d_id);
-            }
-        });
+    // Step 1: Fetch all device_owner records sorted by latest date
+    const list = await device_owner.find().sort({ date_of_own: -1 });
 
-        // Convert the aggregated result into a list of objects
-        const result = Object.keys(aggregated).map((user_id) => ({
-            user_id,
-            d_ids: aggregated[user_id],
-        }));
+    // Step 2: Aggregate devices per user, keeping order
+    const aggregated = {};
+    list.forEach(({ user_id, d_id, date_of_own }) => {
+      if (!user_id) return;
+      if (!aggregated[user_id]) aggregated[user_id] = [];
 
-        const final= await processResults(result);
-        console.log("test")
-        console.log(final)
+      aggregated[user_id].push({
+        d_id,
+        date_of_own: date_of_own?.toISOString()?.split("T")[0] || null,
+        raw_date: new Date(date_of_own), // for sorting users later
+      });
+    });
 
-        
-        return Response.json({ data: final }, { status: 200 });
+    // Step 3: Convert to array and sort users by their most recent device date
+    let result = Object.entries(aggregated).map(([user_id, d_ids]) => {
+      return {
+        user_id,
+        d_ids: d_ids.map(({ d_id, date_of_own }) => ({ d_id, date_of_own })),
+        latest_date: d_ids[0]?.raw_date || new Date(0), // latest device date
+      };
+    });
 
-        
-    } catch (error) {
-        return Response.json({
-            message: error
-        })
-    }
+    // Sort users by latest device date
+    result.sort((a, b) => b.latest_date - a.latest_date);
+
+    const total = result.length;
+    const paginatedResult = result.slice(skip, skip + limit);
+    const final = await processResults(paginatedResult);
+
+    return NextResponse.json(
+      {
+        data: final,
+        pagination: {
+          total,
+          page,
+          totalPages: Math.ceil(total / limit),
+          hasMore: page * limit < total,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 400 });
+  }
 }
 
 async function processResults(result) {
-    const final = [];
-  
-    await Promise.all(result.map(async (data) => {
-      var user_name = await user.find({ "user_id": data.user_id });
-      var dic = { ...data, user_name: user_name[0]?.username };
-      final.push(dic);
-    }));
-  
-    return final;
-  }
+  const final = [];
+
+  await Promise.all(
+    result.map(async (data) => {
+      const userData = await user.findOne({ user_id: data.user_id }).lean();
+      const { latest_date, ...rest } = data; // remove internal field
+      final.push({
+        ...rest,
+        user_name: userData?.username || "Unknown",
+      });
+    })
+  );
+
+  return final;
+}

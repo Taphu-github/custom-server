@@ -1,52 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
-import data from "../../../dzongkhag.json";
+import dzongkhagData from "../../../dzongkhag.json";
 
-// Form field configuration
-const formFields = [
-  { id: "username", label: "Username", type: "text" },
-  { id: "cid", label: "CID", type: "text" },
-  { id: "full_name", label: "Name", type: "text" },
-  { id: "email", label: "Email", type: "email" },
-  { id: "phone", label: "Phone", type: "text" },
-  // { id: "dzongkhag", label: "Dzongkhag", type: "text" },
-  // { id: "gewog", label: "Gewog", type: "text" },
-  // { id: "village", label: "Village", type: "text" },
-];
-
+// Reusable password input
 const PasswordInput = ({
-  showPassword,
-  setShowPassword,
   id,
   name,
+  value,
+  show,
+  setShow,
+  onChange,
   placeholder,
 }) => (
   <div className="relative">
     <Input
-      type={showPassword ? "text" : "password"}
+      type={show ? "text" : "password"}
       id={id}
       name={name}
+      value={value}
+      onChange={onChange}
       placeholder={placeholder}
       required
     />
@@ -55,188 +47,169 @@ const PasswordInput = ({
       variant="ghost"
       size="icon"
       className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-      onClick={() => setShowPassword(!showPassword)}
-      aria-label={showPassword ? "Hide password" : "Show password"}
+      onClick={() => setShow(!show)}
     >
-      {showPassword ? (
-        <EyeOff className="h-4 w-4" />
-      ) : (
-        <Eye className="h-4 w-4" />
-      )}
+      {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
     </Button>
   </div>
 );
 
-const RoleSelect = ({ defaultValue = "user" }) => (
-  <Select name="role" defaultValue={defaultValue}>
-    <SelectTrigger className="w-full">
-      <SelectValue placeholder="Select Role" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="admin">Admin</SelectItem>
-      <SelectItem value="user">User</SelectItem>
-    </SelectContent>
-  </Select>
-);
-
-const FormField = ({ field, value }) => (
-  <div className="space-y-2">
-    <Label htmlFor={field.id}>{field.label}</Label>
-    <Input
-      id={field.id}
-      name={field.id}
-      type={field.type}
-      defaultValue={value}
-      required
-    />
-  </div>
-);
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-// Remove the toast-related code and simplify the handlers
 export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
+  const [formData, setFormData] = useState({
+    username: "",
+    cid: "",
+    full_name: "",
+    email: "",
+    phone: "",
+    dzongkhag: "",
+    gewog: "",
+    village: "",
+    role: "user",
+    password: "",
+    confirmPassword: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [selectedDzongkhag, setSelectedDzongkhag] = useState("");
-  const [selectedGewog, setSelectedGewog] = useState("");
-  const [formData, setFormData] = useState(null);
 
-  const handleFormSubmit = async (data) => {
+  // ✅ Initialize state when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        username: currentUser.username || "",
+        cid: currentUser.cid || "",
+        full_name: currentUser.full_name || "",
+        email: currentUser.email || "",
+        phone: currentUser.phone || "",
+        dzongkhag: currentUser.dzongkhag || "",
+        gewog: currentUser.gewog || "",
+        village: currentUser.village || "",
+        role: currentUser.role || "user",
+        password: "",
+        confirmPassword: "",
+      });
+    } else {
+      setFormData({
+        username: "",
+        cid: "",
+        full_name: "",
+        email: "",
+        phone: "",
+        dzongkhag: "",
+        gewog: "",
+        village: "",
+        role: "user",
+        password: "",
+        confirmPassword: "",
+      });
+    }
+  }, [currentUser]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.phone && !/^\d{8}$/.test(formData.phone)) {
+      alert("Phone number must be exactly 8 digits");
+      return;
+    }
+
+    if (formData.email) {
+      formData.email = formData.email.trim().toLowerCase();
+    }
+
     try {
-      const url = currentUser ? `/api/users/${currentUser._id}` : "/api/users";
       const method = currentUser ? "PATCH" : "POST";
+      const url = currentUser ? `/api/users/${currentUser._id}` : `/api/users`;
 
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok)
-        throw new Error(`Failed to ${currentUser ? "update" : "create"} user`);
+      if (!res.ok) throw new Error("Failed to save user");
 
       setIsDialogOpen(false);
-      onSuccess(); // Refresh the user table
-    } catch (error) {
-      console.error("Error saving user:", error);
-      alert(error.message);
+      onSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const newPassword = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
-    if (newPassword !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setPasswordError("Passwords do not match");
       return;
     }
+
     try {
-      const response = await fetch(`/api/users/${currentUser._id}/password`, {
+      const res = await fetch(`/api/users/${currentUser._id}/password`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ newPassword: formData.password }),
       });
-      if (!response.ok) throw new Error(`Failed to update password`);
+
+      if (!res.ok) throw new Error("Failed to update password");
+
+      alert("Password updated");
       setIsDialogOpen(false);
+      onSuccess?.();
     } catch (error) {
-      console.error("Error saving user:", error);
-      alert(error.message);
+      setPasswordError(error.message);
     }
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const userData = Object.fromEntries(formData.entries());
-
-    // Phone validation
-    const phone = userData.phone;
-    if (phone && !/^\d{8}$/.test(phone)) {
-      alert("Phone number must be exactly 8 digits");
-      return;
-    }
-
-    // Email formatting
-    if (userData.email) {
-      userData.email = userData.email.toLowerCase();
-    }
-
-    setFormData(userData);
-  };
-
-  // Update the phone input field with maxLength
-  const FormField = ({ field, value }) => (
-    <div className="space-y-2">
-      <Label htmlFor={field.id}>{field.label}</Label>
-      <Input
-        id={field.id}
-        name={field.id}
-        type={field.type}
-        defaultValue={value}
-        required
-        maxLength={field.id === "phone" ? 8 : undefined}
-        pattern={field.id === "phone" ? "[0-9]{8}" : undefined}
-        onInput={
-          field.id === "phone"
-            ? (e) => {
-                e.target.value = e.target.value.replace(/\D/g, "").slice(0, 8);
-              }
-            : undefined
-        }
-      />
-    </div>
-  );
 
   const renderForm = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        {formFields.map((field) => (
-          <FormField
-            key={field.id}
-            field={field}
-            value={currentUser?.[field.id]}
-          />
+        {["username", "cid", "full_name", "email", "phone"].map((field) => (
+          <div key={field} className="space-y-2">
+            <Label htmlFor={field}>{field.replace("_", " ")}</Label>
+            <Input
+              id={field}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              required
+            />
+          </div>
         ))}
+
         {!currentUser && (
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label>Password</Label>
             <PasswordInput
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
               id="password"
               name="password"
-              placeholder="Enter your password"
+              placeholder="Enter password"
+              value={formData.password}
+              show={showPassword}
+              setShow={setShowPassword}
+              onChange={handleChange}
             />
           </div>
         )}
+
         <div className="space-y-2">
           <Label>Dzongkhag</Label>
           <Select
-            name="dzongkhag"
-            value={selectedDzongkhag}
-            onValueChange={(value) => {
-              setSelectedDzongkhag(value);
-              setSelectedGewog(""); // Reset gewog when dzongkhag changes
-            }}
+            value={formData.dzongkhag}
+            onValueChange={(val) =>
+              setFormData((prev) => ({ ...prev, dzongkhag: val, gewog: "" }))
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Dzongkhag" />
             </SelectTrigger>
             <SelectContent>
-              {data.map((d) => (
+              {dzongkhagData.map((d) => (
                 <SelectItem key={d.dzongkhag} value={d.dzongkhag}>
                   {d.dzongkhag}
                 </SelectItem>
@@ -245,21 +218,21 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
           </Select>
         </div>
 
-        {/* Gewog Dropdown */}
         <div className="space-y-2">
           <Label>Gewog</Label>
           <Select
-            name="gewog"
-            value={selectedGewog}
-            onValueChange={setSelectedGewog}
-            disabled={!selectedDzongkhag}
+            value={formData.gewog}
+            onValueChange={(val) =>
+              setFormData((prev) => ({ ...prev, gewog: val }))
+            }
+            disabled={!formData.dzongkhag}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Gewog" />
             </SelectTrigger>
             <SelectContent>
-              {data
-                .find((d) => d.dzongkhag === selectedDzongkhag)
+              {dzongkhagData
+                .find((d) => d.dzongkhag === formData.dzongkhag)
                 ?.gewogs.map((g) => (
                   <SelectItem key={g} value={g}>
                     {g}
@@ -268,72 +241,63 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
             </SelectContent>
           </Select>
         </div>
-        {/* Village Dropdown */}
-        <FormField
-          key={"village"}
-          field={{ id: "village", label: "Village", type: "text" }}
-          value={currentUser?.["village"]}
-        />
+
         <div className="space-y-2">
-          <Label htmlFor="role">Role</Label>
-          <RoleSelect defaultValue={currentUser?.role || "user"} />
+          <Label>Village</Label>
+          <Input
+            name="village"
+            value={formData.village}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Role</Label>
+          <Select
+            value={formData.role}
+            onValueChange={(val) =>
+              setFormData((prev) => ({ ...prev, role: val }))
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="user">User</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button type="submit">
-            {currentUser ? "Save changes" : "Create User"}
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {currentUser
-                ? "This will update the user's information."
-                : "This will create a new user account."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => formData && handleFormSubmit(formData)}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+      <Button type="submit">
+        {currentUser ? "Save changes" : "Create User"}
+      </Button>
     </form>
   );
 
-  if (!currentUser) {
-    return (
-      <>
-        <CardHeader>
-          <CardTitle>Create User</CardTitle>
-          <CardDescription>
-            Fill in the details to create a new user account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>{renderForm()}</CardContent>
-      </>
-    );
-  }
-
-  return (
+  return !currentUser ? (
+    <>
+      <CardHeader>
+        <CardTitle>Create User</CardTitle>
+        <CardDescription>
+          Fill in the details to create a new user.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>{renderForm()}</CardContent>
+    </>
+  ) : (
     <Tabs defaultValue="account" className="w-full max-w-[800px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="account">Account Details</TabsTrigger>
+      <TabsList className="grid grid-cols-2">
+        <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="password">Password</TabsTrigger>
       </TabsList>
       <TabsContent value="account">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Account Details</CardTitle>
-            <CardDescription>
-              Make changes to user account details here.
-            </CardDescription>
+            <CardTitle>Account Details</CardTitle>
+            <CardDescription>Update user info</CardDescription>
           </CardHeader>
           <CardContent>{renderForm()}</CardContent>
         </Card>
@@ -341,41 +305,32 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
       <TabsContent value="password">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Password</CardTitle>
-            <CardDescription>
-              Change the user&apos;s password here.
-            </CardDescription>
+            <CardTitle>Password</CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              id="password-form"
-              onSubmit={handlePasswordSubmit}
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New password</Label>
-                <PasswordInput
-                  showPassword={showPassword}
-                  setShowPassword={setShowPassword}
-                  id="new-password"
-                  name="password"
-                  placeholder="Enter new password"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm password</Label>
-                <PasswordInput
-                  showPassword={showPassword}
-                  setShowPassword={setShowPassword}
-                  id="confirm-password"
-                  name="confirmPassword"
-                  placeholder="Confirm new password"
-                />
-              </div>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <PasswordInput
+                id="password"
+                name="password"
+                placeholder="New password"
+                show={showPassword}
+                setShow={setShowPassword}
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <PasswordInput
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm password"
+                show={showPassword}
+                setShow={setShowPassword}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
               {passwordError && (
-                <p className="text-sm text-red-500">{passwordError}</p>
+                <p className="text-red-500 text-sm">{passwordError}</p>
               )}
-              <Button type="submit">Update password</Button>
+              <Button type="submit">Update Password</Button>
             </form>
           </CardContent>
         </Card>

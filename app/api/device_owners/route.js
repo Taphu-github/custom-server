@@ -38,50 +38,49 @@ import user from "@/models/user";
  *         description: Failed to add device owner
  */
 
-
 export async function GET() {
-
-    try {
-        await connectToMongoDB();
-        const list = await device_owner.find();
-        return Response.json({
-            data: list
-        })
-    } catch (error) {
-        return Response.json({
-            message: error
-        })
-    }
+  try {
+    await connectToMongoDB();
+    const list = await device_owner.find().sort({ date_of_own: -1 });
+    return Response.json({
+      data: list,
+    });
+  } catch (error) {
+    return Response.json({
+      message: error,
+    });
+  }
 }
 
 export async function POST(req) {
+  try {
+    await connectToMongoDB();
+    const body = await req.json();
 
-    try {
-        await connectToMongoDB();
-        const body= await req.json();
-        
-        const user_id = body.user_id;
-        const d_id = body.d_id;
-        const date_of_own = body.date_of_own;
+    const user_id = body.user_id;
+    const d_id = body.d_id;
+    const date_of_own = body.date_of_own;
 
-        const new_device_owner = await device_owner.create({
-            user_id,
-            d_id,
-            date_of_own
-        })
+    const new_device_owner = await device_owner.create({
+      user_id,
+      d_id,
+      date_of_own,
+    });
 
-        new_device_owner.save();
+    new_device_owner.save();
 
-        return Response.json({
-            new_device_owner,
-            message: "Successfully added"
-        }, {
-            status: 200
-        })
-
-    } catch (error) {
-        return Response.json({
-            message: "error: " + error
-        })
-    }
+    return Response.json(
+      {
+        new_device_owner,
+        message: "Successfully added",
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    return Response.json({
+      message: "error: " + error,
+    });
+  }
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import {
   Table,
@@ -44,19 +43,52 @@ export default function DeviceTable() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [currentDevice, setCurrentDevice] = useState(null);
-  const [deviceToDelete, setDeviceToDelete] = useState(null); // Track device to delete
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false); // Track AlertDialog state
+  const [deviceToDelete, setDeviceToDelete] = useState(null);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Add new state variables
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState({
+    d_name: '',
+    d_id: '',
+    location: ''
+  });
 
+  // Update useEffect to handle pagination and filters
   useEffect(() => {
-    fetch("/api/devices")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchDevices = async () => {
+      const queryParams = new URLSearchParams({
+        page: currentPage,
+        limit: 10,
+        ...filters
+      });
+
+      try {
+        const response = await fetch(`/api/devices?${queryParams}`);
+        const data = await response.json();
         setDevices(data.data);
+        setTotalPages(data.pagination.totalPages);
         setLoading(false);
-      })
-      .catch((error) => console.log(error));
-  }, []);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    };
+
+    fetchDevices();
+  }, [currentPage, filters]);
+
+  // Add filter handler
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  // Add pagination handler
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   const handleOpenDialog = (device = null) => {
     setCurrentDevice(device);
@@ -163,6 +195,25 @@ export default function DeviceTable() {
               <Button onClick={() => handleOpenDialog()}>
                 <PlusIcon className="mr-2 h-4 w-4" /> Add Device
               </Button>
+            </div>
+
+            {/* Add Filter Fields */}
+            <div className="grid grid-cols-3 gap-4">
+              <Input
+                placeholder="Filter by Device ID"
+                value={filters.d_id}
+                onChange={(e) => handleFilterChange('d_id', e.target.value)}
+              />
+              <Input
+                placeholder="Filter by Device Name"
+                value={filters.d_name}
+                onChange={(e) => handleFilterChange('d_name', e.target.value)}
+              />
+              <Input
+                placeholder="Filter by Location"
+                value={filters.location}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+              />
             </div>
 
             {/* AlertDialog for Deletion */}
@@ -335,6 +386,27 @@ export default function DeviceTable() {
                 ))}
               </TableBody>
             </Table>
+
+            {/* Add Pagination Controls */}
+            <div className="flex items-center justify-center space-x-4 mt-4">
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       )}
