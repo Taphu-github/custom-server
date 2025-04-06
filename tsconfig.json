@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/dashboard/user/components/DeleteUserDialog.js", "app/dashboard/user/components/FilterBar.js", "app/dashboard/user/components/PaginationControls.js", "app/dashboard/user/components/UserTable.js"],
   "exclude": ["node_modules"]
 }

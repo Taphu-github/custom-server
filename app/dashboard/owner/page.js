@@ -27,7 +27,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { PencilIcon, TrashIcon, PlusIcon, Loader } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { PlusIcon, Loader } from "lucide-react";
 
 export default function DeviceOwnerTable() {
   const [deviceOwners, setDeviceOwners] = useState([]);
@@ -69,30 +75,22 @@ export default function DeviceOwnerTable() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const selectedUser = users.find((user) => user.user_id === selectedUserId);
+
     const deviceOwnerData = {
       user_id: selectedUserId,
+      user_name: selectedUser?.username, // Add username to the data
       d_id: selectedDeviceIds,
       date_of_own: event.target.date_of_own.value,
     };
 
     try {
       let response;
-
-      // if (currentDeviceOwner) {
-      //   // Edit existing device owner
-      //   response = await fetch(`/api/owners/${currentDeviceOwner._id}`, {
-      //     method: "PATCH",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(deviceOwnerData),
-      //   });
-      // } else {
-      // Add new device owner
       response = await fetch("/api/device_owners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(deviceOwnerData),
       });
-      // }
 
       if (response.ok) {
         const updatedData = await response.json();
@@ -115,18 +113,20 @@ export default function DeviceOwnerTable() {
     }
   };
 
-  const handleDeleteOwner = async (id) => {
-    try {
-      const response = await fetch(`/api/owners/${id}`, { method: "DELETE" });
-      if (response.ok) {
-        setDeviceOwners((prev) => prev.filter((owner) => owner._id !== id));
-      } else {
-        throw new Error("Failed to delete device owner");
-      }
-    } catch (error) {
-      console.error("Error deleting owner:", error);
-    }
-  };
+  // const handleDeleteOwner = async (id) => {
+  //   try {
+  //     const response = await fetch(`/api/owners/user/${id}`, {
+  //       method: "DELETE",
+  //     });
+  //     if (response.ok) {
+  //       setDeviceOwners((prev) => prev.filter((owner) => owner.user_id !== id));
+  //     } else {
+  //       throw new Error("Failed to delete device owner");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting owner:", error);
+  //   }
+  // };
 
   return (
     <div className="w-full h-screen ">
@@ -158,8 +158,8 @@ export default function DeviceOwnerTable() {
                     <Label htmlFor="user_id">User</Label>
                     <Select
                       id="user_id"
-                      value={selectedUserId}
-                      onValueChange={setSelectedUserId}
+                      value={String(selectedUserId)}
+                      onValueChange={(val) => setSelectedUserId(val)}
                       required
                     >
                       <SelectTrigger>
@@ -167,7 +167,10 @@ export default function DeviceOwnerTable() {
                       </SelectTrigger>
                       <SelectContent>
                         {users.map((user) => (
-                          <SelectItem key={user.user_id} value={user.user_id}>
+                          <SelectItem
+                            key={user.user_id}
+                            value={String(user.user_id)}
+                          >
                             {user.username}
                           </SelectItem>
                         ))}
@@ -179,7 +182,7 @@ export default function DeviceOwnerTable() {
                     <Label htmlFor="d_ids">Devices</Label>
                     <Select
                       id="d_ids"
-                      multiple
+                      // multiple
                       value={selectedDeviceIds}
                       onValueChange={setSelectedDeviceIds}
                       required
@@ -226,17 +229,34 @@ export default function DeviceOwnerTable() {
                   <TableHead>ID</TableHead>
                   <TableHead>User</TableHead>
                   <TableHead>Devices</TableHead>
+                  {/* <TableHead>Actions</TableHead> */}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {deviceOwners.map((owner, index) => (
+                  // console.log(owner);
+                  // return
                   <TableRow key={owner._id}>
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{owner.user_name}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {owner.d_ids.map((id) => (
-                          <Badge key={id}>{id}</Badge>
+                        {owner.d_ids?.map((id) => (
+                          <TooltipProvider key={id.d_id}>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Badge>{id.d_id}</Badge>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-green-300/95 text-black ">
+                                <p className="font-bold text-md">
+                                  Date of Ownership
+                                </p>
+                                <p className="">
+                                  {new Date(id.date_of_own).toDateString()}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         ))}
                       </div>
                     </TableCell>

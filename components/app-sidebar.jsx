@@ -14,9 +14,9 @@ import {
   PawPrint,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +59,7 @@ const navItems = [
 
 export function AppSidebar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   // State to hold user data
   const [user, setUser] = React.useState({ name: "", email: "" });
@@ -112,16 +113,23 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.name}>
-                <SidebarMenuButton asChild>
-                  <a href={item.href}>
-                    {item.icon && <item.icon />}
-                    <span>{item.name}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton
+                    asChild
+                    className={isActive ? "bg-muted text-primary" : ""}
+                  >
+                    <a href={item.href} className="flex items-center gap-2">
+                      {item.icon && <item.icon />}
+                      <span>{item.name}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

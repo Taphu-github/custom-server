@@ -1,6 +1,5 @@
-
-import { connectToMongoDB } from '../../../../lib/mongodb';
-import device_owner from '@/models/device_owner';
+import { connectToMongoDB } from "../../../../lib/mongodb";
+import device_owner from "@/models/device_owner";
 
 /**
  * @swagger
@@ -82,33 +81,51 @@ import device_owner from '@/models/device_owner';
 export async function GET(_, { params }) {
   try {
     await connectToMongoDB();
-    const dev_owner = await device_owner.findById(params.id);
-    if (dev_owner) {
-      return Response.json({
-        dev_owner
-      })
+    const user_id = Number(params.id);
+    if (isNaN(user_id)) {
+      return Response.json(
+        {
+          message: "Invalid user ID format",
+        },
+        {
+          status: 400,
+        }
+      );
     }
 
-    return Response.json({
-      message: `Device Owner ${params.id} not found`
-    },
+    const dev_owner = await device_owner.find({ user_id });
+
+    if (dev_owner && dev_owner.length > 0) {
+      return Response.json({
+        dev_owner,
+      });
+    }
+
+    return Response.json(
       {
-        status: 400
-      })
+        message: `Device Owner with ID ${params.id} not found`,
+      },
+      {
+        status: 404,
+      }
+    );
   } catch (error) {
-    return Response.json({
-      message: error
-    }, {
-      status: 400
-    })
+    console.error("Error fetching device owner:", error);
+    return Response.json(
+      {
+        message: "An error occurred while fetching the device owner",
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }
 export async function PUT(req, { params }) {
-
   try {
     await connectToMongoDB();
     const { id } = params;
-    const dev_own = device_owner.findById(id)
+    const dev_own = device_owner.findById(id);
     const body = await req.json();
 
     if (dev_own) {
@@ -118,44 +135,41 @@ export async function PUT(req, { params }) {
 
       dev_own.save();
       return Response.json({
-        device_owner
-      })
-
+        device_owner,
+      });
     }
     return Response.json({
-      message: `Device Owner ${id} not found`
-    })
-
+      message: `Device Owner ${id} not found`,
+    });
   } catch (error) {
-    return Response.json({
-      message: error
-    }, {
-      status: 400
-    })
+    return Response.json(
+      {
+        message: error,
+      },
+      {
+        status: 400,
+      }
+    );
   }
 }
 
-
 export async function DELETE(req, { params }) {
-
   try {
     await connectToMongoDB();
     const { id } = params;
-    const deleteItem = await device_owner.findById(id)
+    const deleteItem = await device_owner.findById(id);
     if (deleteItem) {
       await device_owner.findByIdAndDelete(id);
       return Response.json({
-        message: `Device owner ${id} deleted successfully`
-      })
+        message: `Device owner ${id} deleted successfully`,
+      });
     }
     return Response.json({
-      message: `Device Owner ${id} not found`
-    })
+      message: `Device Owner ${id} not found`,
+    });
   } catch (error) {
     return Response.json({
-      message: error
-    })
+      message: error,
+    });
   }
 }
-
-

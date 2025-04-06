@@ -1,34 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { PencilIcon, TrashIcon, PlusIcon, Loader } from "lucide-react";
+import { PlusIcon, Loader } from "lucide-react";
 import UserForm from "./components/UserForm";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import PaginationControls from "./components/PaginationControls";
+import FilterBar from "./components/FilterBar";
+import DeleteUserDialog from "./components/DeleteUserDialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import UserTableContent from "./components/UserTable";
 
 export default function UserTable() {
-  // Add pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(8);
@@ -36,7 +18,7 @@ export default function UserTable() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [userToDelete, setUserToDelete] = useState(null); // Track user to delete
+  const [userToDelete, setUserToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     full_name: "",
@@ -45,54 +27,27 @@ export default function UserTable() {
     phone: "",
     cid: "",
   });
-
-  // const fetchUsers = () => {
-  //   setLoading(true);
-  //   // Add filters to URL
-  //   const queryParams = new URLSearchParams({
-  //     page: currentPage,
-  //     limit: itemsPerPage,
-  //     ...Object.fromEntries(
-  //       Object.entries(filters).filter(([_, value]) => value !== "")
-  //     ),
-  //   });
-
-  //   fetch(`/api/users?${queryParams}`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setUsers(data.data);
-  //       setTotalPages(data.pagination.totalPages);
-  //       setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       setLoading(false);
-  //     });
-  // };
-
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
 
-  // Debounced fetch function
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters(filters);
-    }, 500); // 500ms delay
-
+      setCurrentPage(1); // Reset to page 1 on new filter
+    }, 500);
     return () => clearTimeout(timer);
   }, [filters]);
 
-  // Separate effect for fetching data
   useEffect(() => {
-    fetchUser();
+    fetchUsers();
   }, [currentPage, itemsPerPage, debouncedFilters]);
 
-  const fetchUser = useCallback(() => {
+  const fetchUsers = useCallback(() => {
     setLoading(true);
     const queryParams = new URLSearchParams({
       page: currentPage,
       limit: itemsPerPage,
       ...Object.fromEntries(
-        Object.entries(debouncedFilters).filter(([_, value]) => value !== "")
+        Object.entries(debouncedFilters).filter(([_, v]) => v)
       ),
     });
 
@@ -104,22 +59,14 @@ export default function UserTable() {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
       });
   }, [currentPage, itemsPerPage, debouncedFilters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Add pagination controls
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleOpenDialog = (user = null) => {
@@ -134,22 +81,21 @@ export default function UserTable() {
 
   const handleDeleteUser = async () => {
     try {
-      const response = await fetch(`/api/users/${userToDelete._id}`, {
+      const res = await fetch(`/api/users/${userToDelete._id}`, {
         method: "DELETE",
       });
-      if (response.ok) {
-        setUsers(users.filter((user) => user._id !== userToDelete._id));
+      if (res.ok) {
+        setUsers((prev) => prev.filter((u) => u._id !== userToDelete._id));
         setIsAlertDialogOpen(false);
         setUserToDelete(null);
       } else {
-        console.error("Failed to delete user");
+        alert("Delete failed");
       }
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Delete error:", error);
     }
   };
 
-  // Add this before the closing Table tag
   return (
     <div className="flex justify-center items-start w-full h-screen pt-10">
       {loading ? (
@@ -157,7 +103,7 @@ export default function UserTable() {
           <Loader className="animate-spin text-4xl" />
         </div>
       ) : (
-        <div className="space-y-4 w-[90%] ">
+        <div className="space-y-4 w-[90%]">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Users</h2>
             <Button onClick={() => handleOpenDialog()}>
@@ -165,78 +111,25 @@ export default function UserTable() {
             </Button>
           </div>
 
-          {/* Add Filters */}
-          <div className="grid grid-cols-5 gap-4">
-            <div className="relative">
-              <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
-              <Input
-                placeholder="Search by name..."
-                name="full_name"
-                value={filters.full_name}
-                onChange={handleFilterChange}
-                className="pl-8"
-              />
-            </div>
-            <Input
-              placeholder="Search by CID..."
-              name="cid"
-              value={filters.cid}
-              onChange={handleFilterChange}
-            />
-            <Input
-              placeholder="Search by phone..."
-              name="phone"
-              value={filters.phone}
-              onChange={handleFilterChange}
-            />
-            <Input
-              placeholder="Search by dzongkhag..."
-              name="dzongkhag"
-              value={filters.dzongkhag}
-              onChange={handleFilterChange}
-            />
-            <Input
-              placeholder="Search by gewog..."
-              name="gewog"
-              value={filters.gewog}
-              onChange={handleFilterChange}
-            />
-          </div>
+          <FilterBar filters={filters} onChange={handleFilterChange} />
 
-          {/* AlertDialog for Deletion */}
-          {userToDelete && (
-            <AlertDialog
-              open={isAlertDialogOpen}
-              onOpenChange={setIsAlertDialogOpen}
-            >
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. It will permanently delete the
-                    user <strong>{userToDelete.username}</strong>.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteUser}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
+          <DeleteUserDialog
+            open={isAlertDialogOpen}
+            setOpen={setIsAlertDialogOpen}
+            user={userToDelete}
+            onDelete={handleDeleteUser}
+          />
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
               <UserForm
                 currentUser={currentUser}
                 setIsDialogOpen={setIsDialogOpen}
-                onSuccess={fetchUser}
+                onSuccess={fetchUsers}
               />
             </DialogContent>
           </Dialog>
-
+          {/* 
           <Table>
             <TableCaption>A list of users.</TableCaption>
             <TableHeader>
@@ -288,28 +181,18 @@ export default function UserTable() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-          <div className="flex items-center justify-center w-full space-x-4 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <span className="text-sm">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </div>
+          </Table> */}
+          <UserTableContent
+            users={users}
+            onEdit={handleOpenDialog}
+            onDelete={handleOpenDeleteDialog}
+          />
+
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       )}
     </div>

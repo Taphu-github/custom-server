@@ -1,5 +1,5 @@
-import { connectToMongoDB } from '@/lib/mongodb';
-import detected_animal from '@/models/detected_animal';
+import { connectToMongoDB } from "@/lib/mongodb";
+import detected_animal from "@/models/detected_animal";
 /**
  * @swagger
  * /api/detected_animals:
@@ -21,16 +21,23 @@ import detected_animal from '@/models/detected_animal';
  *         description: Failed to preprocess animal data
  */
 export async function GET() {
-    
-    try {
-        await connectToMongoDB();
-        const data = await detected_animal.find();
-
-        return Response.json(
-            {data: data},{status: 200});
-    } catch (error) {
-        return Response.json({
-            message: error
-        }, {status: 400} );
-    }
+  try {
+    await connectToMongoDB();
+    const data = await detected_animal.find();
+    // .populate({
+    //   path: "a_c_id",
+    //   select: "animal_name category_id", // Add any other fields you want from AnimalCategory
+    // })
+    // .sort({ enroach_date: -1 });
+    // Optional: sort by date descending
+    console.log(data[0]);
+    return Response.json({ data: data }, { status: 200 });
+  } catch (error) {
+    return Response.json(
+      {
+        message: error,
+      },
+      { status: 400 }
+    );
+  }
 }
