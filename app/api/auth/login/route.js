@@ -1,6 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import device_owner from "@/models/device_owner";
+import Device from "@/models/device";
 import MQTT_cred from "@/models/MQTT_cred";
 import jwt from "jsonwebtoken";
 
@@ -81,10 +82,17 @@ export async function POST(req) {
         let devices = await device_owner.find({"user_id": uid});
         let device_arr = []
 
-        
-        devices.map(device => {
-            device_arr.push(device.d_id)
-        })
+        let subs_devices=[]
+
+        for(let dev of devices){
+            let device = await Device.findOne({"d_id": dev.d_id});
+            subs_devices.push(device)
+        }
+
+        // devices.map(device => {
+        //     device_arr.push(device.d_id)
+        // })
+        device_arr.push(...devices)
 
         console.log(device_arr);
         const credlist=await MQTT_cred.find();
@@ -92,7 +100,7 @@ export async function POST(req) {
         return Response.json({
             user: user,
             token: token,
-            topics: device_arr,
+            topics: subs_devices,
             mqtt_creds: credlist
 
         },{
