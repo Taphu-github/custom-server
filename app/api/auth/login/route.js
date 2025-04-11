@@ -86,7 +86,16 @@ export async function POST(req) {
 
         for(let dev of devices){
             let device = await Device.findOne({"d_id": dev.d_id});
-            subs_devices.push(device)
+            let new_dev= {
+                dev_owner_id: dev._id,
+                d_id: device.d_id,
+                d_name: device.d_name,
+                mac_address: device.mac_address,
+                installed_date: device.installed_date,
+                location: device.location,
+            }
+            console.log(new_dev);
+            subs_devices.push(new_dev)
         }
 
         // devices.map(device => {
