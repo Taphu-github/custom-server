@@ -18,6 +18,7 @@ import {
 } from "../../../../schemas/deviceSchema";
 import { useState, useEffect } from "react";
 import { z } from "zod";
+import { Switch } from "@/components/ui/switch"; // Add this import
 
 export default function DeviceFormDialog({
   isOpen,
@@ -27,6 +28,7 @@ export default function DeviceFormDialog({
   defaultValues = {},
 }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [includePassword, setIncludePassword] = useState(false);
   const isEdit = mode === "edit";
 
   const schema = isEdit ? editDeviceSchema : deviceSchema;
@@ -37,19 +39,45 @@ export default function DeviceFormDialog({
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(
+      includePassword ? schema : schema.omit({ password: true })
+    ),
     defaultValues,
   });
 
+  // const handleFormSubmit = (data) => {
+  //   if (!includePassword) {
+  //     const { password, ...restData } = data;
+  //     onSubmit(restData);
+  //   } else {
+  //     onSubmit(data);
+  //   }
+  // };
+
   useEffect(() => {
     if (isOpen) {
-      reset(defaultValues);
+      // Add null check before destructuring
+      if (defaultValues) {
+        const { password, ...valuesWithoutPassword } = defaultValues;
+        reset(valuesWithoutPassword);
+      } else {
+        reset({});
+      }
     } else {
       setTimeout(() => {
         document.activeElement?.blur();
       }, 50);
     }
   }, [isOpen, defaultValues, reset]);
+
+  const handleFormSubmit = (data) => {
+    if (!includePassword) {
+      const { password, ...restData } = data;
+      onSubmit(restData);
+    } else {
+      onSubmit(data);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -63,7 +91,7 @@ export default function DeviceFormDialog({
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {!isEdit && (
               <div className="space-y-2">
@@ -83,14 +111,27 @@ export default function DeviceFormDialog({
               )}
             </div>
 
-            <div className="space-y-2 col-span-2 sm:col-span-1">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2 col-span-2 sm:col-span-1 mt-1">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="include-password" className="text-sm">
+                    {includePassword ? "Include" : "Exclude"}
+                  </Label>
+                  <Switch
+                    id="include-password"
+                    checked={includePassword}
+                    onCheckedChange={setIncludePassword}
+                  />
+                </div>
+              </div>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   id="password"
                   {...register("password")}
                   placeholder="Enter password"
+                  disabled={!includePassword}
                 />
                 <Button
                   type="button"
@@ -98,7 +139,7 @@ export default function DeviceFormDialog({
                   size="icon"
                   className="absolute right-0 top-0 h-full px-3 py-2"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={!includePassword}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -107,7 +148,7 @@ export default function DeviceFormDialog({
                   )}
                 </Button>
               </div>
-              {errors.password && (
+              {errors.password && includePassword && (
                 <p className="text-sm text-red-500">
                   {errors.password.message}
                 </p>
