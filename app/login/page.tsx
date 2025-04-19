@@ -1,6 +1,5 @@
 "use client";
 import logo from "../AIDS_logo.png";
-import sideImage from "../elephant.jpg";
 import { ImageCarousel } from "@/components/carousel-plugin";
 
 import Image from "next/image";
