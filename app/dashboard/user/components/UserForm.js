@@ -21,6 +21,8 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eye, EyeOff } from "lucide-react";
 import dzongkhagData from "../../../dzongkhag.json";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner"; // or 'react-hot-toast'
 
 // Reusable password input
 const PasswordInput = ({
@@ -67,6 +69,7 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
     role: "user",
     password: "",
     confirmPassword: "",
+    remarks: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -85,6 +88,7 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
         gewog: currentUser.gewog || "",
         village: currentUser.village || "",
         role: currentUser.role || "user",
+        remarks: currentUser.remarks || "",
         password: "",
         confirmPassword: "",
       });
@@ -99,6 +103,7 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
         gewog: "",
         village: "",
         role: "user",
+        remarks: "",
         password: "",
         confirmPassword: "",
       });
@@ -110,11 +115,48 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (formData.phone && !/^\d{8}$/.test(formData.phone)) {
+  //     toast.error("Phone number must be exactly 8 digits");
+  //     return;
+  //   }
+
+  //   if (formData.email) {
+  //     formData.email = formData.email.trim().toLowerCase();
+  //   }
+
+  //   try {
+  //     const method = currentUser ? "PATCH" : "POST";
+  //     const url = currentUser ? `/api/users/${currentUser._id}` : `/api/users`;
+
+  //     const res = await fetch(url, {
+  //       method,
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(formData),
+  //     });
+
+  //     if (!res.ok) {
+  //       toast.error("Failed to save user", { description: res.message });
+  //       throw new Error("Failed to save user");
+  //     }
+
+  //     toast.success("User saved");
+  //     setIsDialogOpen(false);
+  //     onSuccess?.();
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("Something went wrong.", { description: err.message });
+  //     // alert(err.message);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.phone && !/^\d{8}$/.test(formData.phone)) {
-      alert("Phone number must be exactly 8 digits");
+      toast.error("Phone number must be exactly 8 digits");
       return;
     }
 
@@ -132,13 +174,23 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to save user");
+      const responseData = await res.json(); // 👈 read JSON response
 
+      if (!res.ok) {
+        toast.error("Failed to save user", {
+          description: responseData.message || "Unknown error",
+        });
+        return;
+      }
+
+      toast.success("User saved successfully");
       setIsDialogOpen(false);
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      toast.error("Something went wrong", {
+        description: err.message,
+      });
     }
   };
 
@@ -169,19 +221,32 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
   const renderForm = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        {["username", "cid", "full_name", "email", "phone"].map((field) => (
+        {["username", "cid", "full_name", "email"].map((field) => (
           <div key={field} className="space-y-2">
             <Label htmlFor={field}>{field.replace("_", " ")}</Label>
             <Input
               id={field}
               name={field}
+              type="text"
+              placeholder={`Enter ${field.replace("_", " ")}`}
               value={formData[field]}
               onChange={handleChange}
               required
             />
           </div>
         ))}
-
+        <div key="phone" className="space-y-2">
+          <Label htmlFor="phone">Phone No.</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="Enter phone number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        </div>
         {!currentUser && (
           <div className="space-y-2">
             <Label>Password</Label>
@@ -268,6 +333,15 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
               <SelectItem value="user">User</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-2 md:col-span-2">
+          <Label>Remarks</Label>
+          <Textarea
+            name="remarks"
+            value={formData.remarks}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
 

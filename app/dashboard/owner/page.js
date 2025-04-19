@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
 import {
   Table,
   TableBody,
@@ -42,33 +44,139 @@ export default function DeviceOwnerTable() {
   const [devices, setDevices] = useState([]);
   const [currentDeviceOwner, setCurrentDeviceOwner] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const [selectedDeviceIds, setSelectedDeviceIds] = useState([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState({ d_id: "", user_name: "" });
+
   useEffect(() => {
-    fetch("/api/owners")
-      .then((res) => res.json())
-      .then((data) => {
-        setDeviceOwners(data.data);
+    if (!isDialogOpen) {
+      setCurrentDeviceOwner(null);
+      setSelectedUserId("");
+      setSelectedDeviceId("");
+    }
+  }, [isDialogOpen]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: "10",
+          ...filters,
+        });
+
+        console.log("Query Params:", queryParams.toString());
+
+        const [ownersRes, usersRes, devicesRes] = await Promise.all([
+          fetch(`/api/device_owners?${queryParams}`),
+          fetch("/api/users"),
+          fetch("/api/devices"),
+        ]);
+
+        if (!ownersRes.ok || !usersRes.ok || !devicesRes.ok) {
+          throw new Error("One or more API calls failed.");
+        }
+
+        const ownersData = await ownersRes.json();
+        const usersData = await usersRes.json();
+        const devicesData = await devicesRes.json();
+
+        setDeviceOwners(ownersData?.data || []);
+        setTotalPages(ownersData?.pagination?.totalPages || 1);
+        setUsers(usersData?.data || []);
+        setDevices(devicesData?.data || []);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load data", {
+          description: error.message,
+        });
+      } finally {
         setLoading(false);
-      })
-      .catch(console.error);
+      }
+    };
 
-    fetch("/api/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data.data))
-      .catch(console.error);
+    if (loading) {
+      fetchData();
+    }
+  }, [currentPage, filters, loading]);
 
-    fetch("/api/devices")
-      .then((res) => res.json())
-      .then((data) => setDevices(data.data))
-      .catch(console.error);
-  }, []);
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+    // setLoading(true);
+  };
+
+  // Optional: apply client-side filters
+  const filteredDeviceOwners = deviceOwners
+    .map((owner) => {
+      const filteredDevices = owner.d_ids.filter((device) =>
+        device.d_id.toLowerCase().includes(filters.d_id.toLowerCase())
+      );
+
+      return {
+        ...owner,
+        d_ids: filteredDevices,
+      };
+    })
+    .filter((owner) => {
+      // only include users who still have at least one matching device
+      const matchUsername = filters.user_name
+        ? owner.user_name
+            .toLowerCase()
+            .includes(filters.user_name.toLowerCase())
+        : true;
+      return owner.d_ids.length > 0 && matchUsername;
+    });
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/device_owners/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.message || "Failed to delete device owner.");
+      }
+
+      toast.success("Device unassigned successfully", {
+        description: resData.message,
+      });
+
+      setLoading(true);
+
+      setFilters({ ...filters }); // trigger refetch
+    } catch (error) {
+      toast.error("Failed to unassign device", {
+        description: error.message, // ✅ display actual message from backend
+      });
+    }
+  };
+
+  // Update the Button onClick in the TooltipContent
+  <Button
+    variant="destructive"
+    size="sm"
+    onClick={() => handleDelete(owner, device)}
+  >
+    Unassign Device
+  </Button>;
 
   const handleOpenDialog = (deviceOwner = null) => {
     setCurrentDeviceOwner(deviceOwner);
-    setSelectedUserId(deviceOwner?.user_id || "");
-    setSelectedDeviceIds(deviceOwner?.d_ids || []);
+
+    const matchedUser = users.find(
+      (u) => u.username === deviceOwner?.user_name
+    );
+    setSelectedUserId(matchedUser?.user_id || "");
+    setSelectedDeviceId(deviceOwner?.d_id || "");
     setIsDialogOpen(true);
   };
 
@@ -79,59 +187,49 @@ export default function DeviceOwnerTable() {
 
     const deviceOwnerData = {
       user_id: selectedUserId,
-      user_name: selectedUser?.username, // Add username to the data
-      d_id: selectedDeviceIds,
+      d_id: selectedDeviceId,
       date_of_own: event.target.date_of_own.value,
+      remarks: event.target.remarks.value,
     };
 
     try {
-      let response;
-      response = await fetch("/api/device_owners", {
+      const response = await fetch("/api/device_owners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(deviceOwnerData),
       });
 
-      if (response.ok) {
-        const updatedData = await response.json();
-        fetch("/api/owners")
-          .then((res) => res.json())
-          .then((data) => {
-            setDeviceOwners(data.data);
-            setLoading(false);
-          })
-          .catch(console.error);
-      } else {
-        throw new Error("Failed to save device owner");
+      const resData = await response.json();
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error("Failed to save device owner", {
+          description: errorData.message || "Failed to save device owner.",
+        });
+        throw new Error(resData.message || "Failed to save device owner.");
       }
+
+      toast.success("Device owner added successfully", {
+        description: `Device ${selectedDeviceId} assigned.`,
+      });
 
       setIsDialogOpen(false);
       setCurrentDeviceOwner(null);
+      setSelectedUserId("");
+      setSelectedDeviceId("");
+      setLoading(true);
+      setFilters({ ...filters }); // trigger refetch
     } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to save device owner.");
+      toast.error("Failed to add device owner", {
+        description: error.message,
+      });
     }
   };
 
-  // const handleDeleteOwner = async (id) => {
-  //   try {
-  //     const response = await fetch(`/api/owners/user/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (response.ok) {
-  //       setDeviceOwners((prev) => prev.filter((owner) => owner.user_id !== id));
-  //     } else {
-  //       throw new Error("Failed to delete device owner");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error deleting owner:", error);
-  //   }
-  // };
-
   return (
-    <div className="w-full h-screen ">
+    <div className="w-full min-h-screen">
       {loading ? (
-        <div className="flex flex-col justify-center items-center w-full h-screen">
+        <div className="flex justify-center items-center w-full min-h-screen">
           <Loader className="animate-spin text-4xl" />
         </div>
       ) : (
@@ -144,6 +242,23 @@ export default function DeviceOwnerTable() {
               </Button>
             </div>
 
+            {/* Filters */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <Input
+                placeholder="Enter Device ID"
+                value={filters.d_id}
+                onChange={(e) => handleFilterChange("d_id", e.target.value)}
+              />
+              <Input
+                placeholder="Enter Username"
+                value={filters.user_name}
+                onChange={(e) =>
+                  handleFilterChange("user_name", e.target.value)
+                }
+              />
+            </div>
+
+            {/* Dialog Form */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -158,8 +273,8 @@ export default function DeviceOwnerTable() {
                     <Label htmlFor="user_id">User</Label>
                     <Select
                       id="user_id"
-                      value={String(selectedUserId)}
-                      onValueChange={(val) => setSelectedUserId(val)}
+                      value={selectedUserId}
+                      onValueChange={(val) => setSelectedUserId(String(val))}
                       required
                     >
                       <SelectTrigger>
@@ -179,16 +294,15 @@ export default function DeviceOwnerTable() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="d_ids">Devices</Label>
+                    <Label htmlFor="d_id">Device</Label>
                     <Select
-                      id="d_ids"
-                      // multiple
-                      value={selectedDeviceIds}
-                      onValueChange={setSelectedDeviceIds}
+                      id="d_id"
+                      value={selectedDeviceId}
+                      onValueChange={setSelectedDeviceId}
                       required
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Devices" />
+                        <SelectValue placeholder="Select Device" />
                       </SelectTrigger>
                       <SelectContent>
                         {devices.map((device) => (
@@ -205,14 +319,23 @@ export default function DeviceOwnerTable() {
                     <Input
                       id="date_of_own"
                       name="date_of_own"
+                      max={new Date().toISOString().split("T")[0]}
                       type="date"
                       defaultValue={
-                        currentDeviceOwner?.date_of_own
-                          ? new Date(currentDeviceOwner.date_of_own)
-                              .toISOString()
-                              .split("T")[0]
-                          : ""
+                        currentDeviceOwner?.date_of_own?.split("T")[0] || ""
                       }
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="remarks">Remarks</Label>
+                    <textarea
+                      id="remarks"
+                      name="remarks"
+                      className="w-full border border-gray-300 rounded-md p-2"
+                      defaultValue={currentDeviceOwner?.remarks || ""}
+                      rows={3}
                       required
                     />
                   </div>
@@ -222,48 +345,84 @@ export default function DeviceOwnerTable() {
               </DialogContent>
             </Dialog>
 
-            <Table>
-              <TableCaption>A list of device owners.</TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Devices</TableHead>
-                  {/* <TableHead>Actions</TableHead> */}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {deviceOwners.map((owner, index) => (
-                  // console.log(owner);
-                  // return
-                  <TableRow key={owner._id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{owner.user_name}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {owner.d_ids?.map((id) => (
-                          <TooltipProvider key={id.d_id}>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <Badge>{id.d_id}</Badge>
-                              </TooltipTrigger>
-                              <TooltipContent className="bg-green-300/95 text-black ">
-                                <p className="font-bold text-md">
-                                  Date of Ownership
-                                </p>
-                                <p className="">
-                                  {new Date(id.date_of_own).toDateString()}
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        ))}
-                      </div>
-                    </TableCell>
+            {/* Device Owner Table */}
+            {Array.isArray(deviceOwners) && deviceOwners.length === 0 ? (
+              <p className="text-center text-muted-foreground">
+                No device owners found.
+              </p>
+            ) : (
+              <Table>
+                <TableCaption>A list of device owners.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>#</TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead>Devices</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredDeviceOwners.map((owner, index) => (
+                    <TableRow key={owner.user_id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{owner.user_name}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {Array.isArray(owner.d_ids) &&
+                            owner.d_ids.map((device) => (
+                              <TooltipProvider key={device.d_id}>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Badge>{device.d_id}</Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="bg-primary/95 text-white p-4">
+                                    <p className="font-bold text-md">
+                                      Date of Ownership
+                                    </p>
+                                    <p>
+                                      {new Date(
+                                        device.date_of_own
+                                      ).toDateString()}
+                                    </p>
+                                    <p className="font-bold text-md">Remarks</p>
+                                    <p>{device.remarks}</p>
+                                    <p
+                                      className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm"
+                                      onClick={() => handleDelete(device._id)}
+                                    >
+                                      Unassign Device
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+
+            {/* Pagination */}
+            <div className="flex items-center justify-center space-x-4 mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       )}

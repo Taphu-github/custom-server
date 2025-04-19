@@ -14,14 +14,16 @@ export async function GET(req) {
 
     // Step 1: Fetch all device_owner records sorted by latest date
     const list = await device_owner.find().sort({ date_of_own: -1 });
+    console.log(list);
 
     // Step 2: Aggregate devices per user, keeping order
     const aggregated = {};
-    list.forEach(({ user_id, d_id, date_of_own }) => {
+    list.forEach(({ _id, user_id, d_id, date_of_own }) => {
       if (!user_id) return;
       if (!aggregated[user_id]) aggregated[user_id] = [];
 
       aggregated[user_id].push({
+        _id,
         d_id,
         date_of_own: date_of_own?.toISOString()?.split("T")[0] || null,
         raw_date: new Date(date_of_own), // for sorting users later
