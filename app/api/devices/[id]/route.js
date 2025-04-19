@@ -112,7 +112,9 @@ export async function PATCH(req, { params }) {
 
     if (device) {
       device.d_name = body.d_name || device.d_name;
-      device.password = body.password || device.password;
+      if (body.password) {
+        device.password = body.password;
+      }
 
       // Save the updated device
       await device.save();
