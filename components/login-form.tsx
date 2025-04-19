@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const router = useRouter();  
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -31,7 +32,7 @@ export function LoginForm({
       if (!response.ok) {
         const errorData = await response.json(); // Extract error details from the response
         console.error("Error:", errorData.message || "Failed to log in");
-        alert(errorData.message || "Invalid login credentials");
+        toast.error(errorData.message || "Invalid login credentials");
         return;
       }
 
@@ -46,7 +47,7 @@ export function LoginForm({
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login. Please try again.");
+      toast.error("Login failed. Please try again.");
     }
   }
 
@@ -65,37 +66,42 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="username">User Name</Label>
-          <Input id="username" name="username" placeholder="username" required />
+          <Input
+            id="username"
+            name="username"
+            placeholder="username"
+            required
+          />
         </div>
         <div className="grid gap-2">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
           </div>
           <div className="relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
+            <Input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-        </div>
-    
+
         <Button type="submit" className="w-full">
           Login
         </Button>
