@@ -47,11 +47,11 @@ export async function GET(req) {
     // Build filter query
     const filterQuery = {};
     const filterFields = ["full_name", "dzongkhag", "gewog", "phone", "cid"];
-    
-    filterFields.forEach(field => {
+
+    filterFields.forEach((field) => {
       const value = searchParams.get(field);
       if (value) {
-        filterQuery[field] = { $regex: value, $options: 'i' };
+        filterQuery[field] = { $regex: value, $options: "i" };
       }
     });
 
@@ -75,10 +75,7 @@ export async function GET(req) {
       },
     });
   } catch (error) {
-    return Response.json(
-      { message: "error: " + error },
-      { status: 400 }
-    );
+    return Response.json({ message: "error: " + error }, { status: 400 });
   }
 }
 
@@ -140,17 +137,29 @@ export async function POST(req) {
   try {
     await connectToMongoDB();
     const body = await req.json();
-    const user_id = body["user_id"];
-    const username = body["username"];
-    const email = body["email"];
-    const password = body["password"];
-    const cid = body["cid"];
-    const full_name = body["full_name"];
-    const phone = body["phone"];
-    const dzongkhag = body["dzongkhag"];
-    const gewog = body["gewog"];
-    const village = body["village"];
-    const role = body["role"];
+
+    const {
+      user_id,
+      username,
+      email,
+      password,
+      cid,
+      full_name,
+      phone,
+      dzongkhag,
+      gewog,
+      village,
+      role,
+      remarks,
+    } = body;
+
+    // Optional: Check for duplicate email/cid
+    const exists = await user.findOne({
+      $or: [{ email }, { username }, { cid }],
+    });
+    if (exists) {
+      return Response.json({ message: "User already exists" }, { status: 400 });
+    }
 
     const newUser = await user.create({
       user_id,
@@ -164,17 +173,17 @@ export async function POST(req) {
       gewog,
       village,
       role,
+      remarks,
     });
 
-    newUser.save();
     return Response.json({
-      message: "Succesfully Added",
+      message: "Successfully Added",
       data: newUser,
     });
   } catch (error) {
     return Response.json(
       {
-        message: "error " + error,
+        message: error.message || "An unexpected error occurred",
       },
       {
         status: 400,

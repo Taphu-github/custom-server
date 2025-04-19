@@ -98,6 +98,7 @@ export async function POST(req) {
     const location = body.location;
     const mac_address = body.mac_address;
     const installed_date = body.installed_date;
+    const remarks = body.remarks;
 
     const systemowner = new Device({
       d_id,
@@ -106,6 +107,7 @@ export async function POST(req) {
       location,
       mac_address,
       installed_date,
+      remarks,
     });
 
     if (
@@ -114,7 +116,8 @@ export async function POST(req) {
       password &&
       location &&
       mac_address &&
-      installed_date
+      installed_date &&
+      remarks
     ) {
       await systemowner.save();
 

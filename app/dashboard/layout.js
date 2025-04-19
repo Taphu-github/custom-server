@@ -1,11 +1,10 @@
-'use client';
+"use client";
 import localFont from "next/font/local";
 import "../globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -29,12 +28,12 @@ export default function Layout({ children }) {
   }, [router]);
 
   return (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarTrigger />
-          <main className="flex justify-center items-center w-full">
-            {children}
-          </main>
-        </SidebarProvider>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarTrigger />
+      <main className="flex justify-center items-center w-full">
+        {children}
+      </main>
+    </SidebarProvider>
   );
 }

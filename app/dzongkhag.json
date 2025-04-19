@@ -1,82 +1,82 @@
 [
   {
     "dzongkhag": "Bumthang",
-    "gewogs": ["Chhoekhor", "Chhumig", "Tang", "Ura"]
+    "gewogs": ["Chokhor", "Chumig", "Tang", "Ura"]
   },
   {
-    "dzongkhag": "Chukha",
-    "gewogs": ["Bjacho", "Bongo", "Chapcha", "Darla", "Geling", "Getena", "Logchina", "Metakha", "Phuentsholing", "Sampheling", "Tading"]
+    "dzongkhag": "Chhukha",
+    "gewogs": ["Bjagchhog", "Bongo", "Chapchaa", "Darla", "Doongna", "Geling", "Getana", "Loggchina", "Maedtabkha", "Phuentshogling", "Samphelling"]
   },
   {
     "dzongkhag": "Dagana",
-    "gewogs": ["Dorona", "Drukjeygang", "Gesarling", "Kana", "Karmaling", "Lajab", "Lhamoizingkha", "Nichula", "Tashiding", "Tsendagang"]
+    "gewogs": ["Kana", "Dorona", "Tsendagang", "Tseza", "Tsangkha", "Tashiding", "Nichula", "Lhamoizingkha", "Lajab", "Khebisa", "Drujeygang", "Gesarling", "Gozhi", "Karmaling"]
   },
   {
     "dzongkhag": "Gasa",
-    "gewogs": ["Khatoed", "Laya", "Lunana"]
+    "gewogs": ["Khamaed", "Khatoed", "Laya", "Lunana"]
   },
   {
     "dzongkhag": "Haa",
-    "gewogs": ["Bji", "Sombaykha", "Uesu"]
+    "gewogs": ["Gakiling", "Sombaykha", "Samar", "Bji", "Uesu", "Katsho"]
   },
   {
     "dzongkhag": "Lhuntse",
-    "gewogs": ["Gangzur", "Jarey", "Khoma", "Kurtoe", "Metsho", "Minjay", "Tsenkhar"]
+    "gewogs": ["Maenbi", "Jarey", "Tsaenkhar", "Minjey", "Maedtsho", "Kurtoe", "Khoma", "Gangzur"]
   },
   {
     "dzongkhag": "Mongar",
-    "gewogs": ["Chali", "Chaskhar", "Drametse", "Khengkhar", "Mongar", "Ngatshang", "Saling"]
+    "gewogs": ["Tsakaling", "Tsamang", "Thang-Rong", "Silambi", "Shermuhoong", "Saling", "Ngatshang", "Na-Rang", "Monggar", "Kengkhar", "Jurmed", "Gongdue", "Drepoong", "Dramedtse", "Chagsakhar", "Chhaling", "Balam"]
   },
   {
     "dzongkhag": "Paro",
-    "gewogs": ["Doga", "Dopshari", "Doteng", "Hungrel", "Lamgong", "Naja", "Shaba"]
+    "gewogs": ["Dogar", "Dopshari", "Doteng", "Hungrel", "Lamgong", "Lungnyi", "Naja", "Shaba", "Tsento", "Wangchang"]
   },
   {
     "dzongkhag": "Pemagatshel",
-    "gewogs": ["Chhimung", "Choekhorling", "Dewathang", "Khar", "Norbugang", "Shumar", "Yurung"]
+    "gewogs": ["Chhimoong", "Choekhorling", "Chongshing", "Dechheling", "Dungmaed", "Khar", "Nanong", "Norbugang", "Shumar", "Yurung", "Zobel"]
   },
   {
     "dzongkhag": "Punakha",
-    "gewogs": ["Chhubu", "Shengana", "Talo", "Toewang"]
+    "gewogs": ["Chubbu", "Toedwang", "Toedpisa", "Talo", "Shengana-Bjemi", "Lingmukha", "Kabjisa", "Guma", "Goenshari", "Dzomi", "Barp"]
   },
   {
     "dzongkhag": "Samdrup Jongkhar",
-    "gewogs": ["Dewathang", "Lauri", "Marteo", "Phuntshothang", "Samrang", "Serthi", "Wangphu"]
+    "gewogs": ["Pemathang", "Wangphu", "Orong", "Gomdar", "Samrang", "Martsalla", "Phuntshothang", "Lauri", "Serthi", "Dewathang"]
   },
   {
     "dzongkhag": "Samtse",
-    "gewogs": ["Dugdu", "Tading", "Ugentse", "Yoeseltse", "Tashichholing", "Sipsu", "Pemaling"]
+    "gewogs": ["Denchukha", "Dophoogchen", "Dorokha", "Dumtoed", "Namgaychhoeling", "Lahireni", "Pemaling", "Biru", "Tashichhoeling", "Sipsu", "Tendruk", "Tendu", "Norgaygang", "Bara", "Norbugang", "Chengmari", "Ugyentse", "Nainital", "Yoeseltse", "Ghumauney", "Sangngagchoeling", "Chargharey", "Tading", "Phuntsogpelri", "Pagli", "Samtse"]
   },
   {
     "dzongkhag": "Sarpang",
-    "gewogs": ["Chhudzom", "Dekiling", "Gelephu", "Jigmechhoeling", "Samtenling", "Serzhong", "Shompangkha"]
+    "gewogs": ["Chhudzom", "Chhuzanggang", "Dekiling", "Gakiling", "Gelegphu", "Jigme Chhoeling", "Samtenling", "Senggye", "Serzhong", "Shompangkha", "Tareythang", "Umling"]
   },
   {
     "dzongkhag": "Thimphu",
-    "gewogs": ["Chang", "Dagala", "Kawang", "Lingzhi", "Mewang", "Naro", "Soe"]
+    "gewogs": ["Lingzhi", "Naro", "Seo", "Chang Gewog", "Dagala Gewog", "Genekha Gewog", "Kawang Gewog", "Mewang Gewog"]
   },
   {
     "dzongkhag": "Trashigang",
-    "gewogs": ["Bartsham", "Kanglung", "Radhi", "Samkhar", "Shongphu", "Thrimshing", "Uzorong"]
+    "gewogs": ["Bartsham", "Bidung", "Kanglung", "Kangpara", "Khaling", "Lumang", "Merak", "Phongmey", "Radhi", "Sakteng", "Samkhar", "Shongphu", "Thrimshing", "Udzorong", "Yangneer"]
   },
   {
     "dzongkhag": "Trashiyangtse",
-    "gewogs": ["Bumdeling", "Khamdang", "Ramjar", "Toetsho", "Tomzhangtshen", "Yalang", "Yangtse"]
+    "gewogs": ["Yangtse", "Yalang", "Tongmijangsa", "Toedtsho", "Ramjar", "Khamdang", "Jamkhar", "Bumdeling"]
   },
   {
     "dzongkhag": "Trongsa",
-    "gewogs": ["Dragteng", "Korphu", "Langthil", "Nubi", "Tangsibji"]
+    "gewogs": ["Tangsibje", "Nubee", "Langthel", "Korphu", "Drakteng"]
   },
   {
     "dzongkhag": "Tsirang",
-    "gewogs": ["Barshong", "Dunglegang", "Kikhorthang", "Mendrelgang", "Patshaling", "Phuentenchhu", "Rangthangling"]
+    "gewogs": ["Sergithang", "Tsholingkhar", "Tsirang Toe", "Semjong", "Rangthaling", "Phuentenchu", "Patshaling", "Mendrelgang", "Kilkhorthang", "Gosarling", "Barshong", "Doongalagang"]
   },
   {
     "dzongkhag": "Wangdue Phodrang",
-    "gewogs": ["Athang", "Gangtey", "Daga", "Kazhi", "Nahi", "Nyisho", "Phobji", "Ruebisa"]
+    "gewogs": ["Athang", "Bjena", "Daga", "Dangchu", "Gangtey", "Gasetsho Gom", "Gasetsho Wom", "Kazhi", "Nahi", "Nyisho", "Phangyul", "Phobjikha", "Rubesa", "Sephu", "Thedtsho"]
   },
   {
     "dzongkhag": "Zhemgang",
-    "gewogs": ["Bardo", "Bjoka", "Goshing", "Nangkor", "Ngangla", "Phangkhar", "Trong"]
+    "gewogs": ["Trong", "Bardho", "Shingkhar", "Nangkor", "Bjoka", "Ngangla", "Phangkhar", "Goshing"]
   }
 ]
