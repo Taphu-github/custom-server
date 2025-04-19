@@ -44,6 +44,7 @@ export function LoginForm({
       localStorage.setItem("user", JSON.stringify(user));
 
       // Redirect to dashboard
+      toast.success("Login successful!");
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
