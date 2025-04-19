@@ -30,6 +30,7 @@ export default function DetectedAnimalTable() {
     deviceId: "",
     animalName: "",
     encroachDate: "",
+    encroachTime: "",
   });
   const itemsPerPage = 13;
 
@@ -58,6 +59,24 @@ export default function DetectedAnimalTable() {
   }, []);
 
   useEffect(() => {
+    // const filtered = detectedAnimals.filter((animal) => {
+    //   const matchesDeviceId = animal.d_id
+    //     .toLowerCase()
+    //     .includes(filters.deviceId.toLowerCase());
+
+    //   const matchesAnimalName =
+    //     !filters.animalName ||
+    //     animal_name[animal.a_c_id]?.toLowerCase() ===
+    //       filters.animalName.toLowerCase();
+
+    //   const matchesDate =
+    //     !filters.encroachDate ||
+    //     new Date(animal.enroach_date).toISOString().split("T")[0] ===
+    //       filters.encroachDate;
+
+    //   return matchesDeviceId && matchesAnimalName && matchesDate;
+    // });
+
     const filtered = detectedAnimals.filter((animal) => {
       const matchesDeviceId = animal.d_id
         .toLowerCase()
@@ -73,7 +92,11 @@ export default function DetectedAnimalTable() {
         new Date(animal.enroach_date).toISOString().split("T")[0] ===
           filters.encroachDate;
 
-      return matchesDeviceId && matchesAnimalName && matchesDate;
+      const matchesTime =
+        !filters.encroachTime ||
+        animal.enroach_time?.slice(0, 5) === filters.encroachTime;
+
+      return matchesDeviceId && matchesAnimalName && matchesDate && matchesTime;
     });
 
     setFilteredAnimals(filtered);
@@ -169,6 +192,15 @@ export default function DetectedAnimalTable() {
                       value={filters.encroachDate}
                       onChange={(e) =>
                         handleFilterChange("encroachDate", e.target.value)
+                      }
+                    />
+                  </TableHead>
+                  <TableHead>
+                    <Input
+                      type="time"
+                      value={filters.encroachTime}
+                      onChange={(e) =>
+                        handleFilterChange("encroachTime", e.target.value)
                       }
                     />
                   </TableHead>
