@@ -42,7 +42,7 @@ export default function UserTable() {
   }, [currentPage, itemsPerPage, debouncedFilters]);
 
   const fetchUsers = useCallback(() => {
-    setLoading(true);
+    // setLoading(true);
     const queryParams = new URLSearchParams({
       page: currentPage,
       limit: itemsPerPage,

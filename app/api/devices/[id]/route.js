@@ -1,7 +1,7 @@
 import { connectToMongoDB } from "@/lib/mongodb";
 import Device from "@/models/device";
 import bcrypt from "bcryptjs";
-import device_owner from '@/models/device_owner';
+import device_owner from "@/models/device_owner";
 
 /**
  * @swagger
@@ -78,27 +78,31 @@ export async function GET(_, { params }) {
     const dev = await Device.findById(params.id);
     if (dev) {
       return Response.json({
-        dev
-      })
+        dev,
+      });
     }
 
-    return Response.json({
-      message: `Device ${params.id} not found`
-    },
+    return Response.json(
       {
-        status: 400
-      })
+        message: `Device ${params.id} not found`,
+      },
+      {
+        status: 400,
+      }
+    );
   } catch (error) {
-    return Response.json({
-      message: error
-    }, {
-      status: 400
-    })
+    return Response.json(
+      {
+        message: error,
+      },
+      {
+        status: 400,
+      }
+    );
   }
 }
 
 export async function PATCH(req, { params }) {
-
   try {
     const { id } = params;
     await connectToMongoDB();
@@ -106,39 +110,33 @@ export async function PATCH(req, { params }) {
 
     const device = await Device.findById(id);
 
-    if(device) {
-      device.d_id = body.d_id || device.d_id;
+    if (device) {
       device.d_name = body.d_name || device.d_name;
-      device.location = body.location || device.location;
-      device.mac_address = body.mac_address || device.mac_address;
-      device.installed_date = body.installed_date || device.installed_date;
+      device.password = body.password || device.password;
 
       // Save the updated device
       await device.save();
 
-        return Response.json({
-          device,
-          message: 'Success'
-        });
-
-
+      return Response.json({
+        device,
+        message: "Success",
+      });
     }
 
     return Response.json({
-      message: `Device ${params.id} not found`
+      message: `Device ${params.id} not found`,
     });
-
   } catch (error) {
-    return Response.json({
-      message: 'error: '+error
-    },
+    return Response.json(
+      {
+        message: "error: " + error,
+      },
       { status: 400 }
     );
   }
 }
 
-
-export async function DELETE(req, {params}) {
+export async function DELETE(req, { params }) {
   try {
     await connectToMongoDB();
     const { id } = params;
@@ -152,13 +150,11 @@ export async function DELETE(req, {params}) {
       );
     }
 
-    const device_owners=await device_owner.find({"d_id":deleteItem.d_id})
+    const device_owners = await device_owner.find({ d_id: deleteItem.d_id });
 
-    device_owners.forEach(async({_id}) => {
-        await device_owner.findByIdAndDelete(_id);
+    device_owners.forEach(async ({ _id }) => {
+      await device_owner.findByIdAndDelete(_id);
     });
-
-
 
     // Return success response
     return new Response(
@@ -166,15 +162,13 @@ export async function DELETE(req, {params}) {
         message: `Device ${deleteItem.d_id} has been deleted`,
         data: deleteItem,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
     // Handle errors
     return new Response(
       JSON.stringify({ message: `Error: ${error.message}` }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
-
-
