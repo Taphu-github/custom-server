@@ -55,6 +55,9 @@ export default function DeviceFormDialog({
   // };
 
   useEffect(() => {
+    if (!isEdit) {
+      setIncludePassword(true);
+    }
     if (isOpen) {
       // Add null check before destructuring
       if (defaultValues) {
@@ -68,7 +71,7 @@ export default function DeviceFormDialog({
         document.activeElement?.blur();
       }, 50);
     }
-  }, [isOpen, defaultValues, reset]);
+  }, [isOpen, defaultValues, reset, isEdit]);
 
   const handleFormSubmit = (data) => {
     if (!includePassword) {
@@ -114,16 +117,18 @@ export default function DeviceFormDialog({
             <div className="space-y-2 col-span-2 sm:col-span-1 mt-1">
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="include-password" className="text-sm">
-                    {includePassword ? "Include" : "Exclude"}
-                  </Label>
-                  <Switch
-                    id="include-password"
-                    checked={includePassword}
-                    onCheckedChange={setIncludePassword}
-                  />
-                </div>
+                {isEdit && (
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="include-password" className="text-sm">
+                      {includePassword ? "Include" : "Exclude"}
+                    </Label>
+                    <Switch
+                      id="include-password"
+                      checked={includePassword}
+                      onCheckedChange={setIncludePassword}
+                    />
+                  </div>
+                )}
               </div>
               <div className="relative">
                 <Input
