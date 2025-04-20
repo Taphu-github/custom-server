@@ -14,8 +14,11 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(""); // Add this state
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError(""); // Clear previous errors
 
     const formData = new FormData(event.currentTarget);
     const username = formData.get("username");
@@ -30,8 +33,8 @@ export function LoginForm({
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Extract error details from the response
-        console.error("Error:", errorData.message || "Failed to log in");
+        const errorData = await response.json();
+        setError(errorData.message || "Invalid login credentials");
         toast.error(errorData.message || "Invalid login credentials");
         return;
       }
@@ -48,6 +51,7 @@ export function LoginForm({
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
+      setError("Login failed. Please try again.");
       toast.error("Login failed. Please try again.");
     }
   }
@@ -106,6 +110,10 @@ export function LoginForm({
         <Button type="submit" className="w-full">
           Login
         </Button>
+
+        {error && (
+          <p className="text-sm text-red-500 text-center mt-2">{error}</p>
+        )}
       </div>
     </form>
   );
