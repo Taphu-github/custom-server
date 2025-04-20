@@ -99,9 +99,9 @@ export function AppSidebar() {
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <p className="truncate font-bold text-xl">
-                      D<span className="text-[#4aac69]">A</span>
+                      D<span className="text-[#5ebea3]">A</span>
                       KZ
-                      <span className="text-[#4aac69]">I</span>N
+                      <span className="text-[#5ebea3]">I</span>N
                     </p>
                   </div>
                 </SidebarMenuButton>

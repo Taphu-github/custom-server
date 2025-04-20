@@ -113,7 +113,7 @@ export default function DevicePage() {
       setIsDialogOpen(false);
       setFormValues(null);
     } catch (err) {
-      toast.error("Submission failed", { description: err.message });
+      toast.error(err.message);
     }
   };
 

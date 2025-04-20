@@ -31,7 +31,7 @@ export default function Layout({ children }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger />
-      <main className="flex justify-center items-center w-full">
+      <main className="flex justify-center items-center w-[95%] ">
         {children}
       </main>
     </SidebarProvider>

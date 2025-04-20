@@ -3,10 +3,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { CircleAlert } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -15,7 +17,14 @@ export function LoginForm({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(""); // Add this state
-
+  useEffect(() => {
+    // Check if the user is already logged in
+    if (error) {
+      setTimeout(() => {
+        setError("");
+      }, 3000);
+    }
+  }, [error]);
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(""); // Clear previous errors
@@ -35,7 +44,7 @@ export function LoginForm({
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Invalid login credentials");
-        toast.error(errorData.message || "Invalid login credentials");
+        // toast.error(errorData.message || "Invalid login credentials");
         return;
       }
 
@@ -51,8 +60,14 @@ export function LoginForm({
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
+
       setError("Login failed. Please try again.");
-      toast.error("Login failed. Please try again.");
+
+      // setError((prev) => {
+      //   return (prev = "");
+      // });
+
+      // toast.error("Login failed. Please try again.");
     }
   }
 
@@ -112,7 +127,15 @@ export function LoginForm({
         </Button>
 
         {error && (
-          <p className="text-sm text-red-500 text-center mt-2">{error}</p>
+          <Card className="flex justify-start items-center border-[1px] border-red-500 transition-all ease-in-out">
+            <CardHeader className="text-red-500">
+              <CircleAlert className="h-8 w-8" />
+            </CardHeader>
+            <div>
+              <CardTitle className="text-red-500">Error</CardTitle>
+              <p className="text-md text-red-500 text-center mt-2">{error}</p>
+            </div>
+          </Card>
         )}
       </div>
     </form>
