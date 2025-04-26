@@ -1,4 +1,4 @@
-const { unix } = require("moment");
+// const { unix } = require("moment");
 const mongoose = require("mongoose");
 const AutoIncrement = require("mongoose-sequence")(mongoose);
 const bcrypt = require("bcryptjs");
@@ -53,7 +53,7 @@ const User = new mongoose.Schema(
       type: String,
       default: "user",
     },
-    remarks: { type: String, required: true },
+    remarks: { type: String, required: false },
   },
   {
     timestamps: true,

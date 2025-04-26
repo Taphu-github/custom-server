@@ -44,39 +44,32 @@ export async function GET(req) {
     await connectToMongoDB();
 
     // Get search parameters from URL
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 10;
-    const d_name = searchParams.get("d_name") || "";
-    const d_id = searchParams.get("d_id") || "";
-    const location = searchParams.get("location") || "";
+    // const { searchParams } = new URL(req.url);
+    // const page = parseInt(searchParams.get("page")) || 1;
+    // const limit = parseInt(searchParams.get("limit")) || 10;
+    // const d_name = searchParams.get("d_name") || "";
+    // const d_id = searchParams.get("d_id") || "";
+    // const location = searchParams.get("location") || "";
 
     // Calculate skip for pagination
-    const skip = (page - 1) * limit;
+    // const skip = (page - 1) * limit;
 
     // Build filter object
-    const filter = {};
-    if (d_name) filter.d_name = { $regex: d_name, $options: "i" };
-    if (d_id) filter.d_id = { $regex: d_id, $options: "i" };
-    if (location) filter.location = { $regex: location, $options: "i" };
+    // const filter = {};
+    // if (d_name) filter.d_name = { $regex: d_name, $options: "i" };
+    // if (d_id) filter.d_id = { $regex: d_id, $options: "i" };
+    // if (location) filter.location = { $regex: location, $options: "i" };
 
     // Get total count for pagination
-    const total = await Device.countDocuments(filter);
+    // const total = await Device.countDocuments(filter);
 
     // Get filtered and paginated data
-    const list = await Device.find(filter)
-      .sort({ installed_date: -1 })
-      .skip(skip)
-      .limit(limit);
+    const list = await Device.find().sort({ installed_date: -1 });
+    // .skip(skip)
+    // .limit(limit);
 
     return Response.json({
       data: list,
-      pagination: {
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-        hasMore: page * limit < total,
-      },
     });
   } catch (error) {
     return Response.json(
@@ -107,7 +100,7 @@ export async function POST(req) {
       location,
       mac_address,
       installed_date,
-      remarks: remarks ?? "",
+      remarks,
     });
 
     if (
@@ -116,7 +109,8 @@ export async function POST(req) {
       password &&
       location &&
       mac_address &&
-      installed_date
+      installed_date &&
+      remarks
     ) {
       await systemowner.save();
 

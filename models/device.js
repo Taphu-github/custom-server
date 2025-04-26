@@ -8,7 +8,7 @@ const Device = new mongoose.Schema({
   location: { type: String, required: true },
   mac_address: { type: String, required: true, unique: true },
   installed_date: { type: Date, required: true },
-  remarks: { type: String, required: true },
+  remarks: { type: String, required: false },
 });
 
 Device.pre("save", async function (next) {

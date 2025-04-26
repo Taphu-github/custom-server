@@ -99,7 +99,11 @@ export default function DeviceFormDialog({
             {!isEdit && (
               <div className="space-y-2">
                 <Label htmlFor="d_id">Device ID</Label>
-                <Input id="d_id" {...register("d_id")} />
+                <Input
+                  placeholder="DzongkhagXX"
+                  id="d_id"
+                  {...register("d_id")}
+                />
                 {errors.d_id && (
                   <p className="text-sm text-red-500">{errors.d_id.message}</p>
                 )}
@@ -108,7 +112,11 @@ export default function DeviceFormDialog({
 
             <div className="space-y-2 col-span-2 sm:col-span-1">
               <Label htmlFor="d_name">Device Name</Label>
-              <Input id="d_name" {...register("d_name")} />
+              <Input
+                placeholder="Village_Owner_Direction"
+                id="d_name"
+                {...register("d_name")}
+              />
               {errors.d_name && (
                 <p className="text-sm text-red-500">{errors.d_name.message}</p>
               )}
@@ -164,12 +172,20 @@ export default function DeviceFormDialog({
               <>
                 <div className="space-y-2">
                   <Label htmlFor="location">Location</Label>
-                  <Input id="location" {...register("location")} />
+                  <Input
+                    placeholder="Dzongkhag, Gewog, Village"
+                    id="location"
+                    {...register("location")}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="mac_address">MAC Address</Label>
-                  <Input id="mac_address" {...register("mac_address")} />
+                  <Input
+                    id="mac_address"
+                    placeholder="00:1A:2B:3C:4D:5E"
+                    {...register("mac_address")}
+                  />
                 </div>
 
                 <div className="space-y-2">
