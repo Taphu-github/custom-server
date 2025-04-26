@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import {
   Table,
@@ -440,35 +445,32 @@ export default function DeviceOwnerTable() {
                             <div className="flex flex-wrap gap-1">
                               {Array.isArray(item.d_ids) &&
                                 item.d_ids.map((device) => (
-                                  <TooltipProvider key={device.d_id}>
-                                    <Tooltip>
-                                      <TooltipTrigger>
-                                        <Badge>{device.d_id}</Badge>
-                                      </TooltipTrigger>
-                                      <TooltipContent className="bg-primary/95 text-white p-4">
-                                        <p className="font-bold text-md">
-                                          Date of Ownership
-                                        </p>
-                                        <p>
-                                          {new Date(
-                                            device.date_of_own
-                                          ).toDateString()}
-                                        </p>
-                                        <p className="font-bold text-md">
-                                          Remarks
-                                        </p>
-                                        <p>{device.remarks}</p>
-                                        <p
-                                          className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm"
-                                          onClick={() =>
-                                            handleDelete(device._id)
-                                          }
-                                        >
-                                          Unassign Device
-                                        </p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
+                                  // <TooltipProvider key={device.d_id}>
+                                  <Popover key={device.d_id}>
+                                    <PopoverTrigger>
+                                      <Badge>{device.d_id}</Badge>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="bg-primary/95 text-white p-4">
+                                      <p className="font-bold text-md">
+                                        Date of Ownership
+                                      </p>
+                                      <p>
+                                        {new Date(
+                                          device.date_of_own
+                                        ).toDateString()}
+                                      </p>
+                                      <p className="font-bold text-md">
+                                        Remarks
+                                      </p>
+                                      <p>{device.remarks}</p>
+                                      <p
+                                        className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm"
+                                        onClick={() => handleDelete(device._id)}
+                                      >
+                                        Unassign Device
+                                      </p>
+                                    </PopoverContent>
+                                  </Popover>
                                 ))}
                             </div>
                           </TableCell>
