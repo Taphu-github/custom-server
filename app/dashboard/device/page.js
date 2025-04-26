@@ -10,6 +10,16 @@ import DeviceFilterInputs from "./_components/DeviceTableFilters";
 import DeviceFormDialog from "./_components/DeviceTableDialog";
 import DevicePaginationControls from "./_components/DeviceTablePagination";
 import { useDevices } from "./_components/useDeviceTable";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function DevicePage() {
   const {
@@ -29,6 +39,7 @@ export default function DevicePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
   const [formValues, setFormValues] = useState(null);
+  const [deviceToDelete, setDeviceToDelete] = useState(null);
 
   const handleAddClick = () => {
     setFormValues(null);
@@ -42,52 +53,19 @@ export default function DevicePage() {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteClick = async (device) => {
+  const handleDeleteClick = (device) => {
+    setDeviceToDelete(device);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      await deleteDevice(device._id);
+      await deleteDevice(deviceToDelete._id);
       toast.success("Device deleted successfully");
+      setDeviceToDelete(null);
     } catch (err) {
       toast.error("Failed to delete device", { description: err.message });
     }
   };
-
-  // const handleFormSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const form = new FormData(e.currentTarget);
-  //   const data = Object.fromEntries(form.entries());
-
-  //   if (formMode === "edit") {
-  //     try {
-  //       const res = await fetch(`/api/devices/${formValues._id}`, {
-  //         method: "PATCH",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ ...data, _id: formValues._id }),
-  //       });
-  //       const updated = await res.json();
-  //       updateDevice(updated.device);
-  //       toast.success("Device updated successfully");
-  //       setIsDialogOpen(false);
-  //       setFormValues(null);
-  //     } catch (err) {
-  //       toast.error("Update failed", { description: err.message });
-  //     }
-  //   } else {
-  //     try {
-  //       const res = await fetch("/api/devices", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(data),
-  //       });
-  //       const created = await res.json();
-  //       addDevice(created.systemowner);
-  //       toast.success("Device added successfully");
-  //       setIsDialogOpen(false);
-  //       setFormValues(null);
-  //     } catch (err) {
-  //       toast.error("Failed to add device", { description: err.message });
-  //     }
-  //   }
-  // };
 
   const handleFormSubmit = async (data) => {
     try {
@@ -98,6 +76,10 @@ export default function DevicePage() {
           body: JSON.stringify({ ...data, _id: formValues._id }),
         });
         const updated = await res.json();
+        if (!res.ok) {
+          // Add this check
+          throw new Error(updated.message || "Failed to update device");
+        }
         updateDevice(updated.device);
         toast.success("Device updated successfully");
       } else {
@@ -107,6 +89,10 @@ export default function DevicePage() {
           body: JSON.stringify(data),
         });
         const created = await res.json();
+        if (!res.ok) {
+          // Add this check
+          throw new Error(created.message || "Failed to create device");
+        }
         addDevice(created.systemowner);
         toast.success("Device added successfully");
       }
@@ -139,6 +125,34 @@ export default function DevicePage() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
+            <AlertDialog
+              open={!!deviceToDelete}
+              onOpenChange={(open) => !open && setDeviceToDelete(null)}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the device
+                    <span className="font-semibold">
+                      {" "}
+                      {deviceToDelete?.d_id}
+                    </span>
+                    .
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleConfirmDelete}
+                    className="bg-primary text-destructive-foreground hover:bg-primary/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <DevicePaginationControls
               currentPage={currentPage}
               totalPages={totalPages}

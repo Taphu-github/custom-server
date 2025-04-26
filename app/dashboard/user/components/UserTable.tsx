@@ -26,12 +26,16 @@ interface User {
 
 interface UserTableContentProps {
   users: User[];
+  currentPage: number;
+  itemsPerPage: number;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
 }
 
 export default function UserTableContent({
   users,
+  currentPage,
+  itemsPerPage,
   onEdit,
   onDelete,
 }: UserTableContentProps) {
@@ -56,7 +60,9 @@ export default function UserTableContent({
       <TableBody>
         {users.map((user, index) => (
           <TableRow key={user._id}>
-            <TableCell>{index + 1}</TableCell>
+            <TableCell>
+              {index + 1 + (currentPage - 1) * itemsPerPage}
+            </TableCell>
             <TableCell>{user.username}</TableCell>
             <TableCell>{user.cid}</TableCell>
             <TableCell>{user.full_name}</TableCell>

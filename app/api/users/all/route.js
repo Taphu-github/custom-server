@@ -1,4 +1,4 @@
-import { connectToMongoDB } from "../../../lib/mongodb";
+import { connectToMongoDB } from "../../../../lib/mongodb";
 import user from "@/models/user";
 
 /**
@@ -39,40 +39,32 @@ import user from "@/models/user";
  */
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 10;
-    const skip = (page - 1) * limit;
+    // const { searchParams } = new URL(req.url);
+    // const page = parseInt(searchParams.get("page")) || 1;
+    // const limit = parseInt(searchParams.get("limit")) || 10;
+    // const skip = (page - 1) * limit;
 
     // Build filter query
-    const filterQuery = {};
-    const filterFields = ["full_name", "dzongkhag", "gewog", "phone", "cid"];
+    // const filterQuery = {};
+    // const filterFields = ["full_name", "dzongkhag", "gewog", "phone", "cid"];
 
-    filterFields.forEach((field) => {
-      const value = searchParams.get(field);
-      if (value) {
-        filterQuery[field] = { $regex: value, $options: "i" };
-      }
-    });
+    // filterFields.forEach((field) => {
+    //   const value = searchParams.get(field);
+    //   if (value) {
+    //     filterQuery[field] = { $regex: value, $options: "i" };
+    //   }
+    // });
 
     await connectToMongoDB();
 
-    const totalUsers = await user.countDocuments(filterQuery);
-    const userList = await user
-      .find(filterQuery)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .exec();
+    // const totalUsers = await user.countDocuments(filterQuery);
+    const userList = await user.find().sort({ createdAt: -1 }).exec();
+    // .find(filterQuery)
+
+    // .skip(skip)
 
     return Response.json({
       data: userList,
-      pagination: {
-        total: totalUsers,
-        page: page,
-        limit: limit,
-        totalPages: Math.ceil(totalUsers / limit),
-      },
     });
   } catch (error) {
     return Response.json({ message: "error: " + error }, { status: 400 });

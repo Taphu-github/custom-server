@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -74,83 +77,13 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-
-  // ✅ Initialize state when currentUser changes
-  useEffect(() => {
-    if (currentUser) {
-      setFormData({
-        username: currentUser.username || "",
-        cid: currentUser.cid || "",
-        full_name: currentUser.full_name || "",
-        email: currentUser.email || "",
-        phone: currentUser.phone || "",
-        dzongkhag: currentUser.dzongkhag || "",
-        gewog: currentUser.gewog || "",
-        village: currentUser.village || "",
-        role: currentUser.role || "user",
-        remarks: currentUser.remarks || "",
-        password: "",
-        confirmPassword: "",
-      });
-    } else {
-      setFormData({
-        username: "",
-        cid: "",
-        full_name: "",
-        email: "",
-        phone: "",
-        dzongkhag: "",
-        gewog: "",
-        village: "",
-        role: "user",
-        remarks: "",
-        password: "",
-        confirmPassword: "",
-      });
-    }
-  }, [currentUser]);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [formDataToSubmit, setFormDataToSubmit] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (formData.phone && !/^\d{8}$/.test(formData.phone)) {
-  //     toast.error("Phone number must be exactly 8 digits");
-  //     return;
-  //   }
-
-  //   if (formData.email) {
-  //     formData.email = formData.email.trim().toLowerCase();
-  //   }
-
-  //   try {
-  //     const method = currentUser ? "PATCH" : "POST";
-  //     const url = currentUser ? `/api/users/${currentUser._id}` : `/api/users`;
-
-  //     const res = await fetch(url, {
-  //       method,
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(formData),
-  //     });
-
-  //     if (!res.ok) {
-  //       toast.error("Failed to save user", { description: res.message });
-  //       throw new Error("Failed to save user");
-  //     }
-
-  //     toast.success("User saved");
-  //     setIsDialogOpen(false);
-  //     onSuccess?.();
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Something went wrong.", { description: err.message });
-  //     // alert(err.message);
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -164,6 +97,11 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
       formData.email = formData.email.trim().toLowerCase();
     }
 
+    setFormDataToSubmit(formData);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmedSubmit = async () => {
     try {
       const method = currentUser ? "PATCH" : "POST";
       const url = currentUser ? `/api/users/${currentUser._id}` : `/api/users`;
@@ -171,10 +109,10 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formDataToSubmit),
       });
 
-      const responseData = await res.json(); // 👈 read JSON response
+      const responseData = await res.json();
 
       if (!res.ok) {
         toast.error("Failed to save user", {
@@ -191,224 +129,255 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
       toast.error("Something went wrong", {
         description: err.message,
       });
+    } finally {
+      setShowConfirmDialog(false);
     }
   };
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/users/${currentUser._id}/password`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newPassword: formData.password }),
-      });
-
-      if (!res.ok) throw new Error("Failed to update password");
-
-      alert("Password updated");
-      setIsDialogOpen(false);
-      onSuccess?.();
-    } catch (error) {
-      setPasswordError(error.message);
-    }
-  };
-
-  const renderForm = () => (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        {["username", "cid", "full_name", "email"].map((field) => (
-          <div key={field} className="space-y-2">
-            <Label htmlFor={field}>{field.replace("_", " ")}</Label>
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          {["username", "cid", "full_name", "email"].map((field) => (
+            <div key={field} className="space-y-2">
+              <Label htmlFor={field}>{field.replace("_", " ")}</Label>
+              <Input
+                id={field}
+                name={field}
+                type="text"
+                placeholder={`Enter ${field.replace("_", " ")}`}
+                value={formData[field]}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          ))}
+          <div key="phone" className="space-y-2">
+            <Label htmlFor="phone">Phone No.</Label>
             <Input
-              id={field}
-              name={field}
-              type="text"
-              placeholder={`Enter ${field.replace("_", " ")}`}
-              value={formData[field]}
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="Enter phone number"
+              value={formData.phone}
               onChange={handleChange}
               required
             />
           </div>
-        ))}
-        <div key="phone" className="space-y-2">
-          <Label htmlFor="phone">Phone No.</Label>
-          <Input
-            id="phone"
-            name="phone"
-            type="tel"
-            placeholder="Enter phone number"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        {!currentUser && (
-          <div className="space-y-2">
-            <Label>Password</Label>
-            <PasswordInput
-              id="password"
-              name="password"
-              placeholder="Enter password"
-              value={formData.password}
-              show={showPassword}
-              setShow={setShowPassword}
-              onChange={handleChange}
-            />
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Label>Dzongkhag</Label>
-          <Select
-            value={formData.dzongkhag}
-            onValueChange={(val) =>
-              setFormData((prev) => ({ ...prev, dzongkhag: val, gewog: "" }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Dzongkhag" />
-            </SelectTrigger>
-            <SelectContent>
-              {dzongkhagData.map((d) => (
-                <SelectItem key={d.dzongkhag} value={d.dzongkhag}>
-                  {d.dzongkhag}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Gewog</Label>
-          <Select
-            value={formData.gewog}
-            onValueChange={(val) =>
-              setFormData((prev) => ({ ...prev, gewog: val }))
-            }
-            disabled={!formData.dzongkhag}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Gewog" />
-            </SelectTrigger>
-            <SelectContent>
-              {dzongkhagData
-                .find((d) => d.dzongkhag === formData.dzongkhag)
-                ?.gewogs.map((g) => (
-                  <SelectItem key={g} value={g}>
-                    {g}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Village</Label>
-          <Input
-            name="village"
-            value={formData.village}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Role</Label>
-          <Select
-            value={formData.role}
-            onValueChange={(val) =>
-              setFormData((prev) => ({ ...prev, role: val }))
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="user">User</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <Label>Remarks</Label>
-          <Textarea
-            name="remarks"
-            value={formData.remarks}
-            onChange={handleChange}
-            required
-          />
-        </div>
-      </div>
-
-      <Button type="submit">
-        {currentUser ? "Save changes" : "Create User"}
-      </Button>
-    </form>
-  );
-
-  return !currentUser ? (
-    <>
-      <CardHeader>
-        <CardTitle>Create User</CardTitle>
-        <CardDescription>
-          Fill in the details to create a new user.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>{renderForm()}</CardContent>
-    </>
-  ) : (
-    <Tabs defaultValue="account" className="w-full max-w-[800px]">
-      <TabsList className="grid grid-cols-2">
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="password">Password</TabsTrigger>
-      </TabsList>
-      <TabsContent value="account">
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Details</CardTitle>
-            <CardDescription>Update user info</CardDescription>
-          </CardHeader>
-          <CardContent>{renderForm()}</CardContent>
-        </Card>
-      </TabsContent>
-      <TabsContent value="password">
-        <Card>
-          <CardHeader>
-            <CardTitle>Password</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+          {!currentUser && (
+            <div className="space-y-2">
+              <Label>Password</Label>
               <PasswordInput
                 id="password"
                 name="password"
-                placeholder="New password"
-                show={showPassword}
-                setShow={setShowPassword}
+                placeholder="Enter password"
                 value={formData.password}
-                onChange={handleChange}
-              />
-              <PasswordInput
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm password"
                 show={showPassword}
                 setShow={setShowPassword}
-                value={formData.confirmPassword}
                 onChange={handleChange}
               />
-              {passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
-              )}
-              <Button type="submit">Update Password</Button>
-            </form>
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Dzongkhag</Label>
+            <Select
+              value={formData.dzongkhag}
+              onValueChange={(val) =>
+                setFormData((prev) => ({ ...prev, dzongkhag: val, gewog: "" }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Dzongkhag" />
+              </SelectTrigger>
+              <SelectContent>
+                {dzongkhagData.map((d) => (
+                  <SelectItem key={d.dzongkhag} value={d.dzongkhag}>
+                    {d.dzongkhag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Gewog</Label>
+            <Select
+              value={formData.gewog}
+              onValueChange={(val) =>
+                setFormData((prev) => ({ ...prev, gewog: val }))
+              }
+              disabled={!formData.dzongkhag}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Gewog" />
+              </SelectTrigger>
+              <SelectContent>
+                {dzongkhagData
+                  .find((d) => d.dzongkhag === formData.dzongkhag)
+                  ?.gewogs.map((g) => (
+                    <SelectItem key={g} value={g}>
+                      {g}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Village</Label>
+            <Input
+              name="village"
+              value={formData.village}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Role</Label>
+            <Select
+              value={formData.role}
+              onValueChange={(val) =>
+                setFormData((prev) => ({ ...prev, role: val }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="user">User</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label>Remarks</Label>
+            <Textarea
+              name="remarks"
+              value={formData.remarks}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        <Button type="submit">
+          {currentUser ? "Save changes" : "Create User"}
+        </Button>
+      </form>
+
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Save</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to {currentUser ? "update" : "create"} this
+              user?
+              <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2 p-3 bg-green-50 rounded-lg">
+                    <h3 className="font-semibold text-sm text-slate-500">
+                      Personal Information
+                    </h3>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        <span className="text-slate-500">Username:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.username}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Full Name:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.full_name}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">CID:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.cid}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Role:</span>{" "}
+                        <span className="font-medium capitalize">
+                          {formDataToSubmit?.role}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 p-3 bg-green-50 rounded-lg">
+                    <h3 className="font-semibold text-sm text-slate-500">
+                      Contact Details
+                    </h3>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        <span className="text-slate-500">Email:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.email}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Phone:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.phone}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 p-3 bg-green-50 rounded-lg col-span-2">
+                    <h3 className="font-semibold text-sm text-slate-500">
+                      Address Information
+                    </h3>
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        <span className="text-slate-500">Dzongkhag:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.dzongkhag}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Gewog:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.gewog}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Village:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.village}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {formDataToSubmit?.remarks && (
+                    <div className="space-y-2 p-3 bg-slate-50 rounded-lg col-span-2">
+                      <h3 className="font-semibold text-sm text-slate-500">
+                        Additional Information
+                      </h3>
+                      <p className="text-sm">
+                        <span className="text-slate-500">Remarks:</span>{" "}
+                        <span className="font-medium">
+                          {formDataToSubmit?.remarks}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmedSubmit}>
+              {currentUser ? "Update" : "Create"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

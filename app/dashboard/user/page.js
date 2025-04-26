@@ -129,61 +129,10 @@ export default function UserTable() {
               />
             </DialogContent>
           </Dialog>
-          {/* 
-          <Table>
-            <TableCaption>A list of users.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>CID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Dzongkhag</TableHead>
-                <TableHead>Gewog</TableHead>
-                <TableHead>Village</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user, index) => (
-                <TableRow key={user._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.cid}</TableCell>
-                  <TableCell>{user.full_name}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user.dzongkhag}</TableCell>
-                  <TableCell>{user.gewog}</TableCell>
-                  <TableCell>{user.village}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDialog(user)}
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleOpenDeleteDialog(user)}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table> */}
           <UserTableContent
             users={users}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
             onEdit={handleOpenDialog}
             onDelete={handleOpenDeleteDialog}
           />

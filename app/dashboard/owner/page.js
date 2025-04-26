@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
 import {
@@ -50,6 +50,7 @@ export default function DeviceOwnerTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState({ d_id: "", user_name: "" });
+  const [viewMode, setViewMode] = useState("user"); // 'user' or 'device'
 
   useEffect(() => {
     if (!isDialogOpen) {
@@ -72,8 +73,8 @@ export default function DeviceOwnerTable() {
 
         const [ownersRes, usersRes, devicesRes] = await Promise.all([
           fetch(`/api/device_owners?${queryParams}`),
-          fetch("/api/users"),
-          fetch("/api/devices"),
+          fetch("/api/users/all"),
+          fetch("/api/devices/all"),
         ]);
 
         if (!ownersRes.ok || !usersRes.ok || !devicesRes.ok) {
@@ -225,6 +226,41 @@ export default function DeviceOwnerTable() {
       });
     }
   };
+  // Transform data based on view mode
+  const transformedData = useMemo(() => {
+    if (viewMode === "user") {
+      return filteredDeviceOwners;
+    } else {
+      // Transform to device-centric view
+      const deviceMap = new Map();
+      deviceOwners.forEach((owner) => {
+        owner.d_ids.forEach((device) => {
+          if (!deviceMap.has(device.d_id)) {
+            deviceMap.set(device.d_id, {
+              d_id: device.d_id,
+              users: [
+                {
+                  user_name: owner.user_name,
+                  date_of_own: device.date_of_own,
+                  remarks: device.remarks,
+                  _id: device._id,
+                },
+              ],
+            });
+          } else {
+            deviceMap.get(device.d_id).users.push({
+              user_name: owner.user_name,
+              date_of_own: device.date_of_own,
+              remarks: device.remarks,
+              _id: device._id,
+            });
+          }
+        });
+      });
+
+      return Array.from(deviceMap.values());
+    }
+  }, [viewMode, deviceOwners, filteredDeviceOwners]);
 
   return (
     <div className="w-full min-h-screen">
@@ -236,7 +272,27 @@ export default function DeviceOwnerTable() {
         <div className="flex justify-center items-start w-full h-full pt-10">
           <div className="space-y-4 w-[90%]">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Device Owners</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold">Device Owners</h2>
+                <div className="flex items-center space-x-2 bg-secondary/20 p-2 rounded-lg">
+                  <Button
+                    className="font-medium text-sm"
+                    variant={viewMode === "user" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("user")}
+                  >
+                    User View
+                  </Button>
+                  <Button
+                    className="font-medium text-sm"
+                    variant={viewMode === "device" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("device")}
+                  >
+                    Device View
+                  </Button>
+                </div>
+              </div>
               <Button onClick={() => handleOpenDialog()}>
                 <PlusIcon className="mr-2 h-4 w-4" /> Add Device Owner
               </Button>
@@ -307,7 +363,7 @@ export default function DeviceOwnerTable() {
                       <SelectContent>
                         {devices.map((device) => (
                           <SelectItem key={device._id} value={device.d_id}>
-                            {device.d_id}
+                            {device.d_id + ", " + device.d_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -346,57 +402,117 @@ export default function DeviceOwnerTable() {
             </Dialog>
 
             {/* Device Owner Table */}
-            {Array.isArray(deviceOwners) && deviceOwners.length === 0 ? (
+            {Array.isArray(transformedData) && transformedData.length === 0 ? (
               <p className="text-center text-muted-foreground">
-                No device owners found.
+                No {viewMode === "user" ? "device owners" : "devices"} found.
               </p>
             ) : (
               <Table>
-                <TableCaption>A list of device owners.</TableCaption>
+                <TableCaption>
+                  A list of {viewMode === "user" ? "device owners" : "devices"}.
+                </TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead>#</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Devices</TableHead>
+                    {viewMode === "user" ? (
+                      <>
+                        <TableHead>User</TableHead>
+                        <TableHead>Devices</TableHead>
+                      </>
+                    ) : (
+                      <>
+                        <TableHead>Device ID</TableHead>
+                        <TableHead>Users</TableHead>
+                      </>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredDeviceOwners.map((owner, index) => (
-                    <TableRow key={owner.user_id}>
+                  {transformedData.map((item, index) => (
+                    <TableRow
+                      key={viewMode === "user" ? item.user_id : item.d_id}
+                    >
                       <TableCell>{index + 1}</TableCell>
-                      <TableCell>{owner.user_name}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {Array.isArray(owner.d_ids) &&
-                            owner.d_ids.map((device) => (
-                              <TooltipProvider key={device.d_id}>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <Badge>{device.d_id}</Badge>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="bg-primary/95 text-white p-4">
-                                    <p className="font-bold text-md">
-                                      Date of Ownership
-                                    </p>
-                                    <p>
-                                      {new Date(
-                                        device.date_of_own
-                                      ).toDateString()}
-                                    </p>
-                                    <p className="font-bold text-md">Remarks</p>
-                                    <p>{device.remarks}</p>
-                                    <p
-                                      className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm"
-                                      onClick={() => handleDelete(device._id)}
-                                    >
-                                      Unassign Device
-                                    </p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ))}
-                        </div>
-                      </TableCell>
+                      {viewMode === "user" ? (
+                        <>
+                          <TableCell>{item.user_name}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {Array.isArray(item.d_ids) &&
+                                item.d_ids.map((device) => (
+                                  <TooltipProvider key={device.d_id}>
+                                    <Tooltip>
+                                      <TooltipTrigger>
+                                        <Badge>{device.d_id}</Badge>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="bg-primary/95 text-white p-4">
+                                        <p className="font-bold text-md">
+                                          Date of Ownership
+                                        </p>
+                                        <p>
+                                          {new Date(
+                                            device.date_of_own
+                                          ).toDateString()}
+                                        </p>
+                                        <p className="font-bold text-md">
+                                          Remarks
+                                        </p>
+                                        <p>{device.remarks}</p>
+                                        <p
+                                          className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm"
+                                          onClick={() =>
+                                            handleDelete(device._id)
+                                          }
+                                        >
+                                          Unassign Device
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                ))}
+                            </div>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell>{item.d_id}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {item.users.map((user) => (
+                                <TooltipProvider key={user._id}>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <Badge variant="outline">
+                                        {user.user_name}
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-primary/95 text-white p-4">
+                                      <p className="font-bold text-md">
+                                        Date of Ownership
+                                      </p>
+                                      <p>
+                                        {new Date(
+                                          user.date_of_own
+                                        ).toDateString()}
+                                      </p>
+                                      <p className="font-bold text-md">
+                                        Remarks
+                                      </p>
+                                      <p>{user.remarks}</p>
+                                      <p
+                                        className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm cursor-pointer"
+                                        onClick={() => handleDelete(user._id)}
+                                      >
+                                        Unassign User
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ))}
+                            </div>
+                          </TableCell>
+                        </>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
