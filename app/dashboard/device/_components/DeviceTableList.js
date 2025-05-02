@@ -12,12 +12,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { PencilIcon, TrashIcon } from "lucide-react";
 
-export default function DeviceTableList({ devices = [], onEdit, onDelete }) {
+export default function DeviceTableList({
+  devices = [],
+  currentPage,
+  onEdit,
+  onDelete,
+}) {
   return (
     <Table>
       <TableCaption>A list of devices.</TableCaption>
       <TableHeader>
         <TableRow>
+          <TableHead>Sl.No</TableHead>
           <TableHead>ID</TableHead>
           <TableHead>Device Name</TableHead>
           <TableHead>Location</TableHead>
@@ -28,8 +34,9 @@ export default function DeviceTableList({ devices = [], onEdit, onDelete }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {devices?.map((device) => (
+        {devices?.map((device, index) => (
           <TableRow key={device._id || device.d_id}>
+            <TableCell>{index + 1 + (currentPage - 1) * 10}</TableCell>
             <TableCell>{device.d_id}</TableCell>
             <TableCell>{device.d_name}</TableCell>
             <TableCell>{device.location}</TableCell>

@@ -481,35 +481,33 @@ export default function DeviceOwnerTable() {
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
                               {item.users.map((user) => (
-                                <TooltipProvider key={user._id}>
-                                  <Tooltip>
-                                    <TooltipTrigger>
-                                      <Badge variant="outline">
-                                        {user.user_name}
-                                      </Badge>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-primary/95 text-white p-4">
-                                      <p className="font-bold text-md">
-                                        Date of Ownership
-                                      </p>
-                                      <p>
-                                        {new Date(
-                                          user.date_of_own
-                                        ).toDateString()}
-                                      </p>
-                                      <p className="font-bold text-md">
-                                        Remarks
-                                      </p>
-                                      <p>{user.remarks}</p>
-                                      <p
-                                        className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm cursor-pointer"
-                                        onClick={() => handleDelete(user._id)}
-                                      >
-                                        Unassign User
-                                      </p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                                // <TooltipProvider>
+                                <Popover key={user._id}>
+                                  <PopoverTrigger>
+                                    <Badge variant="outline">
+                                      {user.user_name}
+                                    </Badge>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="bg-primary/95 text-white p-4">
+                                    <p className="font-bold text-md">
+                                      Date of Ownership
+                                    </p>
+                                    <p>
+                                      {new Date(
+                                        user.date_of_own
+                                      ).toDateString()}
+                                    </p>
+                                    <p className="font-bold text-md">Remarks</p>
+                                    <p>{user.remarks}</p>
+                                    <p
+                                      className="font-bold bg-white text-primary hover:text-white border-[1px] hover:bg-primary transition-all ease-in-out hover:border-white text-md p-1 mt-2 rounded-sm cursor-pointer"
+                                      onClick={() => handleDelete(user._id)}
+                                    >
+                                      Unassign User
+                                    </p>
+                                  </PopoverContent>
+                                </Popover>
+                                // </TooltipProvider>
                               ))}
                             </div>
                           </TableCell>

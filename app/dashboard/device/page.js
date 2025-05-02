@@ -124,6 +124,7 @@ export default function DevicePage() {
               devices={devices}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
+              currentPage={currentPage}
             />
             <AlertDialog
               open={!!deviceToDelete}
