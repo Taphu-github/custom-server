@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -134,6 +134,25 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
     }
   };
 
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        username: currentUser.username,
+        cid: currentUser.cid,
+        full_name: currentUser.full_name,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        dzongkhag: currentUser.dzongkhag,
+        gewog: currentUser.gewog,
+        village: currentUser.village,
+        role: currentUser.role,
+        password: "",
+        confirmPassword: "",
+        remarks: currentUser.remarks,
+      });
+    }
+  }, [currentUser]);
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -181,47 +200,45 @@ export default function UserForm({ currentUser, setIsDialogOpen, onSuccess }) {
 
           <div className="space-y-2">
             <Label>Dzongkhag</Label>
-            <Select
+            <select
               value={formData.dzongkhag}
-              onValueChange={(val) =>
-                setFormData((prev) => ({ ...prev, dzongkhag: val, gewog: "" }))
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  dzongkhag: e.target.value,
+                  gewog: "",
+                }))
               }
+              className="w-full rounded-md border border-input bg-background px-3 py-2"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Dzongkhag" />
-              </SelectTrigger>
-              <SelectContent>
-                {dzongkhagData.map((d) => (
-                  <SelectItem key={d.dzongkhag} value={d.dzongkhag}>
-                    {d.dzongkhag}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="">Select Dzongkhag</option>
+              {dzongkhagData.map((d) => (
+                <option key={d.dzongkhag} value={d.dzongkhag}>
+                  {d.dzongkhag}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
             <Label>Gewog</Label>
-            <Select
+            <select
               value={formData.gewog}
-              onValueChange={(val) =>
-                setFormData((prev) => ({ ...prev, gewog: val }))
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, gewog: e.target.value }))
               }
               disabled={!formData.dzongkhag}
+              className="w-full rounded-md border border-input bg-background px-3 py-2"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Gewog" />
-              </SelectTrigger>
-              <SelectContent>
-                {dzongkhagData
-                  .find((d) => d.dzongkhag === formData.dzongkhag)
-                  ?.gewogs.map((g) => (
-                    <SelectItem key={g} value={g}>
-                      {g}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+              <option value="">Select Gewog</option>
+              {dzongkhagData
+                .find((d) => d.dzongkhag === formData.dzongkhag)
+                ?.gewogs.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <div className="space-y-2">
