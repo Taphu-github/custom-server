@@ -86,7 +86,9 @@ export default function DeviceFormDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent aria-describedby="device-dialog-desc">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Device" : "Add New Device"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? `Edit Device ${defaultValues.d_id}` : "Add New Device"}
+          </DialogTitle>
           <p id="device-dialog-desc" className="text-sm text-muted-foreground">
             {isEdit
               ? "You can only edit the device name and password."
@@ -126,16 +128,18 @@ export default function DeviceFormDialog({
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
                 {isEdit && (
-                  <div className="flex items-center space-x-2">
-                    <Label htmlFor="include-password" className="text-sm">
-                      {includePassword ? "Include" : "Exclude"}
-                    </Label>
-                    <Switch
-                      id="include-password"
-                      checked={includePassword}
-                      onCheckedChange={setIncludePassword}
-                    />
-                  </div>
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor="include-password" className="text-sm">
+                        {includePassword ? "Include" : "Exclude"}
+                      </Label>
+                      <Switch
+                        id="include-password"
+                        checked={includePassword}
+                        onCheckedChange={setIncludePassword}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
               <div className="relative">
