@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"; // ⬅ important!
 import { connectToMongoDB } from "@/lib/mongodb";
 import user from "@/models/user";
 import device from "@/models/device";
@@ -50,4 +51,3 @@ export async function GET() {
     return Response.json({ message: error }, { status: 400 });
   }
 }
-

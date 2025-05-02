@@ -78,7 +78,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("/api/analysis");
+        const res = await fetch("/api/analysis", { cache: "no-store" });
         const json = await res.json();
         console.log(json);
         setData(json.message);
