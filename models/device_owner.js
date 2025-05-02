@@ -5,7 +5,7 @@ const DeviceOwner = new mongoose.Schema({
   user_id: { type: Number, required: true },
   d_id: { type: String, required: true },
   date_of_own: { type: Date, required: false },
-  remarks: { type: String, required: true, default: "No Remarks" },
+  remarks: { type: String, required: false, default: "No Remarks" },
 });
 
 module.exports =
