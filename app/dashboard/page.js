@@ -73,7 +73,9 @@ export default function Dashboard() {
       const parsed = JSON.parse(raw);
       setUserName(parsed.name); // ✅ Correct usage
     }
+  }, [router]);
 
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await fetch("/api/analysis");
@@ -93,7 +95,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [router]);
+  }, []);
 
   const chartData =
     data?.Dates?.map((date, index) => {
