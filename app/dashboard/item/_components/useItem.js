@@ -13,6 +13,8 @@ export function useItems() {
     unique_identifier: "",
     model_number: "",
     category: "",
+    used: "",
+    functional: "",
   });
 
   const fetchItems = async () => {
