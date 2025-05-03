@@ -4,12 +4,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
-import DeviceTableList from "./_components/DeviceTableList";
-import DeviceTableHeader from "./_components/DeviceTableHeader";
-import DeviceFilterInputs from "./_components/DeviceTableFilters";
-import DeviceFormDialog from "./_components/DeviceTableDialog";
-import DevicePaginationControls from "./_components/DeviceTablePagination";
-import { useDevices } from "./_components/useDeviceTable";
+import ItemTableList from "./_components/itemTableList";
+import ItemTableHeader from "./_components/itemTableHeader";
+import ItemFilterInputs from "./_components/itemTableFilters";
+import ItemFormDialog from "./_components/itemTableDialog";
+import ItemPaginationControls from "./_components/itemTablePagination";
+import { useItems } from "./_components/useItem";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +21,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function DevicePage() {
+export default function ItemPage() {
   const {
-    devices,
+    items,
     loading,
     error,
     currentPage,
@@ -31,15 +31,15 @@ export default function DevicePage() {
     filters,
     setCurrentPage,
     setFilters,
-    deleteDevice,
-    addDevice,
-    updateDevice,
-  } = useDevices();
+    deleteItem,
+    addItem,
+    updateItem,
+  } = useItems();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
   const [formValues, setFormValues] = useState(null);
-  const [deviceToDelete, setDeviceToDelete] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleAddClick = () => {
     setFormValues({});
@@ -47,54 +47,58 @@ export default function DevicePage() {
     setIsDialogOpen(true);
   };
 
-  const handleEditClick = (device) => {
-    setFormValues(device);
+  const handleEditClick = (item) => {
+    setFormValues({
+      ...item,
+      purchase_date: item.purchase_date.split("T")[0],
+      // category: item.category._id,
+    });
     setFormMode("edit");
     setIsDialogOpen(true);
   };
 
-  const handleDeleteClick = (device) => {
-    setDeviceToDelete(device);
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteDevice(deviceToDelete._id);
-      toast.success("Device deleted successfully");
-      setDeviceToDelete(null);
+      await deleteItem(itemToDelete._id);
+      toast.success("Item deleted successfully");
+      setItemToDelete(null);
     } catch (err) {
-      toast.error("Failed to delete device", { description: err.message });
+      toast.error("Failed to delete item", {
+        description: err.message,
+      });
     }
   };
 
   const handleFormSubmit = async (data) => {
     try {
       if (formMode === "edit") {
-        const res = await fetch(`/api/devices/${formValues._id}`, {
+        const res = await fetch(`/api/item/${formValues._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data, _id: formValues._id }),
         });
         const updated = await res.json();
         if (!res.ok) {
-          // Add this check
-          throw new Error(updated.message || "Failed to update device");
+          throw new Error(updated.error || "Failed to update item");
         }
-        updateDevice(updated.device);
-        toast.success("Device updated successfully");
+        updateItem(updated);
+        toast.success("Item updated successfully");
       } else {
-        const res = await fetch("/api/devices", {
+        const res = await fetch("/api/item", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
         const created = await res.json();
         if (!res.ok) {
-          // Add this check
-          throw new Error(created.message || "Failed to create device");
+          throw new Error(created.error || "Failed to create Item");
         }
-        addDevice(created.systemowner);
-        toast.success("Device added successfully");
+        addItem(created);
+        toast.success("Device addon added successfully");
       }
       setIsDialogOpen(false);
       setFormValues(null);
@@ -112,34 +116,31 @@ export default function DevicePage() {
       ) : (
         <div className="w-full h-full flex justify-center pt-10">
           <div className="space-y-4 w-[90%]">
-            <DeviceTableHeader onAdd={handleAddClick} />
-            <DeviceFilterInputs
+            <ItemTableHeader onAdd={handleAddClick} />
+            <ItemFilterInputs
               filters={filters}
               onFilterChange={(key, value) => {
                 setFilters((prev) => ({ ...prev, [key]: value }));
                 setCurrentPage(1);
               }}
             />
-            <DeviceTableList
-              devices={devices}
+            <ItemTableList
+              items={items}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
               currentPage={currentPage}
             />
             <AlertDialog
-              open={!!deviceToDelete}
-              onOpenChange={(open) => !open && setDeviceToDelete(null)}
+              open={!!itemToDelete}
+              onOpenChange={(open) => !open && setItemToDelete(null)}
             >
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete
-                    the device
-                    <span className="font-semibold">
-                      {" "}
-                      {deviceToDelete?.d_id}
-                    </span>
+                    the item
+                    <span className="font-semibold"> {itemToDelete?.name}</span>
                     .
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -154,12 +155,12 @@ export default function DevicePage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <DevicePaginationControls
+            <ItemPaginationControls
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
             />
-            <DeviceFormDialog
+            <ItemFormDialog
               isOpen={isDialogOpen}
               onOpenChange={(open) => {
                 setIsDialogOpen(open);
