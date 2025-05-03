@@ -54,17 +54,45 @@ export default function DeviceFormDialog({
   //   }
   // };
 
+  // useEffect(() => {
+  //   if (!isEdit) {
+  //     setIncludePassword(true);
+  //   }
+  //   if (isOpen) {
+  //     // Add null check before destructuring
+  //     if (defaultValues) {
+  //       const { password, ...valuesWithoutPassword } = defaultValues;
+  //       reset(valuesWithoutPassword);
+  //     } else {
+  //       reset({});
+  //     }
+  //   } else {
+  //     setTimeout(() => {
+  //       document.activeElement?.blur();
+  //     }, 50);
+  //   }
+  // }, [isOpen, defaultValues, reset, isEdit]);
+
   useEffect(() => {
     if (!isEdit) {
       setIncludePassword(true);
     }
     if (isOpen) {
-      // Add null check before destructuring
-      if (defaultValues) {
+      // If editing
+      if (isEdit && defaultValues) {
         const { password, ...valuesWithoutPassword } = defaultValues;
         reset(valuesWithoutPassword);
       } else {
-        reset({});
+        // Make sure to reset with clear defaults, not just {}
+        reset({
+          d_id: "",
+          d_name: "",
+          password: "",
+          location: "",
+          mac_address: "",
+          installed_date: "",
+          remarks: "",
+        });
       }
     } else {
       setTimeout(() => {
@@ -87,7 +115,7 @@ export default function DeviceFormDialog({
       <DialogContent aria-describedby="device-dialog-desc">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? `Edit Device ${defaultValues.d_id}` : "Add New Device"}
+            {isEdit ? `Edit Device ${defaultValues?.d_id}` : "Add New Device"}
           </DialogTitle>
           <p id="device-dialog-desc" className="text-sm text-muted-foreground">
             {isEdit

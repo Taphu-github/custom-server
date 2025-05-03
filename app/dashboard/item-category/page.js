@@ -4,12 +4,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
-import DeviceTableList from "./_components/DeviceTableList";
-import DeviceTableHeader from "./_components/DeviceTableHeader";
-import DeviceFilterInputs from "./_components/DeviceTableFilters";
-import DeviceFormDialog from "./_components/DeviceTableDialog";
-import DevicePaginationControls from "./_components/DeviceTablePagination";
-import { useDevices } from "./_components/useDeviceTable";
+import ItemCategoryTableList from "./_components/itemCategoryTableList";
+import ItemCategoryTableHeader from "./_components/itemCategoryTableHeader";
+import ItemCategoryFilterInputs from "./_components/itemCategoryTableFilters";
+import ItemCategoryFormDialog from "./_components/itemCategoryTableDialog";
+import ItemCategoryPaginationControls from "./_components/itemCategoryTablePagination";
+import { useItemCategories } from "./_components/useItemCategoryTable";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +21,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export default function DevicePage() {
+export default function ItemCategoryPage() {
   const {
-    devices,
+    itemCategories,
     loading,
     error,
     currentPage,
@@ -31,70 +31,68 @@ export default function DevicePage() {
     filters,
     setCurrentPage,
     setFilters,
-    deleteDevice,
-    addDevice,
-    updateDevice,
-  } = useDevices();
+    deleteItemCategory,
+    addItemCategory,
+    updateItemCategory,
+  } = useItemCategories();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formMode, setFormMode] = useState("create");
   const [formValues, setFormValues] = useState(null);
-  const [deviceToDelete, setDeviceToDelete] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const handleAddClick = () => {
-    setFormValues({});
+    setFormValues(null);
     setFormMode("create");
     setIsDialogOpen(true);
   };
 
-  const handleEditClick = (device) => {
-    setFormValues(device);
+  const handleEditClick = (category) => {
+    setFormValues(category);
     setFormMode("edit");
     setIsDialogOpen(true);
   };
 
-  const handleDeleteClick = (device) => {
-    setDeviceToDelete(device);
+  const handleDeleteClick = (category) => {
+    setCategoryToDelete(category);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteDevice(deviceToDelete._id);
-      toast.success("Device deleted successfully");
-      setDeviceToDelete(null);
+      await deleteItemCategory(categoryToDelete._id);
+      toast.success("Category deleted successfully");
+      setCategoryToDelete(null);
     } catch (err) {
-      toast.error("Failed to delete device", { description: err.message });
+      toast.error("Failed to delete category", { description: err.message });
     }
   };
 
   const handleFormSubmit = async (data) => {
     try {
       if (formMode === "edit") {
-        const res = await fetch(`/api/devices/${formValues._id}`, {
+        const res = await fetch(`/api/item_categories/${formValues._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data, _id: formValues._id }),
         });
         const updated = await res.json();
         if (!res.ok) {
-          // Add this check
-          throw new Error(updated.message || "Failed to update device");
+          throw new Error(updated.error || "Failed to update category");
         }
-        updateDevice(updated.device);
-        toast.success("Device updated successfully");
+        updateItemCategory(updated);
+        toast.success("Category updated successfully");
       } else {
-        const res = await fetch("/api/devices", {
+        const res = await fetch("/api/item_categories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
         const created = await res.json();
         if (!res.ok) {
-          // Add this check
-          throw new Error(created.message || "Failed to create device");
+          throw new Error(created.error || "Failed to create category");
         }
-        addDevice(created.systemowner);
-        toast.success("Device added successfully");
+        addItemCategory(created);
+        toast.success("Category added successfully");
       }
       setIsDialogOpen(false);
       setFormValues(null);
@@ -112,33 +110,33 @@ export default function DevicePage() {
       ) : (
         <div className="w-full h-full flex justify-center pt-10">
           <div className="space-y-4 w-[90%]">
-            <DeviceTableHeader onAdd={handleAddClick} />
-            <DeviceFilterInputs
+            <ItemCategoryTableHeader onAdd={handleAddClick} />
+            <ItemCategoryFilterInputs
               filters={filters}
               onFilterChange={(key, value) => {
                 setFilters((prev) => ({ ...prev, [key]: value }));
                 setCurrentPage(1);
               }}
             />
-            <DeviceTableList
-              devices={devices}
+            <ItemCategoryTableList
+              categories={itemCategories}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
               currentPage={currentPage}
             />
             <AlertDialog
-              open={!!deviceToDelete}
-              onOpenChange={(open) => !open && setDeviceToDelete(null)}
+              open={!!categoryToDelete}
+              onOpenChange={(open) => !open && setCategoryToDelete(null)}
             >
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete
-                    the device
+                    the category
                     <span className="font-semibold">
                       {" "}
-                      {deviceToDelete?.d_id}
+                      {categoryToDelete?.name}
                     </span>
                     .
                   </AlertDialogDescription>
@@ -154,12 +152,12 @@ export default function DevicePage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <DevicePaginationControls
+            <ItemCategoryPaginationControls
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={setCurrentPage}
             />
-            <DeviceFormDialog
+            <ItemCategoryFormDialog
               isOpen={isDialogOpen}
               onOpenChange={(open) => {
                 setIsDialogOpen(open);

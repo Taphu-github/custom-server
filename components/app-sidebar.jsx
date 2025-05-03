@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  BadgeCheck,
   ChevronsUpDown,
   LogOut,
   Home,
@@ -12,7 +11,15 @@ import {
   Squirrel,
   Radio,
   PawPrint,
+  Blocks,
+  ChartBarStacked,
+  ChevronRight,
 } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -20,7 +27,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -36,12 +42,29 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import logo from "@/app/AIDS_logo.png";
 
 const navItems = [
   { name: "Home", icon: Home, href: "/dashboard" },
   { name: "Device", icon: Smartphone, href: "/dashboard/device" },
+  {
+    name: "Inventory",
+    icon: Blocks,
+    href: "/dashboard/item,/dashboard/item-category",
+    items: [
+      { name: "Items", icon: Blocks, href: "/dashboard/item" },
+      {
+        name: "Item Category",
+        icon: ChartBarStacked,
+        href: "/dashboard/item-category",
+      },
+    ],
+  },
+
   { name: "Owner", icon: User, href: "/dashboard/owner" },
   { name: "User", icon: Users, href: "/dashboard/user" },
   {
@@ -114,21 +137,62 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu>
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = item.href.includes(pathname);
 
-              return (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton
+              if (item.name !== "Inventory") {
+                return (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton
+                      asChild
+                      className={isActive ? "bg-muted text-primary" : ""}
+                    >
+                      <a href={item.href} className="flex items-center gap-2">
+                        {item.icon && <item.icon />}
+                        <span>{item.name}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              } else {
+                return (
+                  <Collapsible
+                    key={item.name}
                     asChild
-                    className={isActive ? "bg-muted text-primary" : ""}
+                    defaultOpen={isActive}
+                    className="group/collapsible"
                   >
-                    <a href={item.href} className="flex items-center gap-2">
-                      {item.icon && <item.icon />}
-                      <span>{item.name}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip={item.name}>
+                          {item.icon && <item.icon />}
+                          <span>{item.name}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items?.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.name}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className={
+                                  pathname === subItem.href
+                                    ? "bg-muted text-primary"
+                                    : ""
+                                }
+                              >
+                                <a href={subItem.href}>
+                                  <span>{subItem.name}</span>
+                                </a>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                );
+              }
             })}
           </SidebarMenu>
         </SidebarGroup>
