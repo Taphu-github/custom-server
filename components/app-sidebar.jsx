@@ -144,7 +144,9 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton
                       asChild
-                      className={isActive ? "bg-muted text-primary" : ""}
+                      className={
+                        pathname === item.href ? "bg-muted text-primary" : ""
+                      }
                     >
                       <a href={item.href} className="flex items-center gap-2">
                         {item.icon && <item.icon />}
