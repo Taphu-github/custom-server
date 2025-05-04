@@ -35,7 +35,7 @@ export default function DetectedAnimalTable() {
     encroachTime: "",
   });
 
-  const itemsPerPage = 13;
+  const itemsPerPage = 12;
   const animal_name = [
     "Bear",
     "Boar",
