@@ -62,14 +62,16 @@ export function useItems() {
     );
   };
 
-  const addItem = (newAddon) => {
-    setItems((prev) =>
-      [...prev, newAddon].sort(
-        (a, b) =>
-          new Date(b.purchase_date).getTime() -
-          new Date(a.purchase_date).getTime()
-      )
-    );
+  const refreshItem = () => {
+    // setItems((prev) =>
+    //   [...prev, newAddon].sort(
+    //     (a, b) =>
+    //       new Date(a.purchase_date).getTime()-
+    //       new Date(b.purchase_date).getTime()
+    //   )
+    // );
+
+    fetchItems();
   };
 
   return {
@@ -84,6 +86,6 @@ export function useItems() {
     fetchItems,
     deleteItem,
     updateItem,
-    addItem,
+    refreshItem,
   };
 }

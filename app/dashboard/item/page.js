@@ -32,7 +32,7 @@ export default function ItemPage() {
     setCurrentPage,
     setFilters,
     deleteItem,
-    addItem,
+    refreshItem,
     updateItem,
   } = useItems();
 
@@ -51,7 +51,6 @@ export default function ItemPage() {
     setFormValues({
       ...item,
       purchase_date: item.purchase_date.split("T")[0],
-      // category: item.category._id,
     });
     setFormMode("edit");
     setIsDialogOpen(true);
@@ -76,6 +75,10 @@ export default function ItemPage() {
   const handleFormSubmit = async (data) => {
     try {
       if (formMode === "edit") {
+        // const formData = {
+        //   ...data,
+        //   category: data.category._id,
+        // };
         const res = await fetch(`/api/item/${formValues._id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -97,8 +100,9 @@ export default function ItemPage() {
         if (!res.ok) {
           throw new Error(created.error || "Failed to create Item");
         }
-        addItem(created);
-        toast.success("Device addon added successfully");
+        // addItem(created);
+        refreshItem();
+        toast.success("Item added successfully");
       }
       setIsDialogOpen(false);
       setFormValues(null);
@@ -111,7 +115,7 @@ export default function ItemPage() {
     <>
       {loading ? (
         <div className="flex justify-center items-center min-h-[70vh]">
-          <Loader className="h-8 w-8 animate-spin" />
+          <Loader className="h-8 w-8 text-primary animate-spin" />
         </div>
       ) : (
         <div className="w-full h-full flex justify-center pt-10">
