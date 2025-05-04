@@ -72,7 +72,7 @@ export default function ItemFormDialog({
   useEffect(() => {
     if (isOpen) {
       if (isEdit && defaultValues) {
-        reset(defaultValues);
+        reset({ ...defaultValues, category: defaultValues?.category?._id });
       } else {
         reset({
           name: "",
