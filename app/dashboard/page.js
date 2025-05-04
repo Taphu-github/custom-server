@@ -129,7 +129,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full h-screen">
       {loading ? (
         <div className="flex flex-col justify-center items-center h-screen">
           <Loader className="animate-spin h-10 w-10 text-green-600" />
