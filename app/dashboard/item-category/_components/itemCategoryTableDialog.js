@@ -35,8 +35,15 @@ export default function ItemCategoryFormDialog({
   });
 
   useEffect(() => {
-    if (isOpen && defaultValues) {
-      reset(defaultValues);
+    if (isOpen) {
+      if (isEdit && defaultValues) {
+        reset(defaultValues);
+      } else {
+        reset({
+          name: "",
+          remarks: "",
+        });
+      }
     }
   }, [isOpen, defaultValues, reset]);
 
