@@ -48,15 +48,19 @@ export default function ItemTableList({
             <TableCell>
               <Badge
                 className={`${
-                  addon.used === "yes" ? "bg-primary" : "bg-red-600"
+                  addon.used === "yes"
+                    ? "bg-primary hover:bg-primary"
+                    : "bg-red-600 hover:bg-red-600"
                 } text-white mr-2`}
               >
                 Used
               </Badge>
               <Badge
                 className={`${
-                  addon.functional === "yes" ? "bg-primary" : "bg-red-600"
-                } text-white`}
+                  addon.functional === "yes"
+                    ? "bg-primary hover:bg-primary"
+                    : "bg-red-600 hover:bg-red-600"
+                } text-white hover:none`}
               >
                 Functional
               </Badge>
