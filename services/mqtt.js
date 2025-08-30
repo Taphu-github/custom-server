@@ -7,11 +7,13 @@ const device = require("../models/device");
 const { notify_user } = require("./fcm_services");
 
 var options = {
-  host: "34773dcfbaf24a4bba66e5a333c2df9a.s1.eu.hivemq.cloud",
+  // host: "34773dcfbaf24a4bba66e5a333c2df9a.s1.eu.hivemq.cloud",
+  host: "d9fb97d1fa244fb3a36711e144b245ee.s1.eu.hivemq.cloud",
   port: 8883,
   protocol: "mqtts",
-  username: "ads@rpi",
-  password: "Ads12345678",
+  // username: "ads@rpi",
+  username: "dakzin",
+  password: "Dakz1n@cst",
 };
 
 var animal_obj = {
