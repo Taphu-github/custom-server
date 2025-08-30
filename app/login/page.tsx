@@ -14,9 +14,11 @@ export default function LoginPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-primary-foreground">
               <Image src={logo} width={200} height={200} alt="Image" />
             </div>
-            <p className="font-bold text-xl">
-              Animal Intrusion Detection System
-            </p>
+            <div >
+              <p className="font-bold text-xl"> Dakzin: AI-powered Animal Intrusion Detection System</p>
+              <p className="font-medium text-lg text-center">Enabling Co-existence between Humans and Wildlife in Bhutan</p>
+            </div>
+           
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

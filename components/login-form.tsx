@@ -17,6 +17,11 @@ export function LoginForm({
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(""); // Add this state
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
   useEffect(() => {
     // Check if the user is already logged in
     if (error) {
@@ -33,6 +38,7 @@ export function LoginForm({
     const username = formData.get("username");
     const password = formData.get("password");
     console.log("Data", username, password);
+    
 
     try {
       const response = await fetch("/api/auth/adminlogin", {
@@ -137,6 +143,73 @@ export function LoginForm({
             </div>
           </Card>
         )}
+        <>
+          {/* Button trigger modal */}
+          <button 
+            type="button" 
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+            onClick={openModal}
+          >
+            Click to know about the Dakzin Project
+          </button>
+
+          {/* Modal */}
+          {isOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+              onClick={closeModal}
+            >
+              {/* Modal Dialog */}
+              <div 
+                className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Content */}
+                <div className="flex flex-col">
+                  
+                  {/* Modal Header */}
+                  <div className="flex justify-between items-center p-4 border-b border-gray-200">
+                    <h5 className="text-lg font-semibold text-gray-900">
+                      About Dakzin
+                    </h5>
+                    <button 
+                      type="button" 
+                      className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-6 h-6 flex items-center justify-center"
+                      onClick={closeModal}
+                    >
+                      <span>&times;</span>
+                    </button>
+                  </div>
+                  
+                  {/* Modal Body */}
+                  <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
+                    <p>This web app was developed as a part of AIoT-based Animal Intrusion Detection System. This system prototype was initially developed as the student project(2023-2024) by College of Science and Technology (CST), Royal University of Bhutan in collaboration with Agriculture Machinery and Technology Center (AMTC), Paro, Department of Agriculture /Ministry of Agriculture and Livestocks. The system is enhanced  through the project titled “ Smart Solution for Human-Wildlife Conflict: Implementing an Intrusion Detection System” funded by Bhutan Foundation, Thimphu and co-financed by AMTC and CST from 2024-2025.<br/>This collaborative effort leverages CST's expertise in engineering and technology to create a solution that not only safeguards crops but also enabling harmonious coexistence between human and wildlife towards ensuring the sustainable food security of Bhutan. This project was conceptualized by IT Department of the College of Science & Technology and started working on as the student project 2021.</p>
+                  </div>
+                  
+                  {/* Modal Footer
+                  <div className="flex justify-end gap-2 p-4 border-t border-gray-200">
+                    <button 
+                      type="button" 
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
+                      onClick={closeModal}
+                    >
+                      Close
+                    </button>
+                    <button 
+                      type="button" 
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+                      onClick={closeModal}
+                    >
+                      Got it!
+                    </button>
+                  </div> */}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+
+
       </div>
     </form>
   );
