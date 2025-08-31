@@ -252,15 +252,15 @@ export function LoginForm({
                             <ul className="space-y-2 pl-4 text-sm">
                               <li className="flex items-start text-gray-700">
                                       <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                      <span>{"Mr. Jeevan Gurung, Project member(Lecturer, CST)"}</span>
+                                      <span>{"Mr. Jeevan Gurung, (Lecturer, CST"}</span>
                                   </li>
                               <li className="flex items-start text-gray-700">
                                   <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                  <span>{"Mr. Tandin Phuntsho, Developer (Software Engineer/CST IT Graduate)"}</span>
+                                  <span>{"Mr. Tandin Phuntsho, (Software Engineer/CST IT Graduate)"}</span>
                               </li>
                               <li className="flex items-start text-gray-700">
                                   <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                  <span>{"Mr. Pravaat Chhetri, Developer(Software Engineer/CST IT Graduate)"}</span>
+                                  <span>{"Mr. Pravaat Chhetri, (Software Engineer/CST IT Graduate)"}</span>
                               </li>
                               
                             </ul>

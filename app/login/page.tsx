@@ -16,7 +16,7 @@ export default function LoginPage() {
             </div>
             <div >
               <p className="font-bold text-xl"> Dakzin: AI-powered Animal Intrusion Detection System</p>
-              <p className="font-medium text-lg text-center">Enabling Co-existence between Humans and Wildlife in Bhutan</p>
+              <p className="font-medium text-lg text-center">Enabling Human-Wildlife Co-existence in Bhutan</p>
             </div>
            
           </a>
