@@ -171,7 +171,7 @@ export default function AnimalCategoryTable() {
               {Array.isArray(animalCategories) &&
                 animalCategories.map((category) => (
                   <TableRow key={category.a_c_id}>
-                    <TableCell>{Number(category.a_c_id) + 1}</TableCell>
+                    <TableCell>{Number(category.a_c_id)}</TableCell>
                     <TableCell>{category.animal_name}</TableCell>
                     <TableCell>{category.animal_description}</TableCell>
                     <TableCell>
