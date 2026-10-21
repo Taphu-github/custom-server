@@ -3,12 +3,12 @@
 // Shared building blocks for the public Dakzin pages:
 // styles, header, footer, page hero, FAQ accordion and icons.
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import logo from "@/app/AIDS_logo.png";
-import { NAV, LOGIN_PATH, CONTACT, PAGE_PHOTOS, type FaqItem } from "./site-content";
+import { NAV, LOGIN_PATH, CONTACT, PAGE_PHOTOS, DETECTABLE_ANIMALS, TEAM_GROUPS, type FaqItem } from "./site-content";
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&display=swap');
@@ -288,7 +288,30 @@ function SiteFooter() {
  * Wraps every public page: styles, header (with optional hero content) and footer.
  * `hero` is rendered inside the dark header band.
  */
+// Every photo used across the public pages. They are downloaded quietly in the background
+// on the first page a visitor opens, so later pages show their photos instantly.
+const ALL_PHOTOS = [
+  ...Object.values(PAGE_PHOTOS).map((p) => p.src),
+  ...DETECTABLE_ANIMALS.flatMap((a) => (a.photo ? [a.photo] : [])),
+  ...TEAM_GROUPS.flatMap((g) => g.members.flatMap((m) => (m.photo ? [m.photo] : []))),
+];
+
+function usePreloadPhotos() {
+  useEffect(() => {
+    const load = () =>
+      ALL_PHOTOS.forEach((src) => {
+        const img = new window.Image();
+        img.decoding = "async";
+        img.src = src;
+      });
+    if (document.readyState === "complete") load();
+    else window.addEventListener("load", load, { once: true });
+    return () => window.removeEventListener("load", load);
+  }, []);
+}
+
 export function SiteShell({ hero, children }: { hero?: ReactNode; children: ReactNode }) {
+  usePreloadPhotos();
   return (
     <div className="dz">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
@@ -327,7 +350,7 @@ export function PageHero({ eyebrow, title, lead, crumb, children }: PageHeroProp
       {photo && (
         <figure className="ph-card">
           <div className="ph-img">
-            <Image src={photo.src} alt={photo.caption} fill sizes="(min-width: 960px) 600px, 100vw" style={{ objectFit: "cover" }} priority />
+            <Image src={photo.src} alt={photo.caption} fill unoptimized priority style={{ objectFit: "cover" }} />
             {photo.tag && <span className="ph-tag">{photo.tag}</span>}
           </div>
           <figcaption>{photo.caption}</figcaption>

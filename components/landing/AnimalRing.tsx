@@ -88,7 +88,7 @@ export default function AnimalRing() {
               <li key={a.name} className={`ar-item${i === active ? " on" : ""}`} style={{ left: `${left}%`, top: `${top}%` }}>
                 <div className="ar-photo">
                   {a.photo ? (
-                    <Image src={a.photo} alt={a.name} fill sizes="140px" style={{ objectFit: "cover" }} />
+                    <Image src={a.photo} alt={a.name} fill unoptimized priority style={{ objectFit: "cover" }} />
                   ) : (
                     <span className="ar-initial" aria-hidden="true">{a.name[0]}</span>
                   )}

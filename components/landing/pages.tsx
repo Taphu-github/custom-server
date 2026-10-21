@@ -187,7 +187,7 @@ export function AboutPage() {
                 <div className="member" key={g.title + m.name}>
                   <div className="avatar">
                     {m.photo ? (
-                      <Image src={m.photo} alt={m.name} width={192} height={192} />
+                      <Image src={m.photo} alt={m.name} width={192} height={192} unoptimized />
                     ) : (
                       <span aria-hidden="true">{initials(m.name)}</span>
                     )}
