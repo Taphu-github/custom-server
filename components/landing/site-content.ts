@@ -44,13 +44,13 @@ export const NAV: NavItem[] = [
 export interface DetectableAnimal { id: number; name: string; kind: "Wild" | "Livestock"; photo?: string }
 
 export const DETECTABLE_ANIMALS: DetectableAnimal[] = [
-  { id: 0, name: "Bear", kind: "Wild" },
-  { id: 1, name: "Wild boar", kind: "Wild" },
-  { id: 2, name: "Cattle", kind: "Livestock" },
+  { id: 0, name: "Bear", kind: "Wild", photo: "/animals/bear.jpg" },
+  { id: 1, name: "Wild boar", kind: "Wild", photo: "/animals/wild-boar.jpg" },
+  { id: 2, name: "Cattle", kind: "Livestock", photo: "/animals/cattle.jpg" },
   { id: 3, name: "Deer", kind: "Wild", photo: "/animals/deer.jpg" },
   { id: 4, name: "Elephant", kind: "Wild", photo: "/animals/elephant.jpg" },
-  { id: 5, name: "Horse", kind: "Livestock" },
-  { id: 6, name: "Monkey", kind: "Wild" },
+  { id: 5, name: "Horse", kind: "Livestock", photo: "/animals/horse.jpg" },
+  { id: 6, name: "Monkey", kind: "Wild", photo: "/animals/monkey.jpg" },
 ];
 
 /* ───────────── How it works ───────────── */
