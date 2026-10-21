@@ -28,6 +28,17 @@ export interface HeroImage { src: string; alt: string }
 
 export const LOGIN_PATH = "/login";
 
+/* Photo shown in the top band of each inner page (keyed by the page's crumb name). Files are in /public/pages. */
+export interface PagePhoto { src: string; caption: string; tag?: string }
+export const PAGE_PHOTOS: Record<string, PagePhoto> = {
+  "How it works": { src: "/pages/site-team.jpg", caption: "A Dakzin repellent station with its tiger doll and speaker" },
+  Features: { src: "/pages/monkey-capture.jpg", caption: "A monkey seen at the forest edge of a pilot site", tag: "Monkey detected" },
+  News: { src: "/pages/launch-banner.jpg", caption: "Dakzin System Launch · Trongsa & Zhemgang, September 2025" },
+  "Project milestones": { src: "/pages/launch-community.jpg", caption: "Launching the system with the local community" },
+  FAQ: { src: "/pages/user-training.jpg", caption: "Hands-on user training with farmers" },
+  About: { src: "/pages/blessing.jpg", caption: "Blessing the Dakzin station at a pilot site" },
+};
+
 export const NAV: NavItem[] = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/features", label: "Features" },

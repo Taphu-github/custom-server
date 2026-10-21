@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import logo from "@/app/AIDS_logo.png";
-import { NAV, LOGIN_PATH, CONTACT, type FaqItem } from "./site-content";
+import { NAV, LOGIN_PATH, CONTACT, PAGE_PHOTOS, type FaqItem } from "./site-content";
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&display=swap');
@@ -93,6 +93,13 @@ const CSS = `
 
 /* inner page hero */
 .dz .page-hero { padding-top:clamp(16px, 2.5vw, 32px); padding-bottom:clamp(40px, 5vw, 56px); }
+.dz .page-hero.has-photo { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 56px; align-items:center; }
+@media (min-width: 960px) { .dz .page-hero.has-photo { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
+.dz .ph-text { min-width:0; }
+.dz .ph-card { margin:0; width:100%; max-width:620px; justify-self:end; background:#fff; border-radius:24px; padding:12px; box-shadow:0 20px 50px rgba(20,83,45,.18); }
+.dz .ph-img { position:relative; aspect-ratio:16/10; border-radius:16px; overflow:hidden; background:#EEF2EF; }
+.dz .ph-tag { position:absolute; left:14px; top:14px; background:var(--dz-primary); color:var(--dz-primary-fg); font-size:13px; font-weight:600; padding:4px 12px; border-radius:999px; }
+.dz .ph-card figcaption { padding:10px 6px 2px; font-size:14px; color:#4A5650; }
 .dz .page-hero h1 { margin:0 0 20px; font-weight:800; font-size:clamp(34px, 4.2vw, 58px); line-height:1.05; letter-spacing:-.02em; max-width:48rem; }
 .dz .page-hero p.lead, .dz .hero p.lead { margin-bottom:0; }
 .dz .crumbs { font-size:15px; color:var(--dz-on-dark-muted); margin:0 0 16px; }
@@ -305,15 +312,27 @@ interface PageHeroProps {
 }
 
 export function PageHero({ eyebrow, title, lead, crumb, children }: PageHeroProps) {
+  const photo = PAGE_PHOTOS[crumb];
   return (
-    <section className="wrap page-hero">
-      <p className="crumbs">
-        <Link href="/">Home</Link> / {crumb}
-      </p>
-      <p className="eyebrow">{eyebrow}</p>
-      <h1>{title}</h1>
-      {lead && <p className="lead">{lead}</p>}
-      {children}
+    <section className={`wrap page-hero${photo ? " has-photo" : ""}`}>
+      <div className="ph-text">
+        <p className="crumbs">
+          <Link href="/">Home</Link> / {crumb}
+        </p>
+        <p className="eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        {lead && <p className="lead">{lead}</p>}
+        {children}
+      </div>
+      {photo && (
+        <figure className="ph-card">
+          <div className="ph-img">
+            <Image src={photo.src} alt={photo.caption} fill sizes="(min-width: 960px) 600px, 100vw" style={{ objectFit: "cover" }} priority />
+            {photo.tag && <span className="ph-tag">{photo.tag}</span>}
+          </div>
+          <figcaption>{photo.caption}</figcaption>
+        </figure>
+      )}
     </section>
   );
 }
