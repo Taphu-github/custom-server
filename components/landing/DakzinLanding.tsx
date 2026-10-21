@@ -3,8 +3,8 @@
 // Home page ("/"): a scrolling overview. Each section links to its full page.
 
 import Link from "next/link";
-import HeroCarousel from "./HeroCarousel";
-import { SiteShell, CtaBand, MoreLink, BellIcon } from "./site";
+import AnimalRing from "./AnimalRing";
+import { SiteShell, CtaBand, MoreLink } from "./site";
 import { STEPS, FEATURES } from "./site-content";
 import { NEWS_ITEMS } from "./news-content";
 
@@ -36,20 +36,7 @@ function HomeHero() {
       </div>
 
       <div>
-        <div className="mock">
-          <div className="feed">
-            <HeroCarousel />
-            <div className="bbox-label" style={{ zIndex: 2 }}>Animal detected</div>
-          </div>
-          <div className="alert">
-            <BellIcon />
-            <div>
-              <strong>Alert sent to farm owner</strong>
-              <br />
-              <span style={{ color: "var(--dz-on-dark-muted)" }}>Mobile app notification · just now</span>
-            </div>
-          </div>
-        </div>
+        <AnimalRing />
       </div>
     </section>
   );

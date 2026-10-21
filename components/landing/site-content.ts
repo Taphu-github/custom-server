@@ -37,6 +37,22 @@ export const NAV: NavItem[] = [
   { href: "/about", label: "About" },
 ];
 
+/* ───────────── Animals the AI model recognises ───────────── */
+// Same order and IDs as the model's classes (services/mqtt.js and lib/data_preprocess.js).
+// photo: a square image in /public/animals, e.g. "/animals/bear.jpg". Without one, the first letter is shown.
+
+export interface DetectableAnimal { id: number; name: string; kind: "Wild" | "Livestock"; photo?: string }
+
+export const DETECTABLE_ANIMALS: DetectableAnimal[] = [
+  { id: 0, name: "Bear", kind: "Wild" },
+  { id: 1, name: "Wild boar", kind: "Wild" },
+  { id: 2, name: "Cattle", kind: "Livestock" },
+  { id: 3, name: "Deer", kind: "Wild", photo: "/animals/deer.jpg" },
+  { id: 4, name: "Elephant", kind: "Wild", photo: "/animals/elephant.jpg" },
+  { id: 5, name: "Horse", kind: "Livestock" },
+  { id: 6, name: "Monkey", kind: "Wild" },
+];
+
 /* ───────────── How it works ───────────── */
 
 // Home page summary
