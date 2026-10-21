@@ -58,7 +58,10 @@ const CSS = `
 .dz :focus-visible { outline:2px solid var(--dz-highlight); outline-offset:3px; border-radius:4px; }
 
 /* header + nav */
-.dz .site-header { background:var(--dz-dark); color:var(--dz-bg); }
+/* Light green header band (#90EE90): dark green text on it */
+.dz .site-header { background:#90EE90; color:#0B2A17;
+  --dz-on-dark:#0B2A17; --dz-on-dark-muted:#1F4D2E; --dz-highlight:#14532D;
+  --dz-dark-line:rgba(20,83,45,.18); --dz-dark-line-strong:rgba(20,83,45,.4); }
 /* logo left · page links centred · Log in at the far right */
 .dz nav.top { display:grid; grid-template-columns:1fr auto 1fr; grid-template-areas:"logo links login"; align-items:center; gap:16px 24px; max-width:var(--page-max); margin:0 auto; padding:20px var(--gutter); }
 .dz nav.top .logo { grid-area:logo; justify-self:start; }
@@ -72,8 +75,8 @@ const CSS = `
 .dz .logo-img { width:40px; height:40px; border-radius:8px; background:#fff; padding:3px; object-fit:contain; }
 .dz .nav-links { display:flex; flex-wrap:wrap; align-items:center; gap:8px 28px; font-size:16px; }
 .dz .nav-links a:not(.btn) { color:var(--dz-on-dark); padding:10px 0; border-bottom:2px solid transparent; }
-.dz .nav-links a:not(.btn):hover { color:#fff; }
-.dz .nav-links a[aria-current="page"] { color:#fff; border-bottom-color:var(--dz-highlight); }
+.dz .nav-links a:not(.btn):hover { color:#14532D; }
+.dz .nav-links a[aria-current="page"] { color:#14532D; font-weight:600; border-bottom-color:var(--dz-highlight); }
 
 /* home hero */
 .dz .hero { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:clamp(28px, 4vw, 64px); padding-top:clamp(16px, 2.5vw, 32px); padding-bottom:clamp(40px, 5vw, 64px); }
@@ -93,7 +96,7 @@ const CSS = `
 .dz .page-hero h1 { margin:0 0 20px; font-weight:800; font-size:clamp(34px, 4.2vw, 58px); line-height:1.05; letter-spacing:-.02em; max-width:48rem; }
 .dz .page-hero p.lead, .dz .hero p.lead { margin-bottom:0; }
 .dz .crumbs { font-size:15px; color:var(--dz-on-dark-muted); margin:0 0 16px; }
-.dz .crumbs a:hover { color:#fff; text-decoration:underline; }
+.dz .crumbs a:hover { color:#14532D; text-decoration:underline; }
 
 /* sections */
 .dz .block { padding-top:clamp(48px, 6vw, 72px); padding-bottom:clamp(48px, 6vw, 72px); }
@@ -135,7 +138,7 @@ const CSS = `
 .dz .group-item p { margin:0; color:var(--dz-muted); font-size:16px; }
 .dz .jump { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
 .dz .jump a { border:1.5px solid var(--dz-dark-line-strong); color:var(--dz-on-dark); border-radius:999px; padding:8px 16px; font-size:15px; font-weight:600; }
-.dz .jump a:hover { border-color:var(--dz-highlight); color:#fff; }
+.dz .jump a:hover { border-color:var(--dz-highlight); color:#14532D; }
 
 /* faq */
 .dz .faq-list { border-top:1px solid var(--dz-line); }
