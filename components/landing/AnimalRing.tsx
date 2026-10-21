@@ -13,7 +13,7 @@ const ITEM = 19; // % of the ring's width, size of each photo
 
 const CSS = `
 /* card behind the ring */
-.dz .ar-wrap { --ar-card:#FFFFFF; width:100%; max-width:clamp(320px, calc(100svh - 280px), 480px); margin:0 auto; background:var(--ar-card);
+.dz .ar-wrap { --ar-card:#FFFFFF; width:100%; margin:0; background:var(--ar-card);
                border:1px solid rgba(20,83,45,.12); border-radius:28px; padding:clamp(16px, 3vw, 32px);
                box-shadow:0 20px 50px rgba(20,83,45,.18); }
 .dz .ar-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:clamp(8px, 2vw, 16px); }
@@ -21,7 +21,8 @@ const CSS = `
 .dz .ar-head i { white-space:nowrap; font-style:normal; display:inline-flex; align-items:center; gap:6px; font-size:clamp(10px, 2.4vw, 13px); font-weight:600; color:var(--dz-on-dark-muted); }
 .dz .ar-head i::before { content:""; width:8px; height:8px; border-radius:50%; background:#16A34A; box-shadow:0 0 0 4px rgba(22,163,74,.18); }
 .dz .ar { position:relative; width:100%; aspect-ratio:1/1; list-style:none; margin:0; padding:0; }
-.dz .ar-sizer { container-type:inline-size; }
+/* the card fills its column; the ring inside stays a comfortable size */
+.dz .ar-sizer { container-type:inline-size; width:100%; max-width:clamp(300px, calc(100svh - 290px), 520px); margin:0 auto; }
 .dz .ar-orbit { position:absolute; inset:${50 - RADIUS}%; border:2px dashed var(--dz-dark-line-strong); border-radius:50%; }
 .dz .ar-centre { position:absolute; left:50%; top:50%; width:38%; aspect-ratio:1/1; transform:translate(-50%,-50%); border-radius:50%;
                  background:#F7FAF8; box-shadow:0 0 0 8px rgba(20,83,45,.05), 0 0 0 1px rgba(20,83,45,.15) inset;
