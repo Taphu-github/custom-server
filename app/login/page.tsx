@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { LoginForm } from "../../components/login-form";
 
-// Full-screen slideshow of field photos behind a centred login card.
+// Split screen: sliding field photos on the left, login form on the right.
+// On phones the photos become a strip across the top.
 // Photos live in /public/login. To change them, edit this list.
 const SLIDES = [
   { src: "/login/launch-banner.jpg", caption: "Dakzin System Launch · Trongsa & Zhemgang, September 2025" },
@@ -18,76 +19,101 @@ const SLIDES = [
 const SLIDE_MS = 6000;
 
 export default function LoginPage() {
-  const [active, setActive] = useState(0);
+  // pos runs 0..SLIDES.length; the extra last position is a copy of the first photo,
+  // so the slideshow keeps sliding left and then jumps back invisibly.
+  const [pos, setPos] = useState(0);
+  const [animate, setAnimate] = useState(true);
+  const active = pos % SLIDES.length;
 
   useEffect(() => {
-    const t = setInterval(() => setActive((i) => (i + 1) % SLIDES.length), SLIDE_MS);
+    const t = setInterval(() => {
+      setAnimate(true);
+      setPos((p) => p + 1);
+    }, SLIDE_MS);
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    if (pos !== SLIDES.length) return;
+    const t = setTimeout(() => {
+      setAnimate(false);
+      setPos(0);
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [pos]);
+
+  const goTo = (i: number) => {
+    setAnimate(true);
+    setPos(i);
+  };
+
   return (
-    <div className="relative flex min-h-svh w-screen items-center justify-center overflow-hidden bg-[#14532D] p-4 sm:p-8">
-      {/* Background slideshow: photos cross-fade with a slow zoom */}
-      <div className="absolute inset-0" aria-hidden="true">
-        {SLIDES.map((s, i) => (
-          <Image
-            key={s.src}
-            src={s.src}
-            alt=""
-            fill
-            priority={i === 0}
-            sizes="100vw"
-            className="object-cover transition-[opacity,transform] ease-out"
-            style={{
-              opacity: i === active ? 1 : 0,
-              transform: i === active ? "scale(1.08)" : "scale(1)",
-              transitionDuration: `1500ms, ${SLIDE_MS + 1500}ms`,
-            }}
-          />
-        ))}
-        {/* Soft shade so the card and caption stand out on any photo */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/35 to-black/65" />
+    <div className="grid min-h-svh w-screen bg-white lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+      {/* Left: photo slideshow */}
+      <div className="relative h-56 overflow-hidden bg-[#14532D] sm:h-72 lg:h-auto">
+        <div
+          className="flex h-full"
+          style={{
+            transform: `translateX(-${pos * 100}%)`,
+            transition: animate ? "transform 1000ms ease-in-out" : "none",
+          }}
+          aria-hidden="true"
+        >
+          {[...SLIDES, SLIDES[0]].map((s, i) => (
+            <div key={i} className="relative h-full w-full flex-shrink-0">
+              <Image src={s.src} alt="" fill priority={i === 0} sizes="(min-width: 1024px) 55vw, 100vw" className="object-cover" />
+            </div>
+          ))}
+        </div>
+
+        {/* Caption and dots on a soft bottom fade */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent px-5 pb-5 pt-16 sm:px-8 sm:pb-7">
+          <span className="inline-block rounded-full bg-[#16A34A] px-3 py-1 text-xs font-semibold text-white">
+            In the field
+          </span>
+          <p className="mt-2 max-w-lg text-sm font-medium text-white sm:text-base" aria-live="polite">
+            {SLIDES[active].caption}
+          </p>
+          <div className="mt-3 flex gap-1">
+            {SLIDES.map((s, i) => (
+              <button
+                key={s.src}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Show photo ${i + 1}`}
+                aria-current={i === active}
+                className="flex h-7 w-7 items-center justify-center"
+              >
+                <span className={`block h-2 rounded-full transition-all ${i === active ? "w-6 bg-[#4ADE80]" : "w-2 bg-white/70"}`} />
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Login card */}
-      <div className="relative z-10 w-full max-w-md rounded-3xl bg-white/95 p-6 shadow-2xl backdrop-blur-sm sm:p-10">
-        <Link href="/" className="mb-8 flex items-center gap-3">
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-border">
+      {/* Right: login */}
+      <div className="flex flex-col px-6 py-8 sm:px-12 lg:px-16">
+        <Link href="/" className="flex items-center gap-3 self-start">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-border">
             <Image src={logo} width={200} height={200} alt="Dakzin logo" />
           </div>
           <div>
-            <p className="font-bold leading-tight">Dakzin: AI-powered Animal Intrusion Detection System</p>
-            <p className="text-sm text-muted-foreground">Enabling Human-Wildlife Co-existence in Bhutan</p>
+            <p className="font-bold leading-tight">Dakzin</p>
+            <p className="text-sm text-muted-foreground">AI-powered Animal Intrusion Detection System</p>
           </div>
         </Link>
 
-        <LoginForm />
+        <div className="flex flex-1 items-center justify-center py-10">
+          <div className="w-full max-w-sm">
+            <LoginForm />
+          </div>
+        </div>
 
-        <Link href="/" className="mt-8 block text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
-          ← Back to home
-        </Link>
-      </div>
-
-      {/* Caption + slide dots */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6">
-        <p className="text-sm font-medium text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.7)]" aria-live="polite">
-          {SLIDES[active].caption}
-        </p>
-        <div className="flex gap-1">
-          {SLIDES.map((s, i) => (
-            <button
-              key={s.src}
-              type="button"
-              onClick={() => setActive(i)}
-              aria-label={`Show photo ${i + 1}`}
-              aria-current={i === active}
-              className="flex h-7 w-7 items-center justify-center"
-            >
-              <span
-                className={`block h-2 rounded-full transition-all ${i === active ? "w-6 bg-[#4ADE80]" : "w-2 bg-white/70"}`}
-              />
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
+          <Link href="/" className="underline underline-offset-4 hover:text-foreground">
+            ← Back to home
+          </Link>
+          <span>Enabling Human-Wildlife Co-existence in Bhutan</span>
         </div>
       </div>
     </div>
