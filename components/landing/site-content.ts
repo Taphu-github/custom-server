@@ -107,7 +107,7 @@ export const STEPS_DETAIL: StepDetail[] = [
 
 // Home page summary
 export const FEATURES: TitledText[] = [
-  { title: "Fewer false alarms", text: "People and livestock are told apart from wild animals." },
+  { title: "Knows each animal", text: "Recognises 7 animals by type, including cattle and horses." },
   { title: "Detection history", text: "Every visit is recorded, so intrusion patterns can be studied." },
   { title: "Admin dashboard", text: "Devices, owners and detections are managed in one place." },
 ];
@@ -118,7 +118,7 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
     title: "Detection",
     intro: "Making every alert worth acting on.",
     items: [
-      { title: "Fewer false alarms", text: "Because each detection is classified, people and livestock are told apart from wild animals." },
+      { title: "Recognises the animal", text: "Each detection is classified into one of 7 animal types, so farmers know exactly what has entered the field, from wild boar to elephant, and whether it is livestock." },
       { title: "Animal categories", text: "Animals are organised into categories that administrators can add to and update from the dashboard." },
     ],
   },
