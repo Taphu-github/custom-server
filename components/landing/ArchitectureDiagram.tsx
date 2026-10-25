@@ -49,7 +49,7 @@ const CSS = `
 
 export default function ArchitectureDiagram() {
   return (
-    <div className="ad" role="img" aria-label="Dakzin system architecture: field cameras feed the Dakzin unit, which drives the repellent system (lights, sound and a tiger doll) and sends detections over the Internet to the database and web servers with MQTT; farmers are notified on the mobile app or by SMS and call, and admins manage the system from the dashboard.">
+    <div className="ad" role="img" aria-label="Dakzin system architecture: field cameras feed the Dakzin unit, which drives the repellent system (lights, sound and a tiger doll) and sends detections over the Internet to the Dakzin server; farmers are notified on the mobile app or by SMS and call, and admins manage the system from the dashboard.">
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="base" src="/pages/architecture-base.jpg" alt="" />

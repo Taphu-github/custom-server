@@ -38,7 +38,7 @@ export function HowItWorksPage() {
         <h2 className="h2" style={{ marginBottom: 12 }}>How the parts connect</h2>
         <p style={{ margin: "0 0 24px", color: "var(--dz-muted)", maxWidth: "48rem" }}>
           Cameras at the field edge feed the Dakzin unit, which drives the repellent system and
-          sends each detection over the Internet to the database and web servers (via MQTT).
+          sends each detection over the Internet to the Dakzin server.
           Farmers are notified on the mobile app, or by SMS and call when the Internet is down,
           while administrators manage everything from the dashboard.
         </p>
