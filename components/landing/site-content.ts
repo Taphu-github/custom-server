@@ -31,7 +31,7 @@ export const LOGIN_PATH = "/login";
 /* Photo shown in the top band of each inner page (keyed by the page's crumb name). Files are in /public/pages. */
 export interface PagePhoto { src: string; caption: string; tag?: string }
 export const PAGE_PHOTOS: Record<string, PagePhoto> = {
-  "How it works": { src: "/pages/site-team.jpg", caption: "A Dakzin repellent station with its tiger doll and speaker" },
+  "How it works": { src: "/pages/station-community.jpg", caption: "The Dakzin team and local farmers at a repellent station during the system launch" },
   Features: { src: "/pages/monkey-capture.jpg", caption: "A monkey seen at the forest edge of a pilot site", tag: "Monkey detected" },
   News: { src: "/pages/launch-banner.jpg", caption: "Dakzin System Launch · Trongsa & Zhemgang, September 2025" },
   "Project milestones": { src: "/pages/launch-community.jpg", caption: "Launching the system with the local community" },
