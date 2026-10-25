@@ -118,6 +118,7 @@ export const NEWS_ITEMS: NewsItem[] = [
     date: "13–14 May 2024",
     year: 2024,
     category: "Development",
+    image: "/news/prototype-testing-amtc-2024.jpg",
     title: "Prototype integrated and tested with real animals at AMTC",
     place: "AMTC, Paro",
     lead: "A significant milestone was achieved with the successful integration and testing of the AI-powered Animal Intrusion Detection System prototype with the existing Animal Repellent System prototype developed by the Agriculture Machinery and Technology Centre (AMTC), Paro.",
