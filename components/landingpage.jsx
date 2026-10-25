@@ -251,9 +251,9 @@ export default function DakzinLanding() {
       <header>
         <nav className="wrap">
           <a href="#top" className="logo display">
-            <LogoMark />
-            DAKZIN AI
-          </a>
+          <LogoMark />
+          DAKZINAI
+         </a>
           <div className="nav-links">
             <a href="#how">How it works</a>
             <a href="#features">Features</a>

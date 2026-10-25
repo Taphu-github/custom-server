@@ -63,27 +63,45 @@ const CSS = `
   --dz-on-dark:#0B2A17; --dz-on-dark-muted:#1F4D2E; --dz-highlight:#14532D;
   --dz-dark-line:rgba(20,83,45,.18); --dz-dark-line-strong:rgba(20,83,45,.4); }
 /* logo left · page links centred · Log in at the far right */
-.dz nav.top { display:grid; grid-template-columns:1fr auto 1fr; grid-template-areas:"logo links login"; align-items:center; gap:16px 24px; max-width:var(--page-max); margin:0 auto; padding:20px var(--gutter); }
+.dz nav.top { display:grid; grid-template-columns:1fr auto 1fr; grid-template-areas:"logo links login"; align-items:center; gap:16px 24px; max-width:var(--page-max); margin:0 auto; padding:14px var(--gutter); }
 .dz nav.top .logo { grid-area:logo; justify-self:start; }
 .dz nav.top .nav-links { grid-area:links; justify-content:center; }
 .dz nav.top .nav-login { grid-area:login; justify-self:end; padding:10px 22px; }
-@media (max-width: 900px) {
+@media (max-width: 1180px) {
   .dz nav.top { grid-template-columns:1fr auto; grid-template-areas:"logo login" "links links"; }
-  .dz nav.top .nav-links { gap:4px 20px; }
+  .dz nav.top .nav-links { gap:2px 4px; }
 }
-.dz .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; letter-spacing:.02em; }
-.dz .logo-img { width:40px; height:40px; border-radius:8px; background:#fff; padding:3px; object-fit:contain; }
-.dz .nav-links { display:flex; flex-wrap:wrap; align-items:center; gap:8px 28px; font-size:16px; }
-.dz .nav-links a:not(.btn) { color:var(--dz-on-dark); padding:10px 0; border-bottom:2px solid transparent; }
-.dz .nav-links a:not(.btn):hover { color:#14532D; }
-.dz .nav-links a[aria-current="page"] { color:#14532D; font-weight:600; border-bottom-color:var(--dz-highlight); }
+.dz .logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:24px; letter-spacing:0; }
+.dz .logo-text { display:flex; flex-direction:column; line-height:1.1; }
+.dz .logo-text small { margin-top:3px; font-family:'Source Sans 3',sans-serif; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; color:var(--dz-on-dark-muted); }
+@media (max-width: 640px) { .dz .logo-text small { font-size:9px; letter-spacing:.03em; white-space:normal; } }
+.dz .logo-img { width:40px; height:40px; border-radius:8px; background:#fff; padding:3px; object-fit:contain; box-shadow:none; }
+.dz .nav-links { display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px; font-size:16px; }
+/* Dark green menu bar across the top of every page */
+.dz .nav-band { background:#14532D; color:#fff; box-shadow:0 2px 14px rgba(0,0,0,.18);
+  --dz-on-dark-muted:#BBF7D0; }
+@media (min-width: 1181px) { .dz .nav-band { position:sticky; top:0; z-index:50; } }
+.dz .nav-links a:not(.btn) { position:relative; color:#E7F8EC; padding:8px 12px; border-radius:999px; transition:color .2s, background .2s; }
+.dz .nav-links a:not(.btn)::after { content:""; position:absolute; left:12px; right:12px; bottom:2px; height:2px; border-radius:2px; background:#4ADE80;
+                                    transform:scaleX(0); transform-origin:left; transition:transform .25s ease; }
+.dz .nav-links a:not(.btn):hover { color:#fff; background:rgba(255,255,255,.1); }
+.dz .nav-links a:not(.btn):hover::after { transform:scaleX(1); }
+.dz .nav-links a[aria-current="page"] { color:#fff; font-weight:600; background:rgba(255,255,255,.16); }
+.dz .nav-links a[aria-current="page"]::after { transform:scaleX(1); }
+.dz .logo { transition:opacity .2s; }
+.dz .logo:hover { opacity:.8; }
+.dz .logo-img { transition:transform .25s ease; }
+.dz .logo:hover .logo-img { transform:rotate(-6deg) scale(1.05); }
+.dz nav.top .nav-login { transition:background .2s, transform .2s, box-shadow .2s; }
+.dz nav.top .nav-login { background:#4ADE80; color:#0B2A17; }
+.dz nav.top .nav-login:hover { background:#86EFAC; transform:translateY(-1px); box-shadow:0 6px 16px rgba(74,222,128,.35); }
 
 /* home hero */
-.dz .hero { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:clamp(28px, 4vw, 64px); padding-top:clamp(16px, 2.5vw, 32px); padding-bottom:clamp(40px, 5vw, 64px); }
+.dz .hero { display:grid; grid-template-columns:minmax(0,1fr); align-items:start; gap:clamp(28px, 4vw, 64px); padding-top:clamp(24px, 3vw, 40px); padding-bottom:clamp(40px, 5vw, 64px); }
 .dz .hero > div { min-width:0; }
 @media (min-width: 960px) { .dz .hero { grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); } .dz .hero > div:first-child { padding-top:clamp(8px, 1.5vw, 24px); } }
 .dz .hero .eyebrow, .dz .page-hero .eyebrow { color:var(--dz-highlight); }
-.dz .hero h1 { margin:0 0 24px; font-weight:800; font-size:clamp(38px, 4.6vw, 68px); line-height:1.05; letter-spacing:-.02em; }
+.dz .hero h1 { margin:0 0 24px; font-weight:800; font-size:clamp(22px, 2.42vw, 38px); line-height:1.05; letter-spacing:-.02em; }
 .dz .hero p.lead, .dz .page-hero p.lead { margin:0 0 24px; color:var(--dz-on-dark-muted); font-size:20px; max-width:38rem; }
 .dz .mock { background:var(--dz-dark-2); border:1px solid var(--dz-dark-line); border-radius:20px; padding:20px; }
 .dz .feed { position:relative; height:clamp(240px, 28vw, 420px); border-radius:12px; background:#052E16; overflow:hidden; }
@@ -92,15 +110,15 @@ const CSS = `
 .dz .alert { margin-top:16px; display:flex; align-items:center; gap:14px; background:var(--dz-dark); border-radius:12px; padding:14px 16px; font-size:15px; line-height:1.4; }
 
 /* inner page hero */
-.dz .page-hero { padding-top:clamp(16px, 2.5vw, 32px); padding-bottom:clamp(40px, 5vw, 56px); }
-.dz .page-hero.has-photo { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 56px; align-items:center; }
+.dz .page-hero { padding-top:clamp(24px, 3vw, 40px); padding-bottom:clamp(40px, 5vw, 56px); }
+.dz .page-hero.has-photo { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 56px; align-items:start; }
 @media (min-width: 960px) { .dz .page-hero.has-photo { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
 .dz .ph-text { min-width:0; }
 .dz .ph-card { margin:0; width:100%; max-width:620px; justify-self:end; background:#fff; border-radius:24px; padding:12px; box-shadow:0 20px 50px rgba(20,83,45,.18); }
 .dz .ph-img { position:relative; aspect-ratio:16/10; border-radius:16px; overflow:hidden; background:#EEF2EF; }
 .dz .ph-tag { position:absolute; left:14px; top:14px; background:var(--dz-primary); color:var(--dz-primary-fg); font-size:13px; font-weight:600; padding:4px 12px; border-radius:999px; }
 .dz .ph-card figcaption { padding:10px 6px 2px; font-size:14px; color:#4A5650; }
-.dz .page-hero h1 { margin:0 0 20px; font-weight:800; font-size:clamp(34px, 4.2vw, 58px); line-height:1.05; letter-spacing:-.02em; max-width:48rem; }
+.dz .page-hero h1 { margin:0 0 20px; font-weight:800; font-size:clamp(22px, 2.42vw, 38px); line-height:1.05; letter-spacing:-.02em; max-width:48rem; }
 .dz .page-hero p.lead, .dz .hero p.lead { margin-bottom:0; }
 .dz .crumbs { font-size:15px; color:var(--dz-on-dark-muted); margin:0 0 16px; }
 .dz .crumbs a:hover { color:#14532D; text-decoration:underline; }
@@ -256,10 +274,14 @@ export function ArrowIcon() {
 function SiteNav() {
   const pathname = usePathname();
   return (
+    <div className="nav-band">
     <nav className="top" aria-label="Main">
       <Link href="/" className="logo display">
         <Image src={logo} alt="" className="logo-img" priority />
-        DAKZIN
+        <span className="logo-text">
+          DakzinAI
+          <small>Enabling human–wildlife coexistence in Bhutan</small>
+        </span>
       </Link>
       <div className="nav-links">
         {NAV.map((item) => (
@@ -270,6 +292,7 @@ function SiteNav() {
       </div>
       <Link href={LOGIN_PATH} className="btn btn-primary nav-login">Log in</Link>
     </nav>
+    </div>
   );
 }
 
@@ -277,7 +300,7 @@ function SiteFooter() {
   return (
     <footer>
       <div className="wrap base">
-        <span>© {new Date().getFullYear()} Dakzin · {CONTACT.org}</span>
+        <span>© {new Date().getFullYear()} DakzinAI · {CONTACT.org}</span>
         <span>{CONTACT.email} · {CONTACT.place}</span>
       </div>
     </footer>

@@ -98,7 +98,7 @@ export default function LoginPage() {
             <Image src={logo} width={200} height={200} alt="Dakzin logo" />
           </div>
           <div>
-            <p className="font-bold leading-tight">Dakzin</p>
+            <p className="font-bold leading-tight">DakzinAI</p>
             <p className="text-sm text-muted-foreground">AI-powered Animal Intrusion Detection System</p>
           </div>
         </Link>
