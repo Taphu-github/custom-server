@@ -37,7 +37,15 @@ const CSS = `
 
 /* featured (latest) story */
 .dz .nf-feature { display:grid; grid-template-columns:minmax(0,1fr); background:#fff; border:1px solid var(--dz-line); border-radius:20px; overflow:hidden; scroll-margin-top:24px; }
-@media (min-width: 900px) { .dz .nf-feature { grid-template-columns:300px minmax(0,1fr); } }
+@media (min-width: 900px) { .dz .nf-feature { grid-template-columns:300px minmax(0,1fr); } .dz .nf-feature.has-img { grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); } }
+/* when the story has a picture, it replaces the dark green panel */
+.dz .nf-side.img { position:relative; padding:0; background:#0E3A73; justify-content:flex-start; gap:0; }
+.dz .nf-side.img .pic { width:100%; aspect-ratio:718/405; background-size:cover; background-position:center; }
+
+.dz .nf-side.img .over { position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:16px 22px 20px; color:#fff; flex:1; align-content:flex-start; }
+.dz .nf-side.img .label { color:#86EFAC; }
+.dz .nf-side.img .date { font-size:clamp(18px, 1.8vw, 24px); }
+.dz .nf-side.img .place { color:#E5E7EB; font-size:14px; flex-basis:100%; }
 .dz .nf-side { background:var(--dz-dark); color:var(--dz-on-dark); padding:28px; display:flex; flex-direction:column; gap:12px; }
 .dz .nf-side .label { font-size:13px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--dz-highlight); }
 .dz .nf-side .date { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(28px, 3vw, 40px); line-height:1.05; }
@@ -119,18 +127,31 @@ function MoreText({ item, open, onToggle }: StoryPartsProps) {
 function FeaturedStory(props: StoryPartsProps) {
   const { item } = props;
   return (
-    <article className="nf-feature" id={item.id} aria-labelledby={`${item.id}-title`}>
-      <div className="nf-side">
-        <span className="label">Latest</span>
-        <span className="ns-tag">{item.category}</span>
-        <time className="date">{item.date}</time>
-        <span className="place">
-          <PinIcon /> {item.place}
-        </span>
-      </div>
+    <article className={`nf-feature${item.image ? " has-img" : ""}`} id={item.id} aria-labelledby={`${item.id}-title`}>
+      {item.image ? (
+        <div className="nf-side img">
+          <div className="pic" style={{ backgroundImage: `url(${item.image})` }} role="img" aria-label={item.title} />
+          <div className="over">
+            <span className="label">Latest</span>
+            <span className="ns-tag">{item.category}</span>
+            <time className="date">{item.date}</time>
+            <span className="place">
+              <PinIcon /> {item.place}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="nf-side">
+          <span className="label">Latest</span>
+          <span className="ns-tag">{item.category}</span>
+          <time className="date">{item.date}</time>
+          <span className="place">
+            <PinIcon /> {item.place}
+          </span>
+        </div>
+      )}
       <div className="nf-main">
         <h2 id={`${item.id}-title`}>{item.title}</h2>
-        {item.image && <img className="ns-img" src={item.image} alt="" />}
         <p className="ns-lead">{item.lead}</p>
         <Facts item={item} />
         <MoreText {...props} />

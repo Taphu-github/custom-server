@@ -129,7 +129,7 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
     title: "Detection",
     intro: "Making every alert worth acting on.",
     items: [
-      { title: "Recognises the animal", text: "Each detection is classified into one of 7 animal types, so farmers know exactly what has entered the field, from wild boar to elephant, and whether it is livestock." },
+      { title: "Recognises the animal", text: "Each detection is classified into one of 7 animal types, so farmers know exactly what has entered the field." },
       { title: "Animal categories", text: "Animals are organised into categories that administrators can add to and update from the dashboard." },
     ],
   },
@@ -139,9 +139,9 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
     intro: "Turning every detection into useful information.",
     items: [
       { title: "Detection history & analysis", text: "Review where and when animals were detected to plan fencing, patrols and support." },
-      { title: "Device & owner management", text: "Register field units and link them to farm owners by dzongkhag, gewog and village." },
+      { title: "Device & owner management", text: "Register additional DakzinAI systems and assign  farm owners at the field" },
       { title: "User management", text: "Control who can access the dashboard and what they can do." },
-      { title: "Device connection settings", text: "Manage the MQTT credentials each field unit uses to send detections to the server." },
+      { title: "Device connection settings", text: "Manage the MQTT credentials each DakzinAI system uses to send detections to the server." },
     ],
   },
 ];
