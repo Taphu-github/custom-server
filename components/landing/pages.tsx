@@ -4,6 +4,7 @@
 // Each page covers its own topic only and links to the others instead of repeating them.
 
 import Image from "next/image";
+import ArchitectureDiagram from "./ArchitectureDiagram";
 import { SiteShell, PageHero, CtaBand, MoreLink, FaqList } from "./site";
 import { STEPS_DETAIL, FEATURE_GROUPS, FAQ_GROUPS, PARTNER_DETAILS, RELATED_PROJECTS, TEAM_GROUPS } from "./site-content";
 
@@ -42,15 +43,8 @@ export function HowItWorksPage() {
           while administrators manage everything from the dashboard.
         </p>
         <figure className="arch-fig">
-          <a href="/pages/architecture.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open the architecture diagram full size">
-            <Image
-              src="/pages/architecture.jpg"
-              alt="Dakzin system architecture: field cameras, the Dakzin unit, the repellent system, database and web servers with MQTT, admin dashboard, and farmer alerts by mobile app or SMS"
-              width={1018}
-              height={566}
-              unoptimized
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
+          <a href="/pages/architecture.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open the architecture diagram full size" style={{ cursor: "zoom-in" }}>
+            <ArchitectureDiagram />
           </a>
           <figcaption>Dakzin system architecture overview · click to open full size</figcaption>
         </figure>
