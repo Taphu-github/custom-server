@@ -32,7 +32,40 @@ export function HowItWorksPage() {
         />
       }
     >
+      <section className="wrap block" style={{ paddingBottom: 0 }}>
+        <p className="eyebrow">System architecture</p>
+        <h2 className="h2" style={{ marginBottom: 12 }}>How the parts connect</h2>
+        <p style={{ margin: "0 0 24px", color: "var(--dz-muted)", maxWidth: "48rem" }}>
+          Cameras at the field edge feed the Dakzin unit, which drives the repellent system and
+          sends each detection over the Internet to the database and web servers (via MQTT).
+          Farmers are notified on the mobile app, or by SMS and call when the Internet is down,
+          while administrators manage everything from the dashboard.
+        </p>
+        <figure className="arch-fig">
+          <a href="/pages/architecture.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open the architecture diagram full size">
+            <Image
+              src="/pages/architecture.jpg"
+              alt="Dakzin system architecture: field cameras, the Dakzin unit, the repellent system, database and web servers with MQTT, admin dashboard, and farmer alerts by mobile app or SMS"
+              width={1018}
+              height={566}
+              unoptimized
+              style={{ width: "100%", height: "auto", display: "block" }}
+            />
+          </a>
+          <figcaption>Dakzin system architecture overview · click to open full size</figcaption>
+        </figure>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `.dz .step:first-of-type { border-top:0; padding-top:8px; }
+.dz .arch-fig { margin:0; max-width:1060px; background:#fff; border:1px solid var(--dz-line); border-radius:20px; padding:clamp(10px, 2vw, 20px); box-shadow:0 12px 32px rgba(20,83,45,.10); }
+.dz .arch-fig a { display:block; border-radius:12px; overflow:hidden; cursor:zoom-in; }
+.dz .arch-fig figcaption { margin-top:10px; font-size:14px; color:var(--dz-muted); text-align:center; }`,
+          }}
+        />
+      </section>
+
       <section className="wrap block">
+        <p className="eyebrow">Step by step</p>
         {STEPS_DETAIL.map((s) => (
           <article className="step" key={s.n}>
             <div className="num">{s.n}</div>

@@ -44,7 +44,7 @@ export const NAV: NavItem[] = [
   { href: "/features", label: "Features" },
   { href: "/news", label: "News" },
   { href: "/milestones", label: "Project milestones" },
-  { href: "/faq", label: "FAQ" },
+  // { href: "/faq", label: "FAQ" }, // hidden for now — remove the // at the start to show it again
   { href: "/about", label: "About" },
 ];
 

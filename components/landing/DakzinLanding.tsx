@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import AnimalRing from "./AnimalRing";
-import AlertFeed from "./AlertFeed";
+import HeroSummary from "./HeroSummary";
 import { SiteShell, CtaBand, MoreLink } from "./site";
 import { STEPS, FEATURES } from "./site-content";
 import { NEWS_ITEMS } from "./news-content";
@@ -29,11 +29,15 @@ function HomeHero() {
     <section className="wrap hero">
       <div>
         <h1>Know the moment wildlife enters your field.</h1>
-        <p className="lead">
-          Dakzin is an AI-powered animal intrusion detection system. It spots wild animals
-          entering your field, alerts you in real time and drives them away without harm.
+        <p className="lead" style={{ fontSize: 17, lineHeight: 1.6 }}>
+          DakzinAI is a locally developed, field-tested AI-powered Animal Intrusion Detection &amp;
+          Intervention System designed to mitigate human-wildlife conflict (HWC) and promote
+          human-wildlife coexistence in Bhutan. It is a smart &ldquo;virtual fence&rdquo; leveraging AI,
+          computer vision and IoT technologies. The successful pilot demonstrates strong potential as a
+          low-cost, scalable, community-based alternative or complement to chain-link and electric
+          fencing.
         </p>
-        <AlertFeed />
+        <HeroSummary />
       </div>
 
       <div>
