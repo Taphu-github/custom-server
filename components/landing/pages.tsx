@@ -33,47 +33,67 @@ export function HowItWorksPage() {
         />
       }
     >
-      <section className="wrap block" style={{ paddingBottom: 0 }}>
-        <p className="eyebrow">System architecture</p>
-        <h2 className="h2" style={{ marginBottom: 12 }}>How the parts connect</h2>
-        <p style={{ margin: "0 0 24px", color: "var(--dz-muted)", maxWidth: "48rem" }}>
-          Cameras at the field edge feed the Dakzin unit, which drives the repellent system and
-          sends each detection over the Internet to the Dakzin server.
-          Farmers are notified on the mobile app, or by SMS and call when the Internet is down,
-          while administrators manage everything from the dashboard.
-        </p>
-        <figure className="arch-fig">
-          <a href="/pages/architecture.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open the architecture diagram full size" style={{ cursor: "zoom-in" }}>
-            <ArchitectureDiagram />
-          </a>
-          <figcaption>Dakzin system architecture overview · click to open full size</figcaption>
-        </figure>
+      <section className="wrap hw" style={{ paddingTop: 28, paddingBottom: 40 }}>
         <style
           dangerouslySetInnerHTML={{
-            __html: `.dz .step:first-of-type { border-top:0; padding-top:8px; }
-.dz .arch-fig { margin:0; max-width:1060px; background:#fff; border:1px solid var(--dz-line); border-radius:20px; padding:clamp(10px, 2vw, 20px); box-shadow:0 12px 32px rgba(20,83,45,.10); }
+            __html: `.dz .hw-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 40px; align-items:start; }
+@media (min-width: 1000px) { .dz .hw-grid { grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); } .dz .hw-left { position:sticky; top:96px; } .dz .hw .eyebrow { margin-bottom:6px; } }
+.dz .hw-left .h2 { margin:0 0 6px; font-size:clamp(24px, 2.2vw, 30px); }
+.dz .hw-left p.intro { margin:0 0 12px; color:var(--dz-muted); font-size:14.5px; line-height:1.5; }
+.dz .arch-fig { margin:0; background:#fff; border:1px solid var(--dz-line); border-radius:20px; padding:clamp(8px, 1.5vw, 14px); box-shadow:0 12px 32px rgba(20,83,45,.10); }
 .dz .arch-fig a { display:block; border-radius:12px; overflow:hidden; cursor:zoom-in; }
-.dz .arch-fig figcaption { margin-top:10px; font-size:14px; color:var(--dz-muted); text-align:center; }`,
+.dz .arch-fig figcaption { margin-top:8px; font-size:13px; color:var(--dz-muted); text-align:center; }
+.dz .hw-steps { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.dz .hw-step { display:grid; grid-template-columns:40px minmax(0,1fr); gap:12px; background:#fff; border:1px solid var(--dz-line); border-radius:14px; padding:10px 14px;
+               transition:border-color .2s, box-shadow .2s; }
+.dz .hw-step:hover { border-color:#86EFAC; box-shadow:0 8px 20px rgba(20,83,45,.08); }
+.dz .hw-n { width:40px; height:40px; border-radius:12px; background:#14532D; color:#4ADE80; display:flex; align-items:center; justify-content:center;
+            font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:18px; }
+.dz .hw-step h3 { margin:0; font-size:17px; line-height:1.2; }
+.dz .hw-step .lead2 { margin:1px 0 3px; font-weight:600; font-size:14px; color:var(--dz-brand-text); }
+.dz .hw-step p.b { margin:0 0 2px; font-size:13.5px; line-height:1.45; color:var(--dz-muted); }`,
           }}
         />
-      </section>
+        <div className="hw-grid">
+          <div className="hw-left">
+            <p className="eyebrow">System architecture</p>
+            <h2 className="h2">How the parts connect</h2>
+            <p className="intro">
+              Cameras at the field edge feed the Dakzin unit, which drives the repellent system and
+              sends each detection over the Internet to the Dakzin server. Farmers are notified on the
+              mobile app, or by SMS and call when the Internet is down, while administrators manage
+              everything from the dashboard.
+            </p>
+            <figure className="arch-fig">
+              <a href="/pages/architecture.jpg" target="_blank" rel="noopener noreferrer" aria-label="Open the architecture diagram full size">
+                <ArchitectureDiagram />
+              </a>
+              <figcaption>Click the diagram to open it full size</figcaption>
+            </figure>
+          </div>
 
-      <section className="wrap block">
-        <p className="eyebrow">Step by step</p>
-        {STEPS_DETAIL.map((s) => (
-          <article className="step" key={s.n}>
-            <div className="num">{s.n}</div>
-            <div>
-              <h2>{s.title}</h2>
-              <p className="lead2">{s.lead}</p>
-              {s.body.map((para, i) => (
-                <p key={i}>{para}</p>
+          <div>
+            <p className="eyebrow">Step by step</p>
+            <ol className="hw-steps">
+              {STEPS_DETAIL.map((s) => (
+                <li className="hw-step" key={s.n}>
+                  <span className="hw-n" aria-hidden="true">{s.n}</span>
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p className="lead2">{s.lead}</p>
+                    {s.body
+                      .filter((para) => !para.startsWith("["))
+                      .map((para, i) => (
+                        <p className="b" key={i}>{para}</p>
+                      ))}
+                  </div>
+                </li>
               ))}
+            </ol>
+            <div style={{ marginTop: 6 }}>
+              <MoreLink href="/features">What else Dakzin does</MoreLink>
             </div>
-          </article>
-        ))}
-        <div style={{ marginTop: 16 }}>
-          <MoreLink href="/features">What else Dakzin does</MoreLink>
+          </div>
         </div>
       </section>
 
