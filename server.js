@@ -17,7 +17,10 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3000');
   });
-  // Initialize MQTT listener when the server starts
-  initMqttClient();
+  // Initialize MQTT listener when the server starts.
+  // If it fails (for example the database or MQTT broker is unreachable), the website and login keep running.
+  initMqttClient().catch((err) => {
+    console.error('MQTT service not started:', err.message);
+  });
 
 });

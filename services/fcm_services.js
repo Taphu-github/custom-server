@@ -7,11 +7,23 @@ const FCMToken = require("../models/fcm_token.cjs");
 
 
 var admin = require("firebase-admin");
-var serviceAccount = require("../aidsv2-firebase-adminsdk-jr5yw-2e521e6e41.json");
+
+// The Firebase key is a secret file that is not stored in git. If it is missing, the website and
+// login still work; only phone (push) notifications are switched off.
+var serviceAccount = null;
+try {
+    serviceAccount = require("../aidsv2-firebase-adminsdk-jr5yw-2e521e6e41.json");
+} catch (e) {
+    console.warn("Firebase key file not found: phone notifications are disabled.");
+}
 // const device = require('../models/device');
 
 
 async function notify_user(selected_topic, animal_name){
+    if (!serviceAccount) {
+        console.warn("Skipping phone notification (no Firebase key):", animal_name);
+        return;
+    }
 
     let device_owner_lists= await Device_owner.find({"d_id":selected_topic})
     let device_owner_id_list=[]
@@ -36,9 +48,11 @@ async function notify_user(selected_topic, animal_name){
 
     await connectToMongoDB();
 
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+    }
 
 
 
