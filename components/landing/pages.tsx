@@ -1,12 +1,12 @@
 "use client";
 
-// The detail pages: /how-it-works, /features, /faq and /about.
+// The detail pages: /how-it-works, /features and /about.
 // Each page covers its own topic only and links to the others instead of repeating them.
 
 import Image from "next/image";
 import ArchitectureDiagram from "./ArchitectureDiagram";
-import { SiteShell, PageHero, CtaBand, MoreLink, FaqList } from "./site";
-import { STEPS_DETAIL, FEATURE_GROUPS, FAQ_GROUPS, PARTNER_DETAILS, RELATED_PROJECTS, TEAM_GROUPS } from "./site-content";
+import { SiteShell, PageHero, CtaBand, MoreLink } from "./site";
+import { STEPS_DETAIL, FEATURE_GROUPS, PARTNER_DETAILS, RELATED_PROJECTS, TEAM_GROUPS } from "./site-content";
 
 /** "Mr. Karma Wangchuk" → "KW" (honorifics are skipped). */
 function initials(name: string) {
@@ -81,11 +81,9 @@ export function HowItWorksPage() {
                   <div>
                     <h3>{s.title}</h3>
                     <p className="lead2">{s.lead}</p>
-                    {s.body
-                      .filter((para) => !para.startsWith("["))
-                      .map((para, i) => (
-                        <p className="b" key={i}>{para}</p>
-                      ))}
+                    {s.body.map((para, i) => (
+                      <p className="b" key={i}>{para}</p>
+                    ))}
                   </div>
                 </li>
               ))}
@@ -139,40 +137,6 @@ export function FeaturesPage() {
       </section>
 
       <CtaBand />
-    </SiteShell>
-  );
-}
-
-/* ───────────── /faq ───────────── */
-
-export function FaqPage() {
-  return (
-    <SiteShell
-      hero={
-        <PageHero
-          crumb="FAQ"
-          eyebrow="FAQ"
-          title="Frequently asked questions"
-          lead="Looking for how the system works, who built it or where it is used? See How it works, About and Project milestones."
-        >
-          <div className="jump">
-            {FAQ_GROUPS.map((g) => (
-              <a key={g.id} href={`#${g.id}`}>{g.title}</a>
-            ))}
-          </div>
-        </PageHero>
-      }
-    >
-      <section className="wrap narrow block">
-        {FAQ_GROUPS.map((g, gi) => (
-          <div className="faq-group" id={g.id} key={g.id}>
-            <h2>{g.title}</h2>
-            <FaqList items={g.items} idPrefix={`faq-${g.id}`} firstOpen={gi === 0} />
-          </div>
-        ))}
-      </section>
-
-      <CtaBand title="Still have a question?" text="Get in touch with the Dakzin team." />
     </SiteShell>
   );
 }

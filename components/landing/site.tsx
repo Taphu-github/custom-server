@@ -1,14 +1,14 @@
 "use client";
 
 // Shared building blocks for the public Dakzin pages:
-// styles, header, footer, page hero, FAQ accordion and icons.
+// styles, header, footer, page hero, call-to-action band and the arrow icon.
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import logo from "@/app/AIDS_logo.png";
-import { NAV, LOGIN_PATH, CONTACT, PAGE_PHOTOS, DETECTABLE_ANIMALS, TEAM_GROUPS, type FaqItem } from "./site-content";
+import { NAV, LOGIN_PATH, CONTACT, PAGE_PHOTOS, DETECTABLE_ANIMALS, TEAM_GROUPS } from "./site-content";
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Sans+3:wght@400;600&display=swap');
@@ -111,17 +111,23 @@ const CSS = `
 
 /* inner page hero */
 .dz .page-hero { padding-top:clamp(24px, 3vw, 40px); padding-bottom:clamp(40px, 5vw, 56px); }
-.dz .page-hero.has-photo { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 56px; align-items:start; }
-@media (min-width: 960px) { .dz .page-hero.has-photo { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } }
 .dz .ph-text { min-width:0; }
-/* Photo in the top band: plain image, no frame, fade or shadow */
-.dz .ph-card { position:relative; margin:0; width:100%; max-width:660px; justify-self:end; }
-.dz .ph-img { position:relative; aspect-ratio:16/10; }
-.dz .ph-tag, .dz .ph-card figcaption { display:none; }
 .dz .page-hero h1 { margin:0 0 20px; font-weight:800; font-size:clamp(22px, 2.42vw, 38px); line-height:1.05; letter-spacing:-.02em; max-width:48rem; }
 .dz .page-hero p.lead, .dz .hero p.lead { margin-bottom:0; }
 .dz .crumbs { font-size:15px; color:var(--dz-on-dark-muted); margin:0 0 16px; }
 .dz .crumbs a:hover { color:#14532D; text-decoration:underline; }
+
+/* Inner page hero with a photo: full-width banner, photo behind, text on the left over a dark green shade */
+.dz .ph-banner { position:relative; overflow:hidden; background:#14532D; min-height:clamp(320px, 34vw, 460px); display:flex; align-items:center; }
+.dz .ph-banner .ph-bg { object-fit:cover; object-position:center; }
+.dz .ph-shade { position:absolute; inset:0; background:linear-gradient(90deg, rgba(11,42,23,.94) 0%, rgba(20,83,45,.82) 36%, rgba(20,83,45,.35) 66%, rgba(20,83,45,0) 100%); }
+.dz .ph-banner .page-hero { position:relative; z-index:1; width:100%; color:#fff;
+  --dz-on-dark:#fff; --dz-on-dark-muted:#DCFCE7; --dz-highlight:#4ADE80; }
+.dz .ph-banner .ph-text { max-width:40rem; }
+.dz .ph-banner h1 { font-size:clamp(26px, 3vw, 44px); line-height:1.1; text-shadow:0 2px 12px rgba(0,0,0,.25); }
+.dz .ph-banner p.lead { color:#E7F8EC; font-size:clamp(17px, 1.4vw, 20px); }
+.dz .ph-banner .crumbs a:hover { color:#fff; }
+@media (max-width: 760px) { .dz .ph-shade { background:linear-gradient(180deg, rgba(11,42,23,.55), rgba(11,42,23,.88)); } }
 
 /* sections */
 .dz .block { padding-top:clamp(48px, 6vw, 72px); padding-bottom:clamp(48px, 6vw, 72px); }
@@ -165,24 +171,12 @@ const CSS = `
 .dz .jump a { border:1.5px solid var(--dz-dark-line-strong); color:var(--dz-on-dark); border-radius:999px; padding:8px 16px; font-size:15px; font-weight:600; }
 .dz .jump a:hover { border-color:var(--dz-highlight); color:#14532D; }
 
-/* faq */
-.dz .faq-list { border-top:1px solid var(--dz-line); }
-.dz .faq-item { border-bottom:1px solid var(--dz-line); }
-.dz .faq-q { width:100%; min-height:64px; display:flex; align-items:center; justify-content:space-between; gap:24px;
-             background:none; border:0; padding:20px 0; text-align:left; cursor:pointer;
-             font-family:'Bricolage Grotesque',sans-serif; font-weight:700; font-size:21px; color:var(--dz-ink); }
-.dz .faq-icon { display:flex; flex-shrink:0; transition:transform .2s; }
-.dz .faq-icon.open { transform:rotate(45deg); }
-.dz .faq-a { margin:0; padding:0 48px 24px 0; color:var(--dz-muted); }
-.dz .faq-group { padding-top:36px; scroll-margin-top:24px; }
-.dz .faq-group:first-child { padding-top:0; }
-.dz .faq-group h2 { margin:0 0 16px; font-size:28px; }
 
 /* cta band */
 .dz .cta { background:var(--dz-dark); color:var(--dz-bg); }
-.dz .cta .inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:24px 32px; padding-top:clamp(40px, 5vw, 64px); padding-bottom:clamp(40px, 5vw, 64px); }
+.dz .cta .inner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 32px; padding-top:clamp(20px, 2.4vw, 32px); padding-bottom:clamp(20px, 2.4vw, 32px); }
 .dz .cta .inner > div:first-child { flex:1 1 480px; min-width:0; }
-.dz .cta h2 { margin:0 0 12px; font-weight:700; font-size:44px; line-height:1.1; }
+.dz .cta h2 { margin:0 0 6px; font-weight:700; font-size:32px; line-height:1.15; }
 .dz .cta p { margin:0; color:var(--dz-on-dark-muted); }
 
 /* about */
@@ -218,48 +212,12 @@ const CSS = `
 
 /* phones */
 @media (max-width: 640px) {
-  .dz .cta h2 { font-size:32px; }
-  .dz .faq-q { font-size:18px; }
-  .dz .faq-a { padding-right:0; }
+  .dz .cta h2 { font-size:26px; }
   .dz .step .num { font-size:48px; }
 }
 `;
 
 /* ───────────── Icons ───────────── */
-
-export function BellIcon() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
-  );
-}
-
-export function PlusIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  );
-}
-
-export function PersonIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21a8 8 0 0 1 16 0" />
-    </svg>
-  );
-}
-
-export function CheckIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  );
-}
 
 export function ArrowIcon() {
   return (
@@ -300,7 +258,7 @@ function SiteFooter() {
   return (
     <footer>
       <div className="wrap base">
-        <span>© {new Date().getFullYear()} DakzinAI · {CONTACT.org}</span>
+        <span>© 2025 DakzinAI · {CONTACT.org}</span>
         <span>{CONTACT.email} · {CONTACT.place}</span>
       </div>
     </footer>
@@ -348,7 +306,7 @@ export function SiteShell({ hero, children }: { hero?: ReactNode; children: Reac
   );
 }
 
-/** Dark hero band used at the top of inner pages. */
+/** Hero at the top of inner pages: a full-width photo banner when the page has a photo in PAGE_PHOTOS. */
 interface PageHeroProps {
   eyebrow: string;
   title: string;
@@ -359,34 +317,34 @@ interface PageHeroProps {
 
 export function PageHero({ eyebrow, title, lead, crumb, children }: PageHeroProps) {
   const photo = PAGE_PHOTOS[crumb];
+  const text = (
+    <div className="ph-text">
+      <p className="crumbs">
+        <Link href="/">Home</Link> / {crumb}
+      </p>
+      <p className="eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      {lead && <p className="lead">{lead}</p>}
+      {children}
+    </div>
+  );
+
+  if (!photo) return <section className="wrap page-hero">{text}</section>;
+
+  // Full-width banner: the photo fills the band and the text sits on the left over a dark green shade.
   return (
-    <section className={`wrap page-hero${photo ? " has-photo" : ""}`}>
-      <div className="ph-text">
-        <p className="crumbs">
-          <Link href="/">Home</Link> / {crumb}
-        </p>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
-        {lead && <p className="lead">{lead}</p>}
-        {children}
-      </div>
-      {photo && (
-        <figure className="ph-card">
-          <div className="ph-img">
-            <Image src={photo.src} alt={photo.caption} fill unoptimized priority style={{ objectFit: "cover" }} />
-            {photo.tag && <span className="ph-tag">{photo.tag}</span>}
-          </div>
-          <figcaption>{photo.caption}</figcaption>
-        </figure>
-      )}
+    <section className="ph-banner">
+      <Image className="ph-bg" src={photo.src} alt={photo.caption} fill unoptimized priority sizes="100vw" />
+      <div className="ph-shade" aria-hidden="true" />
+      <div className="wrap page-hero">{text}</div>
     </section>
   );
 }
 
 /** Closing call-to-action band. */
 export function CtaBand({
-  title = "Protect your harvest this season.",
-  text = "Talk to us about bringing Dakzin to your farm or community.",
+  title = "Protect your crops from wildlife",
+  text = "Talk to us about bringing DakzinAI to your farm or community.",
 }: { title?: string; text?: string }) {
   return (
     <section className="cta">
@@ -409,47 +367,5 @@ export function MoreLink({ href, children }: { href: string; children: ReactNode
     <Link href={href} className="more">
       {children} <ArrowIcon />
     </Link>
-  );
-}
-
-/* ───────────── FAQ accordion ───────────── */
-
-interface FaqListProps {
-  items: FaqItem[];
-  idPrefix?: string;
-  firstOpen?: boolean;
-}
-
-export function FaqList({ items, idPrefix = "faq", firstOpen = true }: FaqListProps) {
-  const [openIndex, setOpenIndex] = useState(firstOpen ? 0 : -1);
-  return (
-    <div className="faq-list">
-      {items.map((item, i) => {
-        const open = openIndex === i;
-        const id = `${idPrefix}-${i}`;
-        return (
-          <div className="faq-item" key={item.q}>
-            <button
-              type="button"
-              className="faq-q"
-              aria-expanded={open}
-              aria-controls={`${id}-a`}
-              id={`${id}-q`}
-              onClick={() => setOpenIndex(open ? -1 : i)}
-            >
-              <span>{item.q}</span>
-              <span className={`faq-icon${open ? " open" : ""}`}>
-                <PlusIcon />
-              </span>
-            </button>
-            {open && (
-              <p className="faq-a" id={`${id}-a`} role="region" aria-labelledby={`${id}-q`}>
-                {item.a}
-              </p>
-            )}
-          </div>
-        );
-      })}
-    </div>
   );
 }

@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DakzinAI · AI-powered Animal Intrusion Detection System
 
-## Getting Started
+DakzinAI is a locally developed, field-tested AI-powered virtual fence that detects wildlife entering farms, alerts farmers and repels animals humanely. It was developed by the College of Science and Technology (CST), Royal University of Bhutan, with AMTC Paro and the Department of Agriculture.
 
-First, run the development server:
+This repository holds the web app: the public website, the login and the admin dashboard, plus the API and MQTT services used by the field units.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+On Windows PowerShell, use `npm.cmd` / `npx.cmd` if scripts are blocked.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+For a production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+Copy `.env.example` to `.env` and fill in your own values. Never commit `.env`.
 
-To learn more about Next.js, take a look at the following resources:
+## Public website
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Page | Route | Page file | Component |
+| --- | --- | --- | --- |
+| Home | `/` | `app/page.tsx` | `components/landing/DakzinLanding.tsx` |
+| How it works | `/how-it-works` | `app/how-it-works/page.tsx` | `HowItWorksPage` in `components/landing/pages.tsx` |
+| Features | `/features` | `app/features/page.tsx` | `FeaturesPage` in `components/landing/pages.tsx` |
+| News | `/news` | `app/news/page.tsx` | `components/landing/news.tsx` |
+| Project milestones | `/milestones` | `app/milestones/page.tsx` | `components/landing/milestones.tsx` |
+| About | `/about` | `app/about/page.tsx` | `AboutPage` in `components/landing/pages.tsx` |
+| Log in | `/login` | `app/login/page.tsx` | `components/login-form.tsx` |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Where to edit things
 
-## Deploy on Vercel
+All website text lives in three content files, so most updates never touch the page code:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `components/landing/site-content.ts`: menu, page header photos, the 7 animals, how-it-works steps, features, partners, team and contact details.
+- `components/landing/news-content.ts`: news stories (newest first) with their photos and key facts.
+- `components/landing/journey-content.ts`: the four Project milestones cards and the pilot sites.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Shared layout (styles, menu, footer, page header banner and the "Contact us" band) is in `components/landing/site.tsx`.
+
+Other components:
+
+- `AnimalRing.tsx`: the "What Dakzin recognises" ring on the home page.
+- `HeroSummary.tsx`: the "The Problem" card on the home page.
+- `ArchitectureDiagram.tsx`: the animated system diagram on How it works.
+
+### Images
+
+All images are in `public/`:
+
+| Folder | Used for |
+| --- | --- |
+| `public/pages/` | Page header banners, the home page photo and the architecture diagram |
+| `public/animals/` | The 7 animal photos in the ring (square) |
+| `public/news/` | One photo per news story |
+| `public/milestones/` | Project milestones card photos |
+| `public/team/` | Team photos on About (square, about 400 × 400 px) |
+| `public/login/` | Login page slideshow |

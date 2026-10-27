@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { FeaturesPage } from "@/components/landing/pages";
 
 export const metadata: Metadata = {
-  title: "Features · Dakzin",
-  description: "Detection, alerts, the Animal Repellent System and the Dakzin dashboard.",
+  title: "Features · DakzinAI",
+  description: "Detection, alerts, the Animal Repellent System and the DakzinAI dashboard.",
 };
 
 export default function Page() {

@@ -13,10 +13,10 @@ const ITEM = 19; // % of the ring's width, size of each photo
 
 const CSS = `
 /* card behind the ring */
-.dz .ar-wrap { --ar-card:#FFFFFF; width:100%; margin:0; background:var(--ar-card);
+.dz .ar-wrap { --ar-card:#FFFFFF; width:100%; max-width:calc(clamp(260px, calc(100svh - 360px), 400px) + 56px); margin:0 0 0 auto; background:var(--ar-card);
                border:1px solid rgba(20,83,45,.12); border-radius:28px; padding:clamp(14px, 2vw, 22px) clamp(16px, 2.5vw, 28px);
                box-shadow:0 20px 50px rgba(20,83,45,.18); }
-.dz .ar-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px; }
+.dz .ar-head { display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; margin-bottom:10px; }
 .dz .ar-head span { white-space:nowrap; font-size:clamp(10px, 2.4vw, 13px); font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--dz-highlight); }
 .dz .ar-head i { white-space:nowrap; font-style:normal; display:inline-flex; align-items:center; gap:6px; font-size:clamp(10px, 2.4vw, 13px); font-weight:600; color:var(--dz-on-dark-muted); }
 .dz .ar-head i::before { content:""; width:8px; height:8px; border-radius:50%; background:#16A34A; box-shadow:0 0 0 4px rgba(22,163,74,.18); }
@@ -43,10 +43,12 @@ const CSS = `
 .dz .ar-label b { display:block; font-size:clamp(9px, 2.7cqw, 15px); color:var(--dz-on-dark); }
 .dz .ar-label span { display:block; font-size:clamp(7px, 1.75cqw, 10px); font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--dz-on-dark-muted); }
 .dz .ar-item.on .ar-label b { color:#15803D; }
+@media (min-width: 960px) { .dz .ar-wrap { margin-right:calc(var(--gutter) * -0.6); } }
+@media (max-width: 959px) { .dz .ar-wrap { margin:0 auto; } }
 @media (max-width: 640px) {
   .dz .ar-centre { width:34%; padding:4%; }
 }
-.dz .ar-note { margin:10px auto 0; max-width:34rem; text-align:center; font-size:14px; line-height:1.45; color:var(--dz-on-dark-muted); }
+.dz .ar-note { margin:10px auto 0; max-width:24rem; text-align:center; font-size:14px; line-height:1.45; color:var(--dz-on-dark-muted); }
 `;
 
 export default function AnimalRing() {

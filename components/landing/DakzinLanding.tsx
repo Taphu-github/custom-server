@@ -3,6 +3,7 @@
 // Home page ("/"): a scrolling overview. Each section links to its full page.
 
 import Link from "next/link";
+import Image from "next/image";
 import AnimalRing from "./AnimalRing";
 import HeroSummary from "./HeroSummary";
 import { SiteShell, CtaBand, MoreLink } from "./site";
@@ -24,24 +25,42 @@ const NEWS_CSS = `
 .dz .hn .go { font-weight:600; color:var(--dz-brand-text); font-size:15px; }
 `;
 
+const HOME_HERO_CSS = `
+.dz .home-banner { align-items:stretch; }
+.dz .home-banner .ph-bg { object-position:center 45%; }
+.dz .home-banner .ph-shade { background:linear-gradient(90deg, rgba(11,42,23,.93) 0%, rgba(20,83,45,.82) 40%, rgba(20,83,45,.45) 70%, rgba(20,83,45,.25) 100%); }
+@media (max-width: 960px) { .dz .home-banner .ph-shade { background:linear-gradient(180deg, rgba(11,42,23,.6), rgba(11,42,23,.88)); } }
+.dz .home-banner .hero { position:relative; z-index:1; width:100%; padding-bottom:clamp(40px, 5vw, 64px); }
+.dz .home-banner .hero > div:first-child { color:#fff; --dz-on-dark:#fff; --dz-on-dark-muted:#DCFCE7; --dz-highlight:#4ADE80; }
+.dz .home-banner .hero h1 { color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.25); }
+.dz .home-banner .hero p.lead { color:#E7F8EC; }
+`;
+
 function HomeHero() {
   return (
-    <section className="wrap hero">
-      <div>
-        <h1>Know the moment wildlife enters your field.</h1>
-        <p className="lead" style={{ fontSize: 17, lineHeight: 1.6 }}>
-          DakzinAI is a locally developed, field-tested AI-powered Animal Intrusion Detection &amp;
-          Intervention System designed to mitigate human-wildlife conflict (HWC) and promote
-          human-wildlife coexistence in Bhutan. It is a smart &ldquo;virtual fence&rdquo; leveraging AI,
-          computer vision and IoT technologies. The successful pilot demonstrates strong potential as a
-          low-cost, scalable, community-based alternative or complement to chain-link and electric
-          fencing.
-        </p>
-        <HeroSummary />
-      </div>
+    <section className="ph-banner home-banner">
+      <style dangerouslySetInnerHTML={{ __html: HOME_HERO_CSS }} />
+      {/* Background photo: the Dakzin system installed at the Zurphi pilot site */}
+      <Image className="ph-bg" src="/pages/home-station.jpg" alt="The Dakzin system installed at the pilot site in Zurphi, Trong, Zhemgang" fill unoptimized priority sizes="100vw" />
+      <div className="ph-shade" aria-hidden="true" />
+      <div className="wrap hero">
+        <div>
+          <p className="eyebrow">AI-powered virtual fence</p>
+          <h1>Know the moment wildlife enters your field.</h1>
+          <p className="lead" style={{ fontSize: 17, lineHeight: 1.6 }}>
+            DakzinAI is a locally developed, field-tested AI-powered Animal Intrusion Detection &amp;
+            Intervention System designed to mitigate human-wildlife conflict (HWC) and promote
+            human-wildlife coexistence in Bhutan. It is a smart &ldquo;virtual fence&rdquo; leveraging AI,
+            computer vision and IoT technologies. The successful pilot demonstrates strong potential as a
+            low-cost, scalable, community-based alternative or complement to chain-link and electric
+            fencing.
+          </p>
+          <HeroSummary />
+        </div>
 
-      <div>
-        <AnimalRing />
+        <div>
+          <AnimalRing />
+        </div>
       </div>
     </section>
   );

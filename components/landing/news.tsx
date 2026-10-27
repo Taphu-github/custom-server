@@ -39,7 +39,7 @@ const CSS = `
 .dz .nf-feature { display:grid; grid-template-columns:minmax(0,1fr); background:#fff; border:1px solid var(--dz-line); border-radius:20px; overflow:hidden; scroll-margin-top:24px; }
 @media (min-width: 900px) { .dz .nf-feature { grid-template-columns:300px minmax(0,1fr); } .dz .nf-feature.has-img { grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); } }
 /* when the story has a picture, it replaces the dark green panel */
-.dz .nf-side.img { position:relative; padding:0; background:#0E3A73; justify-content:flex-start; gap:0; }
+.dz .nf-side.img { position:relative; padding:0; background:var(--dz-dark); justify-content:flex-start; gap:0; }
 .dz .nf-side.img .pic { width:100%; aspect-ratio:718/405; background-size:cover; background-position:center; }
 
 .dz .nf-side.img .over { position:relative; display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:16px 22px 20px; color:#fff; flex:1; align-content:flex-start; }

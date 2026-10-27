@@ -1,12 +1,11 @@
-// All text used by the public Dakzin pages lives here, so it can be edited in one place.
-// (Named site-content.ts so it can never be confused with the old content.js.)
+// All text used by the public DakzinAI pages lives here, so it can be edited in one place.
 // Each fact has ONE home page; other pages link to it instead of repeating it.
-//   Home .............. short overview only
-//   How it works ...... the detect → classify → alert → repel process (incl. SMS/call backup, repellent)
-//   Features .......... capabilities that are not part of that process (accuracy aids, data, dashboard)
-//   FAQ ............... questions not already answered on another page
-//   About ............. mission, partners, team, other joint projects
-//   Project milestones  timeline, funding and pilot sites
+//   Home (/) ................. short overview: hero, how it works, features, latest news, about
+//   How it works ............. the detect → classify → alert → repel process and the architecture diagram
+//   Features ................. capabilities that are not part of that process (accuracy aids, data, dashboard)
+//   News ..................... news-content.ts
+//   Project milestones ....... journey-content.ts
+//   About .................... mission, partners, team, other joint projects
 // Replace any [BRACKETED] placeholder with your real details.
 
 /* ───────────── Types ───────────── */
@@ -16,26 +15,20 @@ export interface Step { n: string; title: string; text: string }
 export interface StepDetail { n: string; title: string; lead: string; body: string[] }
 export interface TitledText { title: string; text: string }
 export interface FeatureGroup { id: string; title: string; intro: string; items: TitledText[] }
-export interface FaqItem { q: string; a: string }
-export interface FaqGroup { id: string; title: string; items: FaqItem[] }
 export interface PartnerDetail { name: string; role: string }
 // photo: a file in /public/team, e.g. "/team/kezang-dema.jpg" (square, about 400 × 400 px)
 export interface TeamMember { name: string; role?: string; photo?: string | null }
 export interface TeamGroup { title: string; members: TeamMember[] }
-export interface Milestone { id: string; when: string; title: string; tag: string; text: string }
-export interface PilotSite { place: string; dzongkhag: string }
-export interface HeroImage { src: string; alt: string }
 
 export const LOGIN_PATH = "/login";
 
 /* Photo shown in the top band of each inner page (keyed by the page's crumb name). Files are in /public/pages. */
-export interface PagePhoto { src: string; caption: string; tag?: string }
+export interface PagePhoto { src: string; caption: string }
 export const PAGE_PHOTOS: Record<string, PagePhoto> = {
   "How it works": { src: "/pages/station-community.jpg", caption: "The Dakzin team and local farmers at a repellent station during the system launch" },
-  Features: { src: "/pages/monkey-capture.jpg", caption: "A monkey seen at the forest edge of a pilot site", tag: "Monkey detected" },
+  Features: { src: "/pages/monkey-capture.jpg", caption: "A monkey seen at the forest edge of a pilot site" },
   News: { src: "/pages/launch-banner.jpg", caption: "Dakzin System Launch · Trongsa & Zhemgang, September 2025" },
   "Project milestones": { src: "/pages/launch-community.jpg", caption: "Launching the system with the local community" },
-  FAQ: { src: "/pages/user-training.jpg", caption: "Hands-on user training with farmers" },
   About: { src: "/pages/blessing.jpg", caption: "Blessing the Dakzin station at a pilot site" },
 };
 
@@ -44,7 +37,6 @@ export const NAV: NavItem[] = [
   { href: "/features", label: "Features" },
   { href: "/news", label: "News" },
   { href: "/milestones", label: "Project milestones" },
-  // { href: "/faq", label: "FAQ" }, // hidden for now — remove the // at the start to show it again
   { href: "/about", label: "About" },
 ];
 
@@ -81,7 +73,6 @@ export const STEPS_DETAIL: StepDetail[] = [
     lead: "Field units keep watch over the farm.",
     body: [
       "Each Dakzin field unit is installed at the edge of a farm, facing the places where animals usually enter, and continuously captures images of the area.",
-      "[Describe the hardware: camera type, processor (e.g. Raspberry Pi / Jetson), power source, mounting and the area one unit covers.]",
     ],
   },
   {
@@ -90,7 +81,6 @@ export const STEPS_DETAIL: StepDetail[] = [
     lead: "Artificial Intelligence recognises the animal.",
     body: [
       "A computer-vision model analyses the images to detect and classify animals, so the system knows what has entered the field.",
-      "[Name the model (e.g. YOLO), the species it is trained on and how the training data was collected.]",
     ],
   },
   {
@@ -142,39 +132,6 @@ export const FEATURE_GROUPS: FeatureGroup[] = [
       { title: "Device & owner management", text: "Register additional DakzinAI systems and assign  farm owners at the field" },
       { title: "User management", text: "Control who can access the dashboard and what they can do." },
       { title: "Device connection settings", text: "Manage the MQTT credentials each DakzinAI system uses to send detections to the server." },
-    ],
-  },
-];
-
-/* ───────────── FAQ ───────────── */
-// Only questions not already answered on another page.
-
-export const FAQ_GROUPS: FaqGroup[] = [
-  {
-    id: "detection",
-    title: "Detection",
-    items: [
-      { q: "Which animals can it recognise?", a: "[List the species your model currently classifies.]" },
-      { q: "How accurate is it?", a: "In field tests the system reached [YOUR ACCURACY FIGURE] detection accuracy. [Add how you measured it.]" },
-      { q: "Does it work at night?", a: "[Describe night-time operation, e.g. infrared cameras or field lighting.]" },
-    ],
-  },
-  {
-    id: "alerts",
-    title: "Alerts & repellent",
-    items: [
-      { q: "Can more than one person get alerts for a farm?", a: "[Explain whether family members or neighbours can be added to receive alerts.]" },
-      { q: "Will animals get used to the repellent?", a: "Combining lights, a moving tiger doll and varied sounds makes it harder for animals to get used to it. Monitoring in December 2025 did find some habituation to the repellent sounds at the Beling (Trongsa) site, and this is one of the areas the team is now improving." },
-    ],
-  },
-  {
-    id: "account",
-    title: "Getting Dakzin & your data",
-    items: [
-      { q: "How can I get Dakzin for my farm?", a: "[Explain how farmers or gewogs can request a device, who installs it and any cost.]" },
-      { q: "How do I log in?", a: "Use the Log in button at the top right of any page with the username and password given to you. [Add who to contact if you forget your password.]" },
-      { q: "Does it record people? What about privacy?", a: "[Describe how images of people are handled, for example not stored, blurred, or deleted after X days.]" },
-      { q: "Who can see my detection data?", a: "[Explain who has access, e.g. the farm owner and authorised administrators from CST and AMTC.]" },
     ],
   },
 ];
@@ -231,52 +188,11 @@ export const TEAM_GROUPS: TeamGroup[] = [
     ],
   },
 ];
+
+/* ───────────── Contact (footer and "Contact us" button) ───────────── */
+
 export const CONTACT = {
   email: "[YOUR EMAIL]",
   place: "Phuentsholing, Bhutan",
-  org: "IT Department, College of Science and Technology, RUB",
+  org: "College of Science and Technology, RUB",
 };
-export const HERO_IMAGES: HeroImage[] = [
-  { src: "https://images.unsplash.com/photo-1607317146126-64b09b69eb4e?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Wild animal photo 1" },
-  { src: "https://images.unsplash.com/photo-1595173425119-1c54835c1874?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Wild animal photo 2" },
-  { src: "https://images.unsplash.com/photo-1700410405744-60f007b2afea?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Wild animal photo 3" },
-  { src: "https://images.unsplash.com/photo-1726810396849-7df4da2fc0f6?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Wild animal photo 4" },
-];
-
-/* ───────────── Project milestones ───────────── */
-
-export const MILESTONES: Milestone[] = [
-  {
-    id: "idea",
-    when: "2021",
-    title: "Idea & student project",
-    tag: "Started",
-    text: "The IT Department of CST conceptualises an AI-powered Animal Intrusion Detection System and work begins as a student project.",
-  },
-  {
-    id: "prototype",
-    when: "2023–2024",
-    title: "System prototype",
-    tag: "Prototype",
-    text: "A final-year student team builds the first working prototype, in collaboration with AMTC Paro, the Department of Agriculture and MoAL.",
-  },
-  {
-    id: "funded",
-    when: "2024–2025",
-    title: "Funded enhancement",
-    tag: "Funded",
-    text: "The system is enhanced through “Smart Solution for Human-Wildlife Conflict: Implementing an Intrusion Detection System”, funded by the Bhutan Foundation and co-financed by AMTC and CST.",
-  },
-  {
-    id: "pilot",
-    when: "Pilot",
-    title: "Field pilots",
-    tag: "In the field",
-    text: "The prototype goes into the field at two pilot sites.",
-  },
-];
-
-export const PILOT_SITES: PilotSite[] = [
-  { place: "Langthil", dzongkhag: "Trongsa" },
-  { place: "Trong", dzongkhag: "Zhemgang" },
-];
