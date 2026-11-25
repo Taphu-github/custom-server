@@ -188,6 +188,15 @@ export const TEAM_GROUPS: TeamGroup[] = [
       { name: "Mr. Karsel Dawa", role: "Data Engineer" },
     ],
   },
+  {
+    title: "Final-year student project team (2022–2023): the team that conceived the idea",
+    members: [
+      { name: "Mr. Tsheten Dorji", role: "Project Supervisor · Lecturer", photo: "/team/tsheten-dorji.jpg" },
+      { name: "Tenzin Norzang", role: "Student team member" },
+      { name: "Thinley Jigme", role: "Student team member" },
+      { name: "Sonam Deki", role: "Student team member" },
+    ],
+  },
 ];
 
 /* ───────────── Contact (footer and "Contact us" button) ───────────── */
