@@ -192,9 +192,9 @@ export const TEAM_GROUPS: TeamGroup[] = [
     title: "Final-year student project team (2022–2023): the team that conceived the idea",
     members: [
       { name: "Mr. Tsheten Dorji", role: "Project Supervisor · Lecturer", photo: "/team/tsheten-dorji.jpg" },
-      { name: "Tenzin Norzang", role: "Student team member" },
-      { name: "Thinley Jigme", role: "Student team member" },
-      { name: "Sonam Deki", role: "Student team member" },
+      { name: "Tenzin Norzang", role: "Student team member", photo: "/team/tenzin-norzang.jpg" },
+      { name: "Thinley Jigme", role: "Student team member", photo: "/team/thinley-jigme.jpg" },
+      { name: "Sonam Deki", role: "Student team member", photo: "/team/sonam-deki.jpg" },
     ],
   },
 ];
