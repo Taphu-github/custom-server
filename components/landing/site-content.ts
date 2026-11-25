@@ -174,7 +174,7 @@ export const TEAM_GROUPS: TeamGroup[] = [
       { name: "Mr. Thinley Dorji", role: "Project member · Assistant Engineer, AMTC" },
       { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC" },
       { name: "Mr. Jeevan Gurung", role: "Lecturer, CST" },
-      { name: "Mr. Tandin Phuntsho", role: "Software Engineer · CST IT graduate" },
+      { name: "Mr. Tandin Phuntsho", role: "Software Engineer · CST IT graduate", photo: "/team/tandin-phuntsho.jpg" },
       { name: "Mr. Pravaat Chhetri", role: "Software Engineer · CST IT graduate" },
     ],
   },
@@ -182,10 +182,10 @@ export const TEAM_GROUPS: TeamGroup[] = [
     title: "Final-year student project team (2023–2024)",
     members: [
       { name: "Mr. Tsheten Dorji", role: "Project Supervisor · Lecturer", photo: "/team/tsheten-dorji.jpg" },
-      { name: "Mr. Tandin Phuntsho", role: "AIoT Developer" },
-      { name: "Miss Pema Lhaden Wangchuk", role: "Team Leader & App Developer" },
-      { name: "Miss Yeshi Tshomo", role: "Web Developer" },
-      { name: "Mr. Karsel Dawa", role: "Data Engineer" },
+      { name: "Mr. Tandin Phuntsho", role: "AIoT Developer", photo: "/team/tandin-phuntsho.jpg" },
+      { name: "Miss Pema Lhaden Wangchuk", role: "Team Leader & App Developer", photo: "/team/pema-lhaden-wangchuk.jpg" },
+      { name: "Miss Yeshi Tshomo", role: "Web Developer", photo: "/team/yeshi-tshomo.jpg" },
+      { name: "Mr. Karsel Dawa", role: "Data Engineer", photo: "/team/karsel-dawa.jpg" },
     ],
   },
   {
