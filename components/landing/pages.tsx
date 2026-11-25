@@ -141,6 +141,27 @@ export function FeaturesPage() {
   );
 }
 
+/* Each team (newest first) gets its own colour scheme. */
+const TEAM_THEMES = [
+  { a: "#16A34A", soft: "#F0FDF4", ink: "#14532D", line: "#BBF7D0" }, // green
+  { a: "#0D9488", soft: "#F0FDFA", ink: "#134E4A", line: "#99F6E4" }, // teal
+  { a: "#2563EB", soft: "#EFF6FF", ink: "#1E3A8A", line: "#BFDBFE" }, // blue
+  { a: "#D97706", soft: "#FFFBEB", ink: "#78350F", line: "#FDE68A" }, // amber
+];
+const TEAM_CSS = `
+.dz .tm-group { margin-bottom:44px; padding:24px; border-radius:24px; background:var(--tm-soft); border:1px solid var(--tm-line); }
+.dz .tm-head { display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin:0 0 20px; }
+.dz .tm-head h3 { margin:0; font-size:22px; color:var(--tm-ink); }
+.dz .tm-year { display:inline-block; padding:6px 14px; border-radius:999px; background:var(--tm-a); color:#fff; font-weight:700; font-size:15px; letter-spacing:.02em; }
+.dz .tm-note { font-size:15px; font-style:italic; color:var(--tm-ink); opacity:.8; }
+.dz .tm-card { position:relative; overflow:hidden; border-color:var(--tm-line); }
+.dz .tm-card::before { content:""; position:absolute; left:0; right:0; top:0; height:5px; background:var(--tm-a); }
+.dz .tm-card:hover { border-color:var(--tm-a); box-shadow:0 10px 26px rgba(0,0,0,.08); }
+.dz .tm-card .avatar { background:var(--tm-soft); color:var(--tm-ink); box-shadow:0 0 0 3px #fff, 0 0 0 5px var(--tm-a); }
+.dz .tm-card p { color:var(--tm-ink); opacity:.75; }
+@media (max-width: 640px) { .dz .tm-group { padding:16px; } }
+`;
+
 /* ───────────── /about ───────────── */
 
 export function AboutPage() {
@@ -190,26 +211,38 @@ export function AboutPage() {
       <section className="wrap block">
         <p className="eyebrow">Our team</p>
         <h2 className="h2">The people behind Dakzin</h2>
-        {TEAM_GROUPS.map((g) => (
-          <div key={g.title} style={{ marginBottom: 40 }}>
-            <h3 style={{ margin: "0 0 16px", fontSize: 22 }}>{g.title}</h3>
-            <div className="team">
-              {g.members.map((m) => (
-                <div className="member" key={g.title + m.name}>
-                  <div className="avatar">
-                    {m.photo ? (
-                      <Image src={m.photo} alt={m.name} width={192} height={192} unoptimized />
-                    ) : (
-                      <span aria-hidden="true">{initials(m.name)}</span>
-                    )}
+        <style dangerouslySetInnerHTML={{ __html: TEAM_CSS }} />
+        {TEAM_GROUPS.map((g, gi) => {
+          const th = TEAM_THEMES[gi % TEAM_THEMES.length];
+          const m = g.title.match(/^(.*?)\s*\(([^)]+)\)(.*)$/);
+          const label = m ? m[1] : g.title;
+          const years = m ? m[2] : "";
+          const note = m ? m[3].replace(/^[:\s–-]+/, "") : "";
+          return (
+            <div key={g.title} className="tm-group" style={{ ["--tm-a" as string]: th.a, ["--tm-soft" as string]: th.soft, ["--tm-ink" as string]: th.ink, ["--tm-line" as string]: th.line }}>
+              <div className="tm-head">
+                {years && <span className="tm-year">{years}</span>}
+                <h3>{label}</h3>
+                {note && <span className="tm-note">{note}</span>}
+              </div>
+              <div className="team">
+                {g.members.map((mem) => (
+                  <div className="member tm-card" key={g.title + mem.name}>
+                    <div className="avatar">
+                      {mem.photo ? (
+                        <Image src={mem.photo} alt={mem.name} width={192} height={192} unoptimized />
+                      ) : (
+                        <span aria-hidden="true">{initials(mem.name)}</span>
+                      )}
+                    </div>
+                    <h3>{mem.name}</h3>
+                    {mem.role && <p>{mem.role}</p>}
                   </div>
-                  <h3>{m.name}</h3>
-                  {m.role && <p>{m.role}</p>}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       <section className="sand">
