@@ -157,7 +157,7 @@ export const TEAM_GROUPS: TeamGroup[] = [
     members: [
       { name: "Mr. Tsheten Dorji", role: "Project PI · Lecturer, CST", photo: "/team/tsheten-dorji.jpg" },
       { name: "Mr. Yeshi Jamtsho", role: "Project member · Lecturer, CST", photo: "/team/yeshi-jamtsho.jpg" },
-      { name: "Mr. Jeevan Gurung", role: "Project member · Lecturer, CST" },
+      { name: "Mr. Jeevan Gurung", role: "Project member · Lecturer, CST", photo: "/team/jeevan-gurung.jpg" },
       { name: "Nyingjay Metog Dorji", role: "Project member", photo: "/team/nyingjay-metog-dorji.jpg" },
       { name: "Kezang Dema", role: "Project member", photo: "/team/kezang-dema.jpg" },
       { name: "Ugyen Penjor", role: "Project member", photo: "/team/ugyen-penjor.jpg" },
@@ -173,7 +173,7 @@ export const TEAM_GROUPS: TeamGroup[] = [
       { name: "Mr. Karma Tshering", role: "Focal person · Junior Engineer, AMTC", photo: "/team/karma-tshering.jpg" },
       { name: "Mr. Thinley Dorji", role: "Project member · Assistant Engineer, AMTC", photo: "/team/thinley-dorji.jpg" },
       { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC", photo: "/team/namgay.jpg" },
-      { name: "Mr. Jeevan Gurung", role: "Lecturer, CST" },
+      { name: "Mr. Jeevan Gurung", role: "Lecturer, CST", photo: "/team/jeevan-gurung.jpg" },
       { name: "Mr. Tandin Phuntsho", role: "Software Engineer · CST IT graduate", photo: "/team/tandin-phuntsho.jpg" },
       { name: "Mr. Pravaat Chhetri", role: "Software Engineer · CST IT graduate", photo: "/team/pravaat-chhetri.jpg" },
     ],

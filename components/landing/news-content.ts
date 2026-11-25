@@ -32,6 +32,27 @@ export const NEWS_CATEGORIES: NewsCategory[] = ["Recognition", "Technology relea
 
 export const NEWS_ITEMS: NewsItem[] = [
   {
+    id: "peoples-choice-award-2026",
+    date: "16–18 November 2026",
+    year: 2026,
+    category: "Recognition",
+    image: "/news/peoples-choice-award-2026.jpg",
+    title: "DakzinAI wins the People’s Choice Award at the Regional Human-Wildlife Coexistence Conference",
+    place: "Conference on Advancing Innovation in Human-Wildlife Coexistence",
+    lead: "The DakzinAI team received the People’s Choice Award at the Regional Human-Wildlife Coexistence Conference, where participants, national and international experts, regional practitioners, local government leaders and community representatives voted for DakzinAI, a homegrown virtual-fencing innovation addressing a local challenge.",
+    body: [
+      "The award recognises “DakzinAI: AI-powered Animal Intrusion Detection and Intervention System for Human-Wildlife Conflict Mitigation in Bhutan” as a technology innovation for reducing human-wildlife conflict and enabling coexistence. It has given the research team at the College of Science and Technology (CST), Royal University of Bhutan, and the Agriculture Machinery and Technology Centre (AMTC), Paro, renewed confidence and motivation to keep improving the technology until it reaches maturity and mass adoption in the field.",
+      "The team thanks WWF Bhutan for the opportunity to take part in the conference and showcase DakzinAI. The conference helped the team understand the complexity of human-wildlife coexistence, learn from best practices, and explore innovative approaches to preventing and mitigating conflict through shared responsibility among stakeholders in Bhutan and through regional collaboration. These insights will guide further enhancements to DakzinAI.",
+      "The team also thanks the College management for its support, and all past and present research team members and everyone from CST, AMTC and the Bhutan Foundation who contributed. Together, they have helped DakzinAI grow from a proof of concept to pilot implementation in the field, and now to a technology recognised at a regional Human-Wildlife Coexistence Conference.",
+    ],
+    facts: [
+      { label: "Award", value: "People’s Choice Award" },
+      { label: "Event", value: "Regional Human-Wildlife Coexistence Conference, 16–18 November 2026" },
+      { label: "Opportunity provided by", value: "WWF Bhutan" },
+      { label: "Represented by", value: "CST, RUB and AMTC, Paro" },
+    ],
+  },
+  {
     id: "rub-foundation-day-2026",
     date: "2 June 2026",
     year: 2026,
