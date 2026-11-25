@@ -153,28 +153,29 @@ export const RELATED_PROJECTS: string[] = [
 
 export const TEAM_GROUPS: TeamGroup[] = [
   {
-    title: "Project team (2024–2026)",
+    title: "Project team (2026–present)",
     members: [
       { name: "Mr. Tsheten Dorji", role: "Project PI · Lecturer, CST", photo: "/team/tsheten-dorji.jpg" },
-      { name: "Mr. Karma Wangchuk", role: "Project member · Lecturer, CST", photo: "/team/karma-wangchuk.jpg" },
       { name: "Mr. Yeshi Jamtsho", role: "Project member · Lecturer, CST", photo: "/team/yeshi-jamtsho.jpg" },
-      { name: "Mr. Pema Galey", role: "Project member · Lecturer, CST", photo: "/team/pema-galey.jpg" },
-      { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC" },
-      { name: "Mr. Karma Tshering", role: "Focal person · Junior Engineer, AMTC" },
-      { name: "Mr. Thinley Dorji", role: "Project member · Assistant Engineer, AMTC" },
-      { name: "Kezang Dema", role: "Project member", photo: "/team/kezang-dema.jpg" },
-      { name: "Kezang Namgay", role: "Project member", photo: "/team/kezang-namgay.jpg" },
+      { name: "Mr. Jeevan Gurung", role: "Project member · Lecturer, CST" },
       { name: "Nyingjay Metog Dorji", role: "Project member", photo: "/team/nyingjay-metog-dorji.jpg" },
+      { name: "Kezang Dema", role: "Project member", photo: "/team/kezang-dema.jpg" },
       { name: "Ugyen Penjor", role: "Project member", photo: "/team/ugyen-penjor.jpg" },
     ],
   },
   {
-    title: "Supported by",
+    title: "Project team (2024–2025)",
     members: [
+      { name: "Mr. Tsheten Dorji", role: "Project PI · Lecturer, CST", photo: "/team/tsheten-dorji.jpg" },
+      { name: "Mr. Yeshi Jamtsho", role: "Project member · Lecturer, CST", photo: "/team/yeshi-jamtsho.jpg" },
+      { name: "Mr. Karma Wangchuk", role: "Project member · Lecturer, CST", photo: "/team/karma-wangchuk.jpg" },
+      { name: "Mr. Pema Galey", role: "Project member · Lecturer, CST", photo: "/team/pema-galey.jpg" },
+      { name: "Mr. Karma Tshering", role: "Focal person · Junior Engineer, AMTC" },
+      { name: "Mr. Thinley Dorji", role: "Project member · Assistant Engineer, AMTC" },
+      { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC" },
       { name: "Mr. Jeevan Gurung", role: "Lecturer, CST" },
       { name: "Mr. Tandin Phuntsho", role: "Software Engineer · CST IT graduate" },
       { name: "Mr. Pravaat Chhetri", role: "Software Engineer · CST IT graduate" },
-      { name: "Bijay Kumar", photo: "/team/bijay-kumar.jpg" },
     ],
   },
   {
