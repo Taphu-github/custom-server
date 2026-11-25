@@ -172,7 +172,7 @@ export const TEAM_GROUPS: TeamGroup[] = [
       { name: "Mr. Pema Galey", role: "Project member · Lecturer, CST", photo: "/team/pema-galey.jpg" },
       { name: "Mr. Karma Tshering", role: "Focal person · Junior Engineer, AMTC" },
       { name: "Mr. Thinley Dorji", role: "Project member · Assistant Engineer, AMTC" },
-      { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC" },
+      { name: "Mr. Namgay", role: "Project member · Executive Engineer, AMTC", photo: "/team/namgay.jpg" },
       { name: "Mr. Jeevan Gurung", role: "Lecturer, CST" },
       { name: "Mr. Tandin Phuntsho", role: "Software Engineer · CST IT graduate", photo: "/team/tandin-phuntsho.jpg" },
       { name: "Mr. Pravaat Chhetri", role: "Software Engineer · CST IT graduate" },
